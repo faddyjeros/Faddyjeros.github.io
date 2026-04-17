@@ -1,0 +1,177 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import yaml from "js-yaml";
+import fs from "node:fs";
+import path from "node:path";
+
+const txRaw = fs.readFileSync(
+  path.resolve("./data/transactions.yaml"),
+  "utf-8"
+);
+const transactions = (yaml.load(txRaw) as { transactions: any[] }).transactions || [];
+
+// Load holdings so we can mark which tickers are currently held
+const holdingsRaw = fs.readFileSync(
+  path.resolve("./data/holdings.yaml"),
+  "utf-8"
+);
+const holdings = (yaml.load(holdingsRaw) as { holdings: any[] }).holdings;
+const currentlyHeld = new Set(holdings.map(h => h.ticker));
+
+// Sort most-recent-first
+transactions.sort((a, b) => (b.date > a.date ? 1 : -1));
+
+// Group for summary: total buys + sells per ticker
+type TickerStat = {
+  ticker: string;
+  buys: number;
+  sells: number;
+  bought_shares: number;
+  sold_shares: number;
+  currency: string;
+  held: boolean;
+};
+const byTicker: Record<string, TickerStat> = {};
+for (const tx of transactions) {
+  if (!byTicker[tx.ticker]) {
+    byTicker[tx.ticker] = {
+      ticker: tx.ticker,
+      buys: 0,
+      sells: 0,
+      bought_shares: 0,
+      sold_shares: 0,
+      currency: tx.currency || "EUR",
+      held: currentlyHeld.has(tx.ticker),
+    };
+  }
+  const stat = byTicker[tx.ticker];
+  if (tx.action === "buy") {
+    stat.buys += 1;
+    stat.bought_shares += tx.shares;
+  } else {
+    stat.sells += 1;
+    stat.sold_shares += tx.shares;
+  }
+}
+const tickerStats = Object.values(byTicker).sort((a, b) => {
+  // Held first, then alphabetical
+  if (a.held !== b.held) return a.held ? -1 : 1;
+  return a.ticker.localeCompare(b.ticker);
+});
+
+const fmtShares = (n: number) =>
+  new Intl.NumberFormat("en-GB", { maximumFractionDigits: 4 }).format(n);
+
+const fmtDate = (s: string) =>
+  new Date(s).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+const yahooUrl = (ticker: string) =>
+  `https://finance.yahoo.com/quote/${encodeURIComponent(ticker)}`;
+---
+
+<Layout title="Transaction History | Jeremie">
+  <Header />
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-16">
+    <section class="pt-8 pb-6 border-b border-border">
+      <div class="flex items-center gap-3 text-sm text-foreground/60">
+        <a href="/portfolio" class="hover:text-foreground/80 hover:underline">← Back to portfolio</a>
+      </div>
+      <h1 class="mt-3 text-2xl font-semibold tracking-tight">Transaction history</h1>
+      <p class="mt-2 text-sm text-foreground/70">
+        Full record of buys and sells since 2019. Transactions in the same
+        ticker on the same day are collapsed at weighted-average price.
+      </p>
+    </section>
+
+    <!-- Per-ticker summary -->
+    <section class="pt-6">
+      <h2 class="text-lg font-semibold">By ticker</h2>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border text-left text-xs uppercase tracking-wider text-foreground/60">
+              <th class="py-2 pr-3 font-normal">Ticker</th>
+              <th class="py-2 pr-3 font-normal">Status</th>
+              <th class="py-2 pr-3 font-normal text-right">Buys</th>
+              <th class="py-2 pr-3 font-normal text-right">Sells</th>
+              <th class="py-2 font-normal text-right">Net shares</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickerStats.map(s => (
+              <tr class="border-b border-border/30">
+                <td class="py-3 pr-3">
+                  <a
+                    href={yahooUrl(s.ticker)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-mono text-xs font-semibold hover:underline"
+                  >
+                    {s.ticker}
+                  </a>
+                </td>
+                <td class="py-3 pr-3">
+                  {s.held ? (
+                    <span class="text-xs text-emerald-600 dark:text-emerald-400">currently held</span>
+                  ) : (
+                    <span class="text-xs text-foreground/50">closed</span>
+                  )}
+                </td>
+                <td class="py-3 pr-3 tabular-nums text-right">{fmtShares(s.bought_shares)} <span class="text-xs text-foreground/50">({s.buys})</span></td>
+                <td class="py-3 pr-3 tabular-nums text-right">{fmtShares(s.sold_shares)} <span class="text-xs text-foreground/50">({s.sells})</span></td>
+                <td class="py-3 tabular-nums text-right">{fmtShares(s.bought_shares - s.sold_shares)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Full transaction list -->
+    <section class="pt-10">
+      <h2 class="text-lg font-semibold">All transactions</h2>
+      <p class="mt-1 text-xs text-foreground/50">
+        {transactions.length} transactions, most recent first.
+      </p>
+      <ul class="mt-4 space-y-3">
+        {transactions.map(tx => {
+          const isBuy = tx.action === "buy";
+          const badgeClass = isBuy
+            ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-400"
+            : "bg-red-600/10 text-red-700 dark:text-red-400";
+          return (
+            <li class="flex flex-col gap-1 border-b border-border/30 pb-3">
+              <div class="flex items-center justify-between gap-3 text-sm">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class={`inline-block rounded px-1.5 py-0.5 text-xs font-mono uppercase tracking-wide ${badgeClass}`}>
+                    {tx.action}
+                  </span>
+                  <a
+                    href={yahooUrl(tx.ticker)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-mono text-xs hover:underline"
+                  >
+                    {tx.ticker}
+                  </a>
+                  <span class="text-foreground/60 truncate">
+                    {fmtShares(tx.shares)} @ {tx.price} {tx.currency}
+                  </span>
+                </div>
+                <span class="text-xs text-foreground/50 shrink-0 tabular-nums">{fmtDate(tx.date)}</span>
+              </div>
+              {tx.note && (
+                <div class="text-xs text-foreground/60 italic pl-1">{tx.note}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  </main>
+</Layout>

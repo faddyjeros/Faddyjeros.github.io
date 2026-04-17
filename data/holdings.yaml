@@ -1,0 +1,50 @@
+# Portfolio holdings — edit this file when you buy, sell, or adjust positions.
+#
+# Fields:
+#   ticker   - Yahoo Finance symbol (exactly as on finance.yahoo.com)
+#   shares   - Number of shares/units you own
+#   bep      - Breakeven price per share (average cost in ticker's quote currency)
+#   currency - Quote currency of the ticker (USD/EUR/CHF/GBP)
+#   name     - Your own label for the position (displayed on the site)
+#   bought   - Rough date you took the position (YYYY-MM-DD, optional)
+#   note     - Short commentary shown under the row on the portfolio page.
+#              Use '>' for multi-line (YAML folds newlines into spaces).
+
+holdings:
+  - ticker: GME
+    shares: 48
+    bep: 80.00
+    currency: USD
+    name: GameStop
+    bought: 2021-01-29
+    note: >
+      Bought during the meme squeeze. Holding as a memento and lottery ticket
+      more than an investment. BEP is horrible, I know.
+
+  - ticker: CSPX.AS
+    shares: 48
+    bep: 471.59
+    currency: EUR
+    name: iShares Core S&P 500 UCITS (Acc)
+    note: >
+      Core US exposure on Degiro. Accumulating share class so dividends
+      reinvest automatically. Partially funded a car purchase in Feb 2025
+      and topped back up later that year.
+
+  - ticker: WPEA.PA
+    shares: 16707
+    bep: 5.819
+    currency: EUR
+    name: iShares MSCI World Swap PEA UCITS
+    note: >
+      Largest position. PEA-eligible swap-based ETF giving global developed
+      market exposure while staying inside the French tax wrapper.
+
+  - ticker: CW8.PA
+    shares: 38
+    bep: 484.39
+    currency: EUR
+    name: Amundi MSCI World UCITS
+    note: >
+      Another MSCI World position, held in the PEA. First Boursorama ETF
+      purchase, built over three buys in early 2024.

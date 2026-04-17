@@ -3,7 +3,7 @@ export const SITE = {
   author: "Jeremie",
   profile: "https://www.linkedin.com/in/jergros/",
   desc: "eDiscovery project manager writing about work, finance, and gaming.",
-  title: "FaddyJeros",
+  title: "Jeremie",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,

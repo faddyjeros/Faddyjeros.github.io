@@ -26,3 +26,10 @@ pnpm-debug.log*
 # pagefind
 
 public/pagefind
+
+# Financial source files - never commit
+*.xlsx
+*.xlsm
+*Transactions*.csv
+*Avis-d-op*.pdf
+*Personal_Accounting*

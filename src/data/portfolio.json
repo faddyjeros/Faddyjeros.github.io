@@ -1,0 +1,75 @@
+{
+  "last_updated": "2026-04-17T18:13:51+00:00",
+  "base_currency": "EUR",
+  "positions": [
+    {
+      "ticker": "GME",
+      "name": "GameStop",
+      "shares": 48.0,
+      "currency": "USD",
+      "price": 24.4611,
+      "bep": 80.0,
+      "value_native": 1174.13,
+      "value_eur": 995.43,
+      "cost_eur": 3255.55,
+      "gain_eur": -2260.12,
+      "gain_pct": -69.42,
+      "bought": "2021-01-29",
+      "allocation_pct": 0.61
+    },
+    {
+      "ticker": "CSPX.AS",
+      "name": "iShares Core S&P 500 UCITS (Acc)",
+      "shares": 48.0,
+      "currency": "EUR",
+      "price": 649.32,
+      "bep": 471.59,
+      "value_native": 31167.36,
+      "value_eur": 31167.36,
+      "cost_eur": 22636.32,
+      "gain_eur": 8531.04,
+      "gain_pct": 37.69,
+      "bought": null,
+      "allocation_pct": 19.11
+    },
+    {
+      "ticker": "WPEA.PA",
+      "name": "iShares MSCI World Swap PEA UCITS",
+      "shares": 16707.0,
+      "currency": "EUR",
+      "price": 6.3933,
+      "bep": 5.819,
+      "value_native": 106812.86,
+      "value_eur": 106812.86,
+      "cost_eur": 97218.03,
+      "gain_eur": 9594.83,
+      "gain_pct": 9.87,
+      "bought": null,
+      "allocation_pct": 65.49
+    },
+    {
+      "ticker": "CW8.PA",
+      "name": "Amundi MSCI World UCITS",
+      "shares": 38.0,
+      "currency": "EUR",
+      "price": 634.9898,
+      "bep": 484.39,
+      "value_native": 24129.61,
+      "value_eur": 24129.61,
+      "cost_eur": 18406.82,
+      "gain_eur": 5722.79,
+      "gain_pct": 31.09,
+      "bought": null,
+      "allocation_pct": 14.79
+    }
+  ],
+  "summary": {
+    "market_value_eur": 163105.27,
+    "total_cost_eur": 141516.73,
+    "total_gain_eur": 21588.54,
+    "total_gain_pct": 15.26,
+    "loan_remaining_eur": 6407.69,
+    "loan_as_of": "2026-04-04",
+    "net_worth_eur": 156697.58
+  }
+}

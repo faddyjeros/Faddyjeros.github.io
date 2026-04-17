@@ -1,0 +1,278 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import portfolio from "@/data/portfolio.json";
+import yaml from "js-yaml";
+import fs from "node:fs";
+import path from "node:path";
+
+const { positions, summary, last_updated } = portfolio;
+
+const holdingsRaw = fs.readFileSync(
+  path.resolve("./data/holdings.yaml"),
+  "utf-8"
+);
+const holdings = (yaml.load(holdingsRaw) as { holdings: any[] }).holdings;
+const noteByTicker = Object.fromEntries(
+  holdings.map(h => [h.ticker, (h.note || "").trim()])
+);
+
+let transactions: any[] = [];
+try {
+  const txRaw = fs.readFileSync(
+    path.resolve("./data/transactions.yaml"),
+    "utf-8"
+  );
+  transactions = (yaml.load(txRaw) as { transactions: any[] }).transactions || [];
+} catch {
+  transactions = [];
+}
+transactions.sort((a, b) => (b.date > a.date ? 1 : -1));
+
+const fmtEur = (n: number) =>
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(n);
+
+const fmtPct = (n: number) =>
+  `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
+
+const fmtShares = (n: number) =>
+  new Intl.NumberFormat("en-GB", { maximumFractionDigits: 4 }).format(n);
+
+const fmtPrice = (n: number, ccy: string) =>
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: ccy,
+    maximumFractionDigits: 2,
+  }).format(n);
+
+const fmtDate = (s: string) =>
+  new Date(s).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+const yahooUrl = (ticker: string) =>
+  `https://finance.yahoo.com/quote/${encodeURIComponent(ticker)}`;
+
+const updated = new Date(last_updated);
+const updatedLabel = updated.toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+const cx = 110;
+const cy = 110;
+const r = 90;
+const palette = [
+  "var(--accent)",
+  "#4f9eff",
+  "#e8a03a",
+  "#8b5cf6",
+  "#ef4444",
+  "#10b981",
+];
+
+type Slice = {
+  position: (typeof positions)[number];
+  path: string;
+  color: string;
+};
+
+let cumAngle = -Math.PI / 2;
+const slices: Slice[] = positions
+  .filter(p => p.allocation_pct > 0)
+  .map((p, i) => {
+    const sweep = (p.allocation_pct / 100) * 2 * Math.PI;
+    const startAngle = cumAngle;
+    const endAngle = cumAngle + sweep;
+    const x1 = cx + r * Math.cos(startAngle);
+    const y1 = cy + r * Math.sin(startAngle);
+    const x2 = cx + r * Math.cos(endAngle);
+    const y2 = cy + r * Math.sin(endAngle);
+    const largeArc = sweep > Math.PI ? 1 : 0;
+    const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+    cumAngle = endAngle;
+    return { position: p, path, color: palette[i % palette.length] };
+  });
+---
+
+<Layout title="Portfolio | Jeremie">
+  <Header />
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-16">
+    <section class="pt-8 pb-6 border-b border-border">
+      <h1 class="text-2xl font-semibold tracking-tight">Portfolio</h1>
+      <p class="mt-2 text-sm text-foreground/70">
+        Live snapshot of publicly-traded holdings. Updates daily at 22:30 UTC.
+      </p>
+      <p class="mt-1 text-xs text-foreground/50">
+        Last updated: {updatedLabel}
+      </p>
+    </section>
+
+    <!-- Summary cards -->
+    <section class="grid grid-cols-2 gap-3 pt-6 md:grid-cols-4">
+      <div class="rounded-lg border border-border p-4">
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Market value</div>
+        <div class="mt-1 text-xl font-semibold tabular-nums">{fmtEur(summary.market_value_eur)}</div>
+      </div>
+      <div class="rounded-lg border border-border p-4">
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Cost basis</div>
+        <div class="mt-1 text-xl font-semibold tabular-nums">{fmtEur(summary.total_cost_eur)}</div>
+      </div>
+      <div class="rounded-lg border border-border p-4">
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Total gain</div>
+        <div class={`mt-1 text-xl font-semibold tabular-nums ${summary.total_gain_eur >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+          {fmtEur(summary.total_gain_eur)}
+        </div>
+        <div class={`text-xs tabular-nums ${summary.total_gain_eur >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+          {fmtPct(summary.total_gain_pct)}
+        </div>
+      </div>
+      <div class="rounded-lg border border-border p-4">
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Net worth</div>
+        <div class="mt-1 text-xl font-semibold tabular-nums">{fmtEur(summary.net_worth_eur)}</div>
+        {summary.loan_remaining_eur !== null && (
+          <div class="text-xs text-foreground/50 tabular-nums">
+            less {fmtEur(summary.loan_remaining_eur)} loan
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- Allocation -->
+    <section class="pt-10">
+      <h2 class="text-lg font-semibold">Allocation</h2>
+      <div class="mt-4 flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-10">
+        <svg viewBox="0 0 220 220" class="h-52 w-52 shrink-0" role="img" aria-label="Portfolio allocation pie chart">
+          {slices.map(s => (
+            <path d={s.path} fill={s.color} stroke="var(--background)" stroke-width="2" />
+          ))}
+        </svg>
+        <ul class="flex-1 space-y-2 text-sm w-full">
+          {slices.map(s => (
+            <li class="flex items-center justify-between gap-4">
+              <span class="flex items-center gap-2 min-w-0">
+                <span class="inline-block h-3 w-3 shrink-0 rounded-sm" style={`background:${s.color}`}></span>
+                <span class="truncate">{s.position.name}</span>
+              </span>
+              <span class="tabular-nums text-foreground/70 shrink-0">{s.position.allocation_pct.toFixed(1)}%</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Holdings -->
+    <section class="pt-10">
+      <h2 class="text-lg font-semibold">Holdings</h2>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border text-left text-xs uppercase tracking-wider text-foreground/60">
+              <th class="py-2 pr-3 font-normal">Ticker</th>
+              <th class="py-2 pr-3 font-normal">Shares</th>
+              <th class="py-2 pr-3 font-normal text-right">Price</th>
+              <th class="py-2 pr-3 font-normal text-right">BEP</th>
+              <th class="py-2 pr-3 font-normal text-right">Value (EUR)</th>
+              <th class="py-2 font-normal text-right">Gain</th>
+            </tr>
+          </thead>
+          <tbody>
+            {positions.map(p => {
+              const up = p.gain_eur >= 0;
+              const colorClass = up ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
+              const note = noteByTicker[p.ticker];
+              return (
+                <>
+                  <tr class="border-b border-border/30">
+                    <td class="py-3 pr-3">
+                      <a
+                        href={yahooUrl(p.ticker)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-mono text-xs font-semibold hover:underline"
+                      >
+                        {p.ticker}
+                      </a>
+                      <div class="text-xs text-foreground/60">{p.name}</div>
+                    </td>
+                    <td class="py-3 pr-3 tabular-nums">{fmtShares(p.shares)}</td>
+                    <td class="py-3 pr-3 tabular-nums text-right">{fmtPrice(p.price, p.currency)}</td>
+                    <td class="py-3 pr-3 tabular-nums text-right text-foreground/70">{fmtPrice(p.bep, p.currency)}</td>
+                    <td class="py-3 pr-3 tabular-nums text-right">{fmtEur(p.value_eur)}</td>
+                    <td class={`py-3 tabular-nums text-right ${colorClass}`}>
+                      <div>{fmtEur(p.gain_eur)}</div>
+                      <div class="text-xs">{fmtPct(p.gain_pct)}</div>
+                    </td>
+                  </tr>
+                  {note && (
+                    <tr class="border-b border-border/50">
+                      <td colspan="6" class="pb-3 pt-0 text-xs text-foreground/60 italic leading-relaxed">
+                        {note}
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Recent activity -->
+    {transactions.length > 0 && (
+      <section class="pt-10">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-lg font-semibold">Recent activity</h2>
+          {transactions.length > 12 && (
+            <a href="/portfolio/transactions" class="text-xs text-foreground/60 hover:text-foreground/80 hover:underline">
+              View all {transactions.length} →
+            </a>
+          )}
+        </div>
+        <ul class="mt-4 space-y-3">
+          {transactions.slice(0, 12).map(tx => {
+            const isBuy = tx.action === "buy";
+            const badgeClass = isBuy
+              ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-400"
+              : "bg-red-600/10 text-red-700 dark:text-red-400";
+            return (
+              <li class="flex flex-col gap-1 border-b border-border/30 pb-3">
+                <div class="flex items-center justify-between gap-3 text-sm">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class={`inline-block rounded px-1.5 py-0.5 text-xs font-mono uppercase tracking-wide ${badgeClass}`}>
+                      {tx.action}
+                    </span>
+                    <span class="font-mono text-xs">{tx.ticker}</span>
+                    <span class="text-foreground/60 truncate">
+                      {fmtShares(tx.shares)} @ {tx.price}
+                    </span>
+                  </div>
+                  <span class="text-xs text-foreground/50 shrink-0 tabular-nums">{fmtDate(tx.date)}</span>
+                </div>
+                {tx.note && (
+                  <div class="text-xs text-foreground/60 italic pl-1">{tx.note}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
+
+    <!-- Disclaimer -->
+    <section class="pt-10">
+      <p class="text-xs text-foreground/50 leading-relaxed">
+        Prices via Yahoo Finance, delayed up to 15 minutes. Currency conversion at
+        spot rates. Shown for transparency, not as investment advice.
+      </p>
+    </section>
+  </main>
+</Layout>

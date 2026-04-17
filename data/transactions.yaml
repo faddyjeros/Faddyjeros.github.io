@@ -1,0 +1,284 @@
+# Transaction log — publicly-visible record of buys and sells.
+#
+# Sourced from Degiro CSV (2019-2025) and Boursorama PEA operation notices (2024).
+# Same-day transactions in the same ticker are collapsed into a single entry
+# at the weighted-average price.
+#
+# Fields:
+#   date     - YYYY-MM-DD
+#   action   - buy | sell
+#   ticker   - Yahoo Finance symbol
+#   shares   - Positive number (whether buy or sell)
+#   price    - Price per share in the ticker's quote currency
+#   currency - Quote currency (USD/EUR)
+#   note     - Optional commentary
+
+transactions:
+  # ===== Currently held positions =====
+
+  # GME — meme stock, still held as a memento
+  - date: 2021-01-28
+    action: buy
+    ticker: GME
+    shares: 5
+    price: 289.99
+    currency: USD
+    note: GameStop squeeze, day 1
+
+  - date: 2021-01-29
+    action: buy
+    ticker: GME
+    shares: 17
+    price: 311.76
+    currency: USD
+    note: GameStop squeeze, day 2 (multiple intraday fills averaged)
+
+  - date: 2021-01-29
+    action: sell
+    ticker: GME
+    shares: 10
+    price: 335.00
+    currency: USD
+    note: Partial take-profit during the spike
+
+  - date: 2022-07-22
+    action: buy
+    ticker: GME
+    shares: 36
+    price: 38.37
+    currency: USD
+    note: >
+      Share count adjustment from 4-for-1 forward split. Held 12 pre-split
+      at avg $320, became 48 post-split at avg $80.
+
+  # CSPX.AS — iShares Core S&P 500 (Amsterdam), ISIN IE00B5BMR087
+  - date: 2021-08-16
+    action: buy
+    ticker: CSPX.AS
+    shares: 20
+    price: 382.82
+    currency: EUR
+
+  - date: 2021-08-19
+    action: buy
+    ticker: CSPX.AS
+    shares: 15
+    price: 379.55
+    currency: EUR
+
+  - date: 2021-09-23
+    action: buy
+    ticker: CSPX.AS
+    shares: 18
+    price: 384.33
+    currency: EUR
+
+  - date: 2025-02-10
+    action: sell
+    ticker: CSPX.AS
+    shares: 25
+    price: 621.88
+    currency: EUR
+    note: Sold to fund car purchase
+
+  - date: 2025-08-28
+    action: buy
+    ticker: CSPX.AS
+    shares: 13
+    price: 593.19
+    currency: EUR
+
+  - date: 2025-09-18
+    action: buy
+    ticker: CSPX.AS
+    shares: 1
+    price: 602.43
+    currency: EUR
+
+  - date: 2025-09-25
+    action: buy
+    ticker: CSPX.AS
+    shares: 6
+    price: 602.47
+    currency: EUR
+
+  # CW8.PA — Amundi MSCI World (Paris, PEA)
+  - date: 2024-02-21
+    action: buy
+    ticker: CW8.PA
+    shares: 25
+    price: 474.85
+    currency: EUR
+    note: First Boursorama PEA purchase
+
+  - date: 2024-03-05
+    action: buy
+    ticker: CW8.PA
+    shares: 5
+    price: 486.49
+    currency: EUR
+
+  - date: 2024-04-02
+    action: buy
+    ticker: CW8.PA
+    shares: 8
+    price: 501.43
+    currency: EUR
+
+  # WPEA.PA — iShares MSCI World Swap PEA (Paris, PEA)
+  - date: 2024-05-06
+    action: buy
+    ticker: WPEA.PA
+    shares: 100
+    price: 4.9589
+    currency: EUR
+
+  - date: 2024-05-30
+    action: buy
+    ticker: WPEA.PA
+    shares: 149
+    price: 5.0196
+    currency: EUR
+
+  - date: 2024-12-09
+    action: buy
+    ticker: WPEA.PA
+    shares: 16458
+    price: 5.8313
+    currency: EUR
+    note: Deployed family gift into global equities
+
+  # ===== Closed positions (historical context) =====
+
+  # IWDA — iShares Core MSCI World (Amsterdam), closed position
+  - date: 2021-07-19
+    action: buy
+    ticker: IWDA.AS
+    shares: 30
+    price: 70.085
+    currency: EUR
+    note: Early global equity position
+
+  - date: 2022-01-21
+    action: sell
+    ticker: IWDA.AS
+    shares: 30
+    price: 74.53
+    currency: EUR
+    note: Closed in favor of consolidating into CSPX
+
+  # IWRD — iShares MSCI World DIST (Amsterdam), closed position
+  - date: 2019-11-25
+    action: buy
+    ticker: IWRD.L
+    shares: 1
+    price: 44.19
+    currency: EUR
+    note: First ever ETF purchase — test trade
+
+  - date: 2020-01-14
+    action: buy
+    ticker: IWRD.L
+    shares: 5
+    price: 45.66
+    currency: EUR
+
+  - date: 2020-02-05
+    action: buy
+    ticker: IWRD.L
+    shares: 11
+    price: 46.535
+    currency: EUR
+
+  - date: 2020-03-31
+    action: buy
+    ticker: IWRD.L
+    shares: 27
+    price: 36.305
+    currency: EUR
+    note: COVID crash buy
+
+  - date: 2020-07-13
+    action: buy
+    ticker: IWRD.L
+    shares: 90
+    price: 55.13
+    currency: EUR
+
+  - date: 2021-01-28
+    action: sell
+    ticker: IWRD.L
+    shares: 44
+    price: 47.045
+    currency: EUR
+    note: Partial sell to free cash for GME squeeze
+
+  - date: 2022-01-21
+    action: sell
+    ticker: IWRD.L
+    shares: 90
+    price: 57.30
+    currency: EUR
+    note: Closed position, consolidated into accumulating ETFs
+
+  # Palantir — closed position
+  - date: 2020-11-27
+    action: buy
+    ticker: PLTR
+    shares: 13
+    price: 30.15
+    currency: USD
+
+  - date: 2021-01-29
+    action: sell
+    ticker: PLTR
+    shares: 13
+    price: 37.50
+    currency: USD
+    note: Sold to deploy into GME squeeze
+
+  # Microsoft — closed position
+  - date: 2020-03-31
+    action: buy
+    ticker: MSFT
+    shares: 2
+    price: 163.30
+    currency: USD
+
+  - date: 2021-01-29
+    action: sell
+    ticker: MSFT
+    shares: 2
+    price: 235.92
+    currency: USD
+    note: Sold to deploy into GME squeeze
+
+  # AMD — closed position
+  - date: 2020-01-14
+    action: buy
+    ticker: AMD
+    shares: 6
+    price: 48.31
+    currency: USD
+
+  - date: 2020-01-22
+    action: buy
+    ticker: AMD
+    shares: 6
+    price: 51.63
+    currency: USD
+
+  - date: 2020-02-05
+    action: buy
+    ticker: AMD
+    shares: 3
+    price: 50.21
+    currency: USD
+
+  - date: 2021-01-29
+    action: sell
+    ticker: AMD
+    shares: 15
+    price: 86.95
+    currency: USD
+    note: Sold to deploy into GME squeeze
