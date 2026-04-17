@@ -49,35 +49,41 @@ export const SHARE_LINKS: Social[] = [
     href: "https://wa.me/?text=",
     linkTitle: `Share this post via WhatsApp`,
     icon: IconWhatsapp,
+    active: false
   },
   {
     name: "Facebook",
     href: "https://www.facebook.com/sharer.php?u=",
     linkTitle: `Share this post on Facebook`,
     icon: IconFacebook,
+    active: false
   },
   {
     name: "X",
     href: "https://x.com/intent/post?url=",
     linkTitle: `Share this post on X`,
     icon: IconBrandX,
+    active: false
   },
   {
     name: "Telegram",
     href: "https://t.me/share/url?url=",
     linkTitle: `Share this post via Telegram`,
     icon: IconTelegram,
+    active: false
   },
   {
     name: "Pinterest",
     href: "https://pinterest.com/pin/create/button/?url=",
     linkTitle: `Share this post on Pinterest`,
     icon: IconPinterest,
+    active: false
   },
   {
     name: "Mail",
     href: "mailto:?subject=See%20this%20post&body=",
     linkTitle: `Share this post via email`,
     icon: IconMail,
+    active: false
   },
 ] as const;
