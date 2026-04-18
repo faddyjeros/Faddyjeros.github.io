@@ -7,6 +7,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const { positions, summary, last_updated } = portfolio;
+const realized = (portfolio as any).realized || { total_eur: 0, events: [] };
+const fxDecomp = (portfolio as any).fx_decomposition || [];
 
 const holdingsRaw = fs.readFileSync(
   path.resolve("./data/holdings.yaml"),
@@ -66,6 +68,7 @@ const updatedLabel = updated.toLocaleDateString("en-GB", {
   year: "numeric",
 });
 
+// Pie geometry
 const cx = 110;
 const cy = 110;
 const r = 90;
@@ -100,6 +103,12 @@ const slices: Slice[] = positions
     cumAngle = endAngle;
     return { position: p, path, color: palette[i % palette.length] };
   });
+
+// Color helpers
+const gainClass = (n: number) =>
+  n >= 0
+    ? "text-emerald-600 dark:text-emerald-400"
+    : "text-red-600 dark:text-red-400";
 ---
 
 <Layout title="Portfolio | Jeremie">
@@ -122,16 +131,18 @@ const slices: Slice[] = positions
         <div class="mt-1 text-xl font-semibold tabular-nums">{fmtEur(summary.market_value_eur)}</div>
       </div>
       <div class="rounded-lg border border-border p-4">
-        <div class="text-xs uppercase tracking-wider text-foreground/60">Cost basis</div>
-        <div class="mt-1 text-xl font-semibold tabular-nums">{fmtEur(summary.total_cost_eur)}</div>
-      </div>
-      <div class="rounded-lg border border-border p-4">
-        <div class="text-xs uppercase tracking-wider text-foreground/60">Total gain</div>
-        <div class={`mt-1 text-xl font-semibold tabular-nums ${summary.total_gain_eur >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Unrealized</div>
+        <div class={`mt-1 text-xl font-semibold tabular-nums ${gainClass(summary.total_gain_eur)}`}>
           {fmtEur(summary.total_gain_eur)}
         </div>
-        <div class={`text-xs tabular-nums ${summary.total_gain_eur >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+        <div class={`text-xs tabular-nums ${gainClass(summary.total_gain_eur)}`}>
           {fmtPct(summary.total_gain_pct)}
+        </div>
+      </div>
+      <div class="rounded-lg border border-border p-4">
+        <div class="text-xs uppercase tracking-wider text-foreground/60">Realized (lifetime)</div>
+        <div class={`mt-1 text-xl font-semibold tabular-nums ${gainClass((summary as any).realized_gain_eur || 0)}`}>
+          {fmtEur((summary as any).realized_gain_eur || 0)}
         </div>
       </div>
       <div class="rounded-lg border border-border p-4">
@@ -185,8 +196,6 @@ const slices: Slice[] = positions
           </thead>
           <tbody>
             {positions.map(p => {
-              const up = p.gain_eur >= 0;
-              const colorClass = up ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
               const note = noteByTicker[p.ticker];
               return (
                 <>
@@ -206,7 +215,7 @@ const slices: Slice[] = positions
                     <td class="py-3 pr-3 tabular-nums text-right">{fmtPrice(p.price, p.currency)}</td>
                     <td class="py-3 pr-3 tabular-nums text-right text-foreground/70">{fmtPrice(p.bep, p.currency)}</td>
                     <td class="py-3 pr-3 tabular-nums text-right">{fmtEur(p.value_eur)}</td>
-                    <td class={`py-3 tabular-nums text-right ${colorClass}`}>
+                    <td class={`py-3 tabular-nums text-right ${gainClass(p.gain_eur)}`}>
                       <div>{fmtEur(p.gain_eur)}</div>
                       <div class="text-xs">{fmtPct(p.gain_pct)}</div>
                     </td>
@@ -225,6 +234,111 @@ const slices: Slice[] = positions
         </table>
       </div>
     </section>
+
+    <!-- FX decomposition -->
+    {fxDecomp.length > 0 && (
+      <section class="pt-10">
+        <h2 class="text-lg font-semibold">Return decomposition</h2>
+        <p class="mt-1 text-sm text-foreground/70">
+          Splits each position's gain into two parts: how much came from the underlying
+          asset moving, versus how much came from currency movement between the average
+          buy date and today.
+        </p>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border text-left text-xs uppercase tracking-wider text-foreground/60">
+                <th class="py-2 pr-3 font-normal">Position</th>
+                <th class="py-2 pr-3 font-normal text-right">Asset</th>
+                <th class="py-2 pr-3 font-normal text-right">FX</th>
+                <th class="py-2 font-normal text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fxDecomp.map((d: any) => (
+                <>
+                  <tr class="border-b border-border/30">
+                    <td class="py-3 pr-3">
+                      <div class="font-mono text-xs font-semibold">{d.ticker}</div>
+                      <div class="text-xs text-foreground/60">avg buy {fmtDate(d.avg_buy_date)}</div>
+                    </td>
+                    <td class={`py-3 pr-3 tabular-nums text-right ${gainClass(d.asset_gain_eur)}`}>
+                      {fmtEur(d.asset_gain_eur)}
+                    </td>
+                    <td class={`py-3 pr-3 tabular-nums text-right ${gainClass(d.fx_gain_eur)}`}>
+                      {fmtEur(d.fx_gain_eur)}
+                    </td>
+                    <td class={`py-3 tabular-nums text-right font-semibold ${gainClass(d.total_gain_eur)}`}>
+                      {fmtEur(d.total_gain_eur)}
+                    </td>
+                  </tr>
+                  <tr class="border-b border-border/50">
+                    <td colspan="4" class="pb-3 pt-0 text-xs text-foreground/60 leading-relaxed">
+                      {d.benchmark_name ? (
+                        <span>
+                          {d.benchmark_name} moved {fmtPct(d.bench_return_pct)} in USD
+                          since {fmtDate(d.avg_buy_date)}. EUR/USD moved {fmtPct(d.fx_change_pct)}
+                          ({d.fx_at_buy} → {d.fx_today}).
+                        </span>
+                      ) : (
+                        <span>
+                          EUR/USD moved {fmtPct(d.fx_change_pct)} ({d.fx_at_buy} → {d.fx_today})
+                          since {fmtDate(d.avg_buy_date)}.
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-xs text-foreground/50 leading-relaxed">
+          For EUR-denominated UCITS ETFs, decomposition uses the underlying USD
+          benchmark (S&amp;P 500 Total Return, MSCI World). Asset and FX contributions
+          are approximations and should sum to the total gain within a small margin.
+        </p>
+      </section>
+    )}
+
+    <!-- Realized gains -->
+    {realized.events.length > 0 && (
+      <section class="pt-10">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-lg font-semibold">Realized gains</h2>
+          <span class={`text-sm tabular-nums ${gainClass(realized.total_eur)}`}>
+            {fmtEur(realized.total_eur)} lifetime
+          </span>
+        </div>
+        <p class="mt-1 text-sm text-foreground/70">
+          Actual profit/loss locked in from closed positions, using average-cost
+          method and the EUR/native FX rate on each sell date.
+        </p>
+        <ul class="mt-4 space-y-3">
+          {realized.events.map((e: any) => (
+            <li class="flex flex-col gap-1 border-b border-border/30 pb-3">
+              <div class="flex items-center justify-between gap-3 text-sm">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="font-mono text-xs">{e.ticker}</span>
+                  <span class="text-foreground/60 truncate">
+                    {fmtShares(e.shares)} @ {e.sell_price} {e.currency}
+                  </span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                  <span class={`text-sm tabular-nums font-semibold ${gainClass(e.gain_eur)}`}>
+                    {fmtEur(e.gain_eur)}
+                  </span>
+                  <span class="text-xs text-foreground/50 tabular-nums">{fmtDate(e.date)}</span>
+                </div>
+              </div>
+              {e.note && (
+                <div class="text-xs text-foreground/60 italic pl-1">{e.note}</div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <!-- Recent activity -->
     {transactions.length > 0 && (
