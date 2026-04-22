@@ -465,7 +465,7 @@ def main() -> int:
 
     PORTFOLIO_OUT.parent.mkdir(parents=True, exist_ok=True)
     with open(PORTFOLIO_OUT, "w") as f:
-        json.dump(snapshot, f, indent=2, default=str)
+        json.dump(snapshot, f, indent=2, default=str, allow_nan=False)
     append_history(snapshot)
 
     s = snapshot["summary"]
