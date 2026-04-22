@@ -12,21 +12,38 @@ import { SITE } from "@/config";
 
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
+  // If there are no posts yet, generate a single empty page so /posts still renders.
+  if (posts.length === 0) {
+    return [{ params: { page: undefined }, props: { page: null } }];
+  }
   return paginate(getSortedPosts(posts), { pageSize: SITE.postPerPage });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+const hasPosts = page && page.data && page.data.length > 0;
 ---
 
 <Layout title={`Posts | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
+    {hasPosts ? (
+      <ul>
+        {page.data.map(data => <Card {...data} />)}
+      </ul>
+    ) : (
+      <div class="py-6 text-sm text-foreground/70 leading-relaxed">
+        <p>No posts yet — blog posts will show up here once I start writing.</p>
+        <p class="mt-2">
+          In the meantime, check out the
+          <a href="/portfolio" class="underline underline-offset-4 hover:text-foreground">portfolio</a>
+          or head back to the
+          <a href="/" class="underline underline-offset-4 hover:text-foreground">homepage</a>.
+        </p>
+      </div>
+    )}
   </Main>
 
-  <Pagination {page} />
+  {hasPosts && <Pagination {page} />}
 
-  <Footer noMarginTop={page.lastPage > 1} />
+  <Footer noMarginTop={hasPosts ? page.lastPage > 1 : false} />
 </Layout>

@@ -79,7 +79,7 @@ transactions:
     shares: 25
     price: 621.88
     currency: EUR
-    note: Sold to fund car purchase
+    note: Sold to fund the purchase of my first car
 
   - date: 2025-08-28
     action: buy
@@ -109,7 +109,7 @@ transactions:
     shares: 25
     price: 474.85
     currency: EUR
-    note: First Boursorama PEA purchase
+    note: First Boursorama PEA purchase to benefit from French fiscal advantages
 
   - date: 2024-03-05
     action: buy
@@ -146,7 +146,7 @@ transactions:
     shares: 16458
     price: 5.8313
     currency: EUR
-    note: Deployed family gift into global equities
+    
 
   # ===== Closed positions (historical context) =====
 

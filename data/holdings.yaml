@@ -18,8 +18,9 @@ holdings:
     name: GameStop
     bought: 2021-01-29
     note: >
-      Bought during the meme squeeze. Holding as a memento and lottery ticket
-      more than an investment. BEP is horrible, I know.
+      I bought this stock during the whole meme squeeze with WallStreetBets. 
+      I made some money initially but held too long and got caught in the crash.
+      Holding it now as a memento that I make stupid decisions sometimes.
 
   - ticker: CSPX.AS
     shares: 48
@@ -27,9 +28,9 @@ holdings:
     currency: EUR
     name: iShares Core S&P 500 UCITS (Acc)
     note: >
-      Core US exposure on Degiro. Accumulating share class so dividends
-      reinvest automatically. Partially funded a car purchase in Feb 2025
-      and topped back up later that year.
+      My initial main exposure to US markets, held on my first brokerage account.
+      It's automatically reinvested instead of providing dividends, so I can forget about it.
+      I sold some to purchase my first car and topped it up a bit since.
 
   - ticker: WPEA.PA
     shares: 16707
@@ -37,8 +38,9 @@ holdings:
     currency: EUR
     name: iShares MSCI World Swap PEA UCITS
     note: >
-      Largest position. PEA-eligible swap-based ETF giving global developed
-      market exposure while staying inside the French tax wrapper.
+      This is my core portfolio position. I hold it in my PEA (though I no longer get benefits
+      since not being a French fiscal resident at the moment). It's got global exposure and is 
+      well diversified.
 
   - ticker: CW8.PA
     shares: 38
@@ -46,5 +48,4 @@ holdings:
     currency: EUR
     name: Amundi MSCI World UCITS
     note: >
-      Another MSCI World position, held in the PEA. First Boursorama ETF
-      purchase, built over three buys in early 2024.
+      Another world position in my PEA. I swapped to WPEA later due to lower cost basis and fees.

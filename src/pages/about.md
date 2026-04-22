@@ -3,35 +3,29 @@ layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
 
-AstroPaper is a minimal, accessible and SEO-friendly blog theme built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
+I'm Jeremie — an eDiscovery project manager based in Switzerland. I run litigation and investigation projects for law firms and companies: scoping the matter, managing timelines and budgets, and coordinating between legal teams and clients. I also run operations through every stage of collection, processing, review, and production.
 
-![Astro Paper](public/astropaper-og.jpg)
+This site is a place for me to write about my work, share things I've tinkered with, and track my hobbies such as gaming, finace, and hiking! 
+For the finance part, I do need to disclose that this is not a portfolio site or a professional shopfront — just somewhere to collect the interesting bits I have.
 
-AstroPaper provides a solid foundation for blogs, or even portfolios\_ with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.
+## What I do
 
-The blog posts in this theme also serve as guides, docs or example articles\_ making AstroPaper a flexible starting point for your next content-driven site.
+eDiscovery is the part of litigation and regulatory work that deals with electronic data: emails, chat logs, documents, databases, and whatever else ends up being relevant to a case. When a dispute or investigation starts, someone has to figure out how to collect the right data without breaking it, cut it down to a manageable size, get lawyers to review it, and hand over what matters to the other side or to a regulator. That coordination, mixing legal strategy, technical execution, tight deadlines, and multiple jurisdictions, is what I do day to day.
 
-## Features
+I've worked across a range of matters, from internal investigations to cross-border disputes, and in several jurisdictions, with parties like the DOJ, EC, French AMF, local prosecutor offices, and more.
 
-AstroPaper comes with a set of useful features that make content publishing easy and effective:
+## Tools
 
-- SEO-friendly
-- Fast performance
-- Light & dark mode
-- Highly customizable
-- Organizable blog posts
-- Responsive & accessible
-- Static search with [PageFind](https://pagefind.app/)
-- Automatic social image generation
+A mix of platforms and scripting I lean on regularly:
 
-and so much more.
+- **Relativity** — primary review platform; hosting, searching, analytics, productions
+- **Nuix** — processing and early case assessment, especially for large or structured data sets
+- **Python** — scripting for data wrangling, automation, and anything Excel can't handle
+- **Excel** — still indispensable, especially for custodian tracking and matter reporting
+- **PowerShell** — for Windows-side automation and quick scripts
 
-## Show your support
+Certification-wise, I'm a [Relativity Certified Administrator (RCA)](https://www.relativity.com/ediscovery-training/certification/) and I also hold some other industry certs from Nuix and Brainspace (though I am not really using this tool in my current gig).
 
-If you like [AstroPaper](https://github.com/satnaing/astro-paper), consider giving it a star ⭐️.
+## Get in touch
 
-Found a bug 🐛 or have an improvement ✨ in mind? Feel free to open an [issue](https://github.com/satnaing/astro-paper/issues), submit a [pull request](https://github.com/satnaing/astro-paper/pulls) or start a [discussion](https://github.com/satnaing/astro-paper/discussions).
-
-If you find this theme helpful, you can also [sponsor me on GitHub](https://github.com/sponsors/satnaing) or [buy me a coffee](https://buymeacoffee.com/satnaing) to show your support — every penny counts.
-
-Kyay zuu! 🙏🏼
+Easiest way to reach me is [LinkedIn](https://www.linkedin.com/in/jergros/). Happy to connect with anyone working in eDiscovery, law firms or companies curious about how matters like these get run, or people just interested in the projects on this site.

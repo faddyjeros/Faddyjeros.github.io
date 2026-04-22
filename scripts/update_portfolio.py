@@ -426,18 +426,34 @@ def append_history(snapshot: dict) -> None:
     history = []
     if HISTORY_OUT.exists():
         with open(HISTORY_OUT) as f:
-            history = json.load(f)
+            try:
+                history = json.load(f)
+            except json.JSONDecodeError:
+                # Previous history file is corrupted (e.g. contains NaN).
+                # Keep only entries we can re-parse; skip broken ones.
+                history = []
+    # Drop any previously-bad entries with NaN or null values
+    history = [
+        h for h in history
+        if isinstance(h.get("market_value_eur"), (int, float))
+        and isinstance(h.get("net_worth_eur"), (int, float))
+        and h["market_value_eur"] == h["market_value_eur"]  # NaN != NaN trick
+        and h["net_worth_eur"] == h["net_worth_eur"]
+    ]
+
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    entry = {
-        "date": today,
-        "market_value_eur": snapshot["summary"]["market_value_eur"],
-        "net_worth_eur": snapshot["summary"]["net_worth_eur"],
-    }
+    mv = snapshot["summary"]["market_value_eur"]
+    nw = snapshot["summary"]["net_worth_eur"]
+    # Refuse to write NaN or None as a history point
+    if mv is None or nw is None or mv != mv or nw != nw:
+        print(f"WARN: skipping history append — invalid values mv={mv} nw={nw}", file=sys.stderr)
+        return
+    entry = {"date": today, "market_value_eur": mv, "net_worth_eur": nw}
     history = [h for h in history if h["date"] != today]
     history.append(entry)
     history.sort(key=lambda h: h["date"])
     with open(HISTORY_OUT, "w") as f:
-        json.dump(history, f, indent=2)
+        json.dump(history, f, indent=2, allow_nan=False)
 
 
 def main() -> int:
