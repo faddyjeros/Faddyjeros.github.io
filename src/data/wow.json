@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-24T14:24:42.207428+00:00",
+  "updated_at": "2026-04-24T23:10:43.335691+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -9,9 +9,9 @@
       "class": "Warrior",
       "spec": "Protection",
       "level": 90,
-      "item_level": 275,
+      "item_level": 276,
       "equipped_item_level": 275,
-      "achievement_points": 20895,
+      "achievement_points": 20990,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
@@ -49,9 +49,9 @@
       "class": "Druid",
       "spec": "Feral",
       "level": 90,
-      "item_level": 226,
-      "equipped_item_level": 225,
-      "achievement_points": 20885,
+      "item_level": 234,
+      "equipped_item_level": 234,
+      "achievement_points": 20920,
       "faction": "Alliance",
       "realm": "Sylvanas"
     }
