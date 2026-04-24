@@ -1,0 +1,59 @@
+{
+  "updated_at": "2026-04-24T14:24:42.207428+00:00",
+  "characters": [
+    {
+      "name": "Vokster",
+      "slug": "vokster",
+      "role": "Main",
+      "focus": "raids_and_mythicplus",
+      "class": "Warrior",
+      "spec": "Protection",
+      "level": 90,
+      "item_level": 275,
+      "equipped_item_level": 275,
+      "achievement_points": 20895,
+      "faction": "Alliance",
+      "realm": "Sylvanas"
+    },
+    {
+      "name": "Faddhunt",
+      "slug": "faddhunt",
+      "role": "PvP Hunter",
+      "focus": "pvp",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "level": 90,
+      "item_level": 244,
+      "equipped_item_level": 242,
+      "achievement_points": 20885,
+      "faction": "Alliance",
+      "realm": "Sylvanas",
+      "pvp": {
+        "solo_shuffle": {
+          "rating": 0,
+          "season_played": 0,
+          "season_won": 0
+        },
+        "blitz": {
+          "rating": 0,
+          "season_played": 0,
+          "season_won": 0
+        }
+      }
+    },
+    {
+      "name": "Faddruid",
+      "slug": "faddruid",
+      "role": "Farmer",
+      "focus": "achievements",
+      "class": "Druid",
+      "spec": "Feral",
+      "level": 90,
+      "item_level": 226,
+      "equipped_item_level": 225,
+      "achievement_points": 20885,
+      "faction": "Alliance",
+      "realm": "Sylvanas"
+    }
+  ]
+}

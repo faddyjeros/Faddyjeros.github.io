@@ -31,16 +31,22 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python dependencies
-        run: pip install yfinance pyyaml pandas
+        run: pip install yfinance pyyaml pandas requests
 
       - name: Run portfolio update
         run: python scripts/update_portfolio.py
+
+      - name: Run WoW data fetch
+        env:
+          BLIZZARD_CLIENT_ID: ${{ secrets.BLIZZARD_CLIENT_ID }}
+          BLIZZARD_CLIENT_SECRET: ${{ secrets.BLIZZARD_CLIENT_SECRET }}
+        run: python scripts/fetch_wow.py
 
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/portfolio.json src/data/history.json
+          git add src/data/portfolio.json src/data/history.json src/data/wow.json
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else

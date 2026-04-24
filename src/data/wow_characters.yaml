@@ -1,0 +1,21 @@
+region: eu
+realm: sylvanas
+
+characters:
+  - name: Vokster
+    slug: vokster
+    focus: raids_and_mythicplus
+    display_name: Vokster
+    role: Main
+
+  - name: Faddhunt
+    slug: faddhunt
+    focus: pvp
+    display_name: Faddhunt
+    role: PvP Hunter
+
+  - name: Faddruid
+    slug: faddruid
+    focus: achievements
+    display_name: Faddruid
+    role: Farmer
