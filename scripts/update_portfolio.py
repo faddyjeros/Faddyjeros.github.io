@@ -10,12 +10,7 @@ Calculations:
   - Realized gains: walks transaction history, applies average-cost method
     for each sell event, converts to EUR using the FX rate on the sell date.
   - FX decomposition: for each currently-held position, splits total EUR gain
-    into "asset contribution" (what the underlying moved in its native currency)
-    and "FX contribution" (what EUR/native-currency moved between buy date and now).
-
-For UCITS ETFs that are EUR-denominated but track USD indices, the decomposition
-uses benchmark indices (S&P 500 Total Return, MSCI World) with historical
-USD prices, and historical EUR/USD rates.
+    into "asset contribution" and "FX contribution".
 
 Run locally: python scripts/update_portfolio.py
 """
@@ -23,6 +18,7 @@ Run locally: python scripts/update_portfolio.py
 from __future__ import annotations
 
 import json
+import math
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -40,15 +36,43 @@ HISTORY_OUT = REPO_ROOT / "src" / "data" / "history.json"
 
 BASE_CURRENCY = "EUR"
 
-# Benchmark map for FX decomposition.
-# Each EUR-denominated UCITS ETF tracks a USD-denominated index. To decompose
-# its returns into asset-performance vs FX-movement, we fetch the USD benchmark.
 BENCHMARKS = {
-    # EUR ETF ticker -> (USD benchmark ticker, display name)
     "CSPX.AS": ("^SP500TR", "S&P 500 Total Return"),
     "CW8.PA": ("URTH", "MSCI World (URTH proxy)"),
     "WPEA.PA": ("URTH", "MSCI World (URTH proxy)"),
 }
+
+
+# ============================================================================
+# Helpers
+# ============================================================================
+
+def is_bad_number(x) -> bool:
+    """True if x is None, NaN, or +/- inf."""
+    if x is None:
+        return True
+    try:
+        return math.isnan(x) or math.isinf(x)
+    except (TypeError, ValueError):
+        return True
+
+
+def safe_round(value, digits=2):
+    """Round if valid, else return None."""
+    if is_bad_number(value):
+        return None
+    return round(float(value), digits)
+
+
+def sanitize_for_json(obj):
+    """Recursively walk a structure and replace NaN/inf with None so JSON is valid."""
+    if isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_for_json(v) for v in obj]
+    if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        return None
+    return obj
 
 
 # ============================================================================
@@ -63,7 +87,6 @@ def get_latest_close(ticker: str) -> float:
 
 
 def get_historical_close(ticker: str, date: pd.Timestamp) -> float:
-    """Close price for `ticker` on `date` (falls back to nearest prior trading day)."""
     start = date - pd.Timedelta(days=10)
     end = date + pd.Timedelta(days=2)
     data = yf.Ticker(ticker).history(start=start, end=end)
@@ -137,12 +160,10 @@ def current_loan_balance() -> dict | None:
 
 
 # ============================================================================
-# Realized gains (average-cost method)
+# Realized gains
 # ============================================================================
 
 def compute_realized_gains(transactions: list[dict]) -> dict:
-    """Walk transactions chronologically, maintain running avg cost per ticker,
-    record realized P&L on each sell, converted to EUR at sale-date FX rate."""
     txs = sorted(transactions, key=lambda t: str(t["date"]))
     running: dict[str, dict] = {}
     events = []
@@ -193,16 +214,16 @@ def compute_realized_gains(transactions: list[dict]) -> dict:
                 "date": date.strftime("%Y-%m-%d"),
                 "ticker": ticker,
                 "shares": shares,
-                "sell_price": round(price, 4),
-                "avg_cost_at_sale": round(avg_cost, 4),
+                "sell_price": safe_round(price, 4),
+                "avg_cost_at_sale": safe_round(avg_cost, 4),
                 "currency": ccy,
-                "gain_native": round(gain_native, 2),
-                "gain_eur": round(gain_eur, 2),
-                "fx_rate_at_sale": round(rate, 4),
+                "gain_native": safe_round(gain_native, 2),
+                "gain_eur": safe_round(gain_eur, 2),
+                "fx_rate_at_sale": safe_round(rate, 4),
                 "note": note,
             })
 
-    total_eur = round(sum(e["gain_eur"] for e in events), 2)
+    total_eur = round(sum((e["gain_eur"] or 0) for e in events), 2)
     return {
         "total_eur": total_eur,
         "events": sorted(events, key=lambda e: e["date"], reverse=True),
@@ -210,7 +231,7 @@ def compute_realized_gains(transactions: list[dict]) -> dict:
 
 
 # ============================================================================
-# FX decomposition
+# FX decomposition (defensive: skip any position with missing data)
 # ============================================================================
 
 def compute_fx_decomposition(
@@ -235,13 +256,16 @@ def compute_fx_decomposition(
         if not buys:
             continue
         total_shares_bought = sum(float(t["shares"]) for t in buys)
+        if total_shares_bought <= 0:
+            continue
         weighted_ordinal = sum(
             pd.Timestamp(str(t["date"])).toordinal() * float(t["shares"]) for t in buys
         ) / total_shares_bought
         avg_buy_date = pd.Timestamp.fromordinal(int(weighted_ordinal))
 
         current_price = current_prices.get(ticker)
-        if current_price is None:
+        if is_bad_number(current_price):
+            print(f"WARN: skipping FX decomp for {ticker} — no current price", file=sys.stderr)
             continue
 
         value_today_native = shares * current_price
@@ -253,76 +277,85 @@ def compute_fx_decomposition(
             "currency": ccy,
             "avg_buy_date": avg_buy_date.strftime("%Y-%m-%d"),
             "shares": shares,
-            "current_price": round(current_price, 4),
-            "bep": round(bep, 4),
+            "current_price": safe_round(current_price, 4),
+            "bep": safe_round(bep, 4),
         }
 
-        if ccy == "USD":
-            # USD-denominated holding (e.g. GME) — FX is a direct effect of EUR/USD
-            try:
+        try:
+            if ccy == "USD":
                 fx_at_buy = get_fx_rate("USD", "EUR", avg_buy_date)
                 fx_today = get_fx_rate("USD", "EUR")
-            except Exception as e:
-                print(f"WARN: FX decomp skipped for {ticker}: {e}", file=sys.stderr)
-                continue
 
-            value_today_eur = value_today_native * fx_today
-            cost_eur_at_buy = cost_native * fx_at_buy
-            asset_only_today_eur = value_today_native * fx_at_buy
+                if is_bad_number(fx_at_buy) or is_bad_number(fx_today) or fx_at_buy == 0:
+                    raise RuntimeError("FX rate missing or zero")
 
-            total_gain_eur = value_today_eur - cost_eur_at_buy
-            asset_gain_eur = asset_only_today_eur - cost_eur_at_buy
-            fx_gain_eur = value_today_eur - asset_only_today_eur
+                value_today_eur = value_today_native * fx_today
+                cost_eur_at_buy = cost_native * fx_at_buy
+                asset_only_today_eur = value_today_native * fx_at_buy
 
-            result.update({
-                "fx_at_buy": round(fx_at_buy, 4),
-                "fx_today": round(fx_today, 4),
-                "fx_change_pct": round((fx_today - fx_at_buy) / fx_at_buy * 100, 2),
-                "value_today_eur": round(value_today_eur, 2),
-                "cost_eur_at_buy": round(cost_eur_at_buy, 2),
-                "total_gain_eur": round(total_gain_eur, 2),
-                "asset_gain_eur": round(asset_gain_eur, 2),
-                "fx_gain_eur": round(fx_gain_eur, 2),
-                "benchmark_note": "Direct USD holding — FX computed against EUR/USD",
-            })
-        elif ccy == "EUR" and ticker in BENCHMARKS:
-            # EUR UCITS ETF tracking USD benchmark
-            bench_ticker, bench_name = BENCHMARKS[ticker]
-            try:
+                total_gain_eur = value_today_eur - cost_eur_at_buy
+                asset_gain_eur = asset_only_today_eur - cost_eur_at_buy
+                fx_gain_eur = value_today_eur - asset_only_today_eur
+
+                result.update({
+                    "fx_at_buy": safe_round(fx_at_buy, 4),
+                    "fx_today": safe_round(fx_today, 4),
+                    "fx_change_pct": safe_round((fx_today - fx_at_buy) / fx_at_buy * 100, 2),
+                    "value_today_eur": safe_round(value_today_eur),
+                    "cost_eur_at_buy": safe_round(cost_eur_at_buy),
+                    "total_gain_eur": safe_round(total_gain_eur),
+                    "asset_gain_eur": safe_round(asset_gain_eur),
+                    "fx_gain_eur": safe_round(fx_gain_eur),
+                    "benchmark_note": "Direct USD holding — FX computed against EUR/USD",
+                })
+
+            elif ccy == "EUR" and ticker in BENCHMARKS:
+                bench_ticker, bench_name = BENCHMARKS[ticker]
                 bench_at_buy = get_historical_close(bench_ticker, avg_buy_date)
                 bench_today = get_latest_close(bench_ticker)
                 fx_at_buy = get_fx_rate("USD", "EUR", avg_buy_date)
                 fx_today = get_fx_rate("USD", "EUR")
-            except Exception as e:
-                print(f"WARN: FX decomp skipped for {ticker}: {e}", file=sys.stderr)
+
+                if any(is_bad_number(x) for x in [bench_at_buy, bench_today, fx_at_buy, fx_today]):
+                    raise RuntimeError("Benchmark or FX data missing")
+                if bench_at_buy == 0 or fx_at_buy == 0:
+                    raise RuntimeError("Zero reference value in decomp")
+
+                bench_return = (bench_today - bench_at_buy) / bench_at_buy
+                cost_eur = cost_native
+                value_today_eur = value_today_native
+                total_gain_eur = value_today_eur - cost_eur
+                fx_change_pct = (fx_today - fx_at_buy) / fx_at_buy
+                asset_gain_eur = cost_eur * bench_return
+                fx_gain_eur = total_gain_eur - asset_gain_eur
+
+                result.update({
+                    "benchmark_ticker": bench_ticker,
+                    "benchmark_name": bench_name,
+                    "bench_at_buy": safe_round(bench_at_buy),
+                    "bench_today": safe_round(bench_today),
+                    "bench_return_pct": safe_round(bench_return * 100, 2),
+                    "fx_at_buy": safe_round(fx_at_buy, 4),
+                    "fx_today": safe_round(fx_today, 4),
+                    "fx_change_pct": safe_round(fx_change_pct * 100, 2),
+                    "value_today_eur": safe_round(value_today_eur),
+                    "cost_eur_at_buy": safe_round(cost_eur),
+                    "total_gain_eur": safe_round(total_gain_eur),
+                    "asset_gain_eur": safe_round(asset_gain_eur),
+                    "fx_gain_eur": safe_round(fx_gain_eur),
+                    "benchmark_note": f"Decomposition uses {bench_name} as USD benchmark.",
+                })
+            else:
                 continue
 
-            bench_return = (bench_today - bench_at_buy) / bench_at_buy
-            cost_eur = cost_native
-            value_today_eur = value_today_native
-            total_gain_eur = value_today_eur - cost_eur
+        except Exception as e:
+            print(f"WARN: FX decomp skipped for {ticker}: {e}", file=sys.stderr)
+            continue
 
-            fx_change_pct = (fx_today - fx_at_buy) / fx_at_buy
-            asset_gain_eur = cost_eur * bench_return
-            fx_gain_eur = total_gain_eur - asset_gain_eur
-
-            result.update({
-                "benchmark_ticker": bench_ticker,
-                "benchmark_name": bench_name,
-                "bench_at_buy": round(bench_at_buy, 2),
-                "bench_today": round(bench_today, 2),
-                "bench_return_pct": round(bench_return * 100, 2),
-                "fx_at_buy": round(fx_at_buy, 4),
-                "fx_today": round(fx_today, 4),
-                "fx_change_pct": round(fx_change_pct * 100, 2),
-                "value_today_eur": round(value_today_eur, 2),
-                "cost_eur_at_buy": round(cost_eur, 2),
-                "total_gain_eur": round(total_gain_eur, 2),
-                "asset_gain_eur": round(asset_gain_eur, 2),
-                "fx_gain_eur": round(fx_gain_eur, 2),
-                "benchmark_note": f"Decomposition uses {bench_name} as USD benchmark.",
-            })
-        else:
+        # Final safety: drop this result if any of the gain fields ended up NaN
+        critical = ["total_gain_eur", "asset_gain_eur", "fx_gain_eur"]
+        if any(result.get(k) is None for k in critical):
+            print(f"WARN: FX decomp for {ticker} had NaN in critical fields; skipping", file=sys.stderr)
             continue
 
         results.append(result)
@@ -360,6 +393,10 @@ def build_portfolio() -> dict:
             print(f"WARNING: failed to fetch {ticker}: {e}", file=sys.stderr)
             continue
 
+        if is_bad_number(price):
+            print(f"WARNING: {ticker} returned non-numeric price; skipping", file=sys.stderr)
+            continue
+
         current_prices[ticker] = price
         rate = fx_today(ccy)
         value_native = price * shares
@@ -379,21 +416,21 @@ def build_portfolio() -> dict:
             "name": h.get("name", ticker),
             "shares": shares,
             "currency": ccy,
-            "price": round(price, 4),
-            "bep": round(bep, 4),
-            "value_native": round(value_native, 2),
-            "value_eur": round(value_base, 2),
-            "cost_eur": round(cost_base, 2),
-            "gain_eur": round(value_base - cost_base, 2),
-            "gain_pct": round((value_base - cost_base) / cost_base * 100, 2) if cost_base else 0,
+            "price": safe_round(price, 4),
+            "bep": safe_round(bep, 4),
+            "value_native": safe_round(value_native),
+            "value_eur": safe_round(value_base),
+            "cost_eur": safe_round(cost_base),
+            "gain_eur": safe_round(value_base - cost_base),
+            "gain_pct": safe_round((value_base - cost_base) / cost_base * 100, 2) if cost_base else 0,
             "bought": bought,
         })
 
     for p in positions:
-        p["allocation_pct"] = round(p["value_eur"] / total_value_base * 100, 2) if total_value_base else 0
+        p["allocation_pct"] = safe_round(p["value_eur"] / total_value_base * 100, 2) if total_value_base else 0
 
     loan = current_loan_balance()
-    loan_eur = round(loan["remaining_eur"], 2) if loan else None
+    loan_eur = safe_round(loan["remaining_eur"]) if loan else None
     net_worth = total_value_base - (loan_eur or 0)
 
     print("Computing realized gains...", file=sys.stderr)
@@ -402,23 +439,26 @@ def build_portfolio() -> dict:
     print("Computing FX decomposition...", file=sys.stderr)
     fx_decomp = compute_fx_decomposition(holdings, transactions, current_prices)
 
-    return {
+    snapshot = {
         "last_updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "base_currency": BASE_CURRENCY,
         "positions": positions,
         "summary": {
-            "market_value_eur": round(total_value_base, 2),
-            "total_cost_eur": round(total_cost_base, 2),
-            "total_gain_eur": round(total_value_base - total_cost_base, 2),
-            "total_gain_pct": round((total_value_base - total_cost_base) / total_cost_base * 100, 2) if total_cost_base else 0,
+            "market_value_eur": safe_round(total_value_base),
+            "total_cost_eur": safe_round(total_cost_base),
+            "total_gain_eur": safe_round(total_value_base - total_cost_base),
+            "total_gain_pct": safe_round((total_value_base - total_cost_base) / total_cost_base * 100, 2) if total_cost_base else 0,
             "loan_remaining_eur": loan_eur,
             "loan_as_of": loan["as_of"] if loan else None,
-            "net_worth_eur": round(net_worth, 2),
+            "net_worth_eur": safe_round(net_worth),
             "realized_gain_eur": realized["total_eur"],
         },
         "realized": realized,
         "fx_decomposition": fx_decomp,
     }
+
+    # Final pass: strip any lingering NaN/inf anywhere in the structure
+    return sanitize_for_json(snapshot)
 
 
 def append_history(snapshot: dict) -> None:
@@ -429,23 +469,19 @@ def append_history(snapshot: dict) -> None:
             try:
                 history = json.load(f)
             except json.JSONDecodeError:
-                # Previous history file is corrupted (e.g. contains NaN).
-                # Keep only entries we can re-parse; skip broken ones.
                 history = []
-    # Drop any previously-bad entries with NaN or null values
     history = [
         h for h in history
         if isinstance(h.get("market_value_eur"), (int, float))
         and isinstance(h.get("net_worth_eur"), (int, float))
-        and h["market_value_eur"] == h["market_value_eur"]  # NaN != NaN trick
-        and h["net_worth_eur"] == h["net_worth_eur"]
+        and not is_bad_number(h["market_value_eur"])
+        and not is_bad_number(h["net_worth_eur"])
     ]
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     mv = snapshot["summary"]["market_value_eur"]
     nw = snapshot["summary"]["net_worth_eur"]
-    # Refuse to write NaN or None as a history point
-    if mv is None or nw is None or mv != mv or nw != nw:
+    if is_bad_number(mv) or is_bad_number(nw):
         print(f"WARN: skipping history append — invalid values mv={mv} nw={nw}", file=sys.stderr)
         return
     entry = {"date": today, "market_value_eur": mv, "net_worth_eur": nw}
@@ -466,12 +502,14 @@ def main() -> int:
     PORTFOLIO_OUT.parent.mkdir(parents=True, exist_ok=True)
     with open(PORTFOLIO_OUT, "w") as f:
         json.dump(snapshot, f, indent=2, default=str, allow_nan=False)
+
     append_history(snapshot)
 
     s = snapshot["summary"]
     print(f"Market value:  {s['market_value_eur']:>12,.2f} EUR")
     print(f"Cost basis:    {s['total_cost_eur']:>12,.2f} EUR")
-    print(f"Unrealized:    {s['total_gain_eur']:>12,.2f} EUR ({s['total_gain_pct']:+.2f}%)")
+    if s["total_gain_eur"] is not None:
+        print(f"Unrealized:    {s['total_gain_eur']:>12,.2f} EUR ({s['total_gain_pct']:+.2f}%)")
     print(f"Realized:      {s['realized_gain_eur']:>12,.2f} EUR (all-time)")
     if s["loan_remaining_eur"] is not None:
         print(f"Loan:          {s['loan_remaining_eur']:>12,.2f} EUR as of {s['loan_as_of']}")
