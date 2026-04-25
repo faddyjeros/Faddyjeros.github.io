@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-24T23:10:41+00:00",
+  "last_updated": "2026-04-25T23:08:48+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -15,7 +15,22 @@
       "gain_eur": -2253.44,
       "gain_pct": -68.81,
       "bought": "2021-01-29",
-      "allocation_pct": 0.95
+      "allocation_pct": 0.62
+    },
+    {
+      "ticker": "CSPX.AS",
+      "name": "iShares Core S&P 500 UCITS (Acc)",
+      "shares": 48.0,
+      "currency": "EUR",
+      "price": 655.717,
+      "bep": 471.59,
+      "value_native": 31474.42,
+      "value_eur": 31474.42,
+      "cost_eur": 22636.32,
+      "gain_eur": 8838.1,
+      "gain_pct": 39.04,
+      "bought": null,
+      "allocation_pct": 19.24
     },
     {
       "ticker": "WPEA.PA",
@@ -30,17 +45,32 @@
       "gain_eur": 9745.19,
       "gain_pct": 10.02,
       "bought": null,
-      "allocation_pct": 99.05
+      "allocation_pct": 65.37
+    },
+    {
+      "ticker": "CW8.PA",
+      "name": "Amundi MSCI World UCITS",
+      "shares": 38.0,
+      "currency": "EUR",
+      "price": 635.7251,
+      "bep": 484.39,
+      "value_native": 24157.55,
+      "value_eur": 24157.55,
+      "cost_eur": 18406.82,
+      "gain_eur": 5750.73,
+      "gain_pct": 31.24,
+      "bought": null,
+      "allocation_pct": 14.76
     }
   ],
   "summary": {
-    "market_value_eur": 107984.54,
-    "total_cost_eur": 100492.79,
-    "total_gain_eur": 7491.75,
-    "total_gain_pct": 7.46,
+    "market_value_eur": 163616.51,
+    "total_cost_eur": 141535.93,
+    "total_gain_eur": 22080.58,
+    "total_gain_pct": 15.6,
     "loan_remaining_eur": 6407.69,
     "loan_as_of": "2026-04-04",
-    "net_worth_eur": 101576.85,
+    "net_worth_eur": 157208.82,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -164,6 +194,29 @@
       "benchmark_note": "Direct USD holding \u2014 FX computed against EUR/USD"
     },
     {
+      "ticker": "CSPX.AS",
+      "name": "iShares Core S&P 500 UCITS (Acc)",
+      "currency": "EUR",
+      "avg_buy_date": "2022-10-06",
+      "shares": 48.0,
+      "current_price": 655.717,
+      "bep": 471.59,
+      "benchmark_ticker": "^SP500TR",
+      "benchmark_name": "S&P 500 Total Return",
+      "bench_at_buy": 7943.63,
+      "bench_today": 15989.69,
+      "bench_return_pct": 101.29,
+      "fx_at_buy": 1.009,
+      "fx_today": 0.8528,
+      "fx_change_pct": -15.48,
+      "value_today_eur": 31474.42,
+      "cost_eur_at_buy": 22636.32,
+      "total_gain_eur": 8838.1,
+      "asset_gain_eur": 22928.21,
+      "fx_gain_eur": -14090.11,
+      "benchmark_note": "Decomposition uses S&P 500 Total Return as USD benchmark."
+    },
+    {
       "ticker": "WPEA.PA",
       "name": "iShares MSCI World Swap PEA UCITS",
       "currency": "EUR",
@@ -182,8 +235,31 @@
       "value_today_eur": 106963.22,
       "cost_eur_at_buy": 97218.03,
       "total_gain_eur": 9745.19,
-      "asset_gain_eur": 22147.58,
-      "fx_gain_eur": -12402.39,
+      "asset_gain_eur": 22147.57,
+      "fx_gain_eur": -12402.38,
+      "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
+    },
+    {
+      "ticker": "CW8.PA",
+      "name": "Amundi MSCI World UCITS",
+      "currency": "EUR",
+      "avg_buy_date": "2024-03-02",
+      "shares": 38.0,
+      "current_price": 635.7251,
+      "bep": 484.39,
+      "benchmark_ticker": "URTH",
+      "benchmark_name": "MSCI World (URTH proxy)",
+      "bench_at_buy": 137.26,
+      "bench_today": 195.27,
+      "bench_return_pct": 42.26,
+      "fx_at_buy": 0.9255,
+      "fx_today": 0.8528,
+      "fx_change_pct": -7.86,
+      "value_today_eur": 24157.55,
+      "cost_eur_at_buy": 18406.82,
+      "total_gain_eur": 5750.73,
+      "asset_gain_eur": 7778.5,
+      "fx_gain_eur": -2027.76,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     }
   ]
