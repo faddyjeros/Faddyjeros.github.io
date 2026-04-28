@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import portfolio from "@/data/portfolio.json";
+import history from "@/data/history.json";
 import yaml from "js-yaml";
 import fs from "node:fs";
 import path from "node:path";
@@ -155,6 +156,54 @@ const gainClass = (n: number) =>
         )}
       </div>
     </section>
+
+    <!-- History chart -->
+    {history.length >= 2 && (
+      <section class="pt-10">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-lg font-semibold">Performance</h2>
+          <div id="range-btns" class="flex gap-1">
+            {["1M","3M","6M","1Y","ALL"].map(r => (
+              <button
+                data-range={r}
+                class:list={[
+                  "range-btn px-2 py-0.5 text-xs rounded font-medium transition-colors",
+                  "border border-border/60 text-foreground/50 hover:text-foreground hover:border-accent/40",
+                  r === "ALL" && "active-range"
+                ]}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="relative mt-4">
+          <svg
+            id="portfolio-chart"
+            viewBox="0 0 800 220"
+            preserveAspectRatio="none"
+            class="w-full h-48 sm:h-56"
+            aria-label="Portfolio performance chart"
+          ></svg>
+          <div
+            id="chart-tooltip"
+            class="pointer-events-none absolute hidden rounded-lg border border-border bg-background px-3 py-2 text-xs shadow-lg"
+          ></div>
+        </div>
+
+        <div class="mt-3 flex items-center gap-5 text-xs text-foreground/50">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block h-0.5 w-4 rounded" style="background:var(--accent)"></span>
+            Market value
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block h-0.5 w-4 rounded border-t border-dashed" style="border-color:var(--accent);opacity:0.5"></span>
+            Net worth
+          </span>
+        </div>
+      </section>
+    )}
 
     <!-- Allocation -->
     <section class="pt-10">
@@ -392,3 +441,182 @@ const gainClass = (n: number) =>
     </section>
   </main>
 </Layout>
+
+<style>
+  .active-range {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+  }
+</style>
+
+<script define:vars={{ history }}>
+  const ALL_DATA = history.slice().sort((a, b) => a.date.localeCompare(b.date));
+
+  const RANGES = { "1M": 30, "3M": 90, "6M": 180, "1Y": 365, "ALL": Infinity };
+
+  const PAD = { t: 12, r: 12, b: 32, l: 62 };
+  const VW = 800, VH = 220;
+  const CW = VW - PAD.l - PAD.r;
+  const CH = VH - PAD.t - PAD.b;
+
+  function filterData(range) {
+    if (RANGES[range] === Infinity) return ALL_DATA;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - RANGES[range]);
+    const cutStr = cutoff.toISOString().slice(0, 10);
+    return ALL_DATA.filter(d => d.date >= cutStr);
+  }
+
+  function fmtEur(n) {
+    return new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+  }
+
+  function fmtDateLabel(dateStr, data) {
+    const span = new Date(data.at(-1).date) - new Date(data[0].date);
+    const days = span / 86400000;
+    const d = new Date(dateStr);
+    if (days <= 60)  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+    if (days <= 400) return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+    return d.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+  }
+
+  function accentColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+  }
+  function fgColor(opacity) {
+    const fg = getComputedStyle(document.documentElement).getPropertyValue("--foreground").trim();
+    return `color-mix(in srgb, ${fg} ${opacity}%, transparent)`;
+  }
+  function borderColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue("--border").trim();
+  }
+
+  function drawChart(data) {
+    const svg = document.getElementById("portfolio-chart");
+    if (!svg || data.length < 2) return;
+
+    const accent = accentColor();
+    const gridCol = borderColor();
+    const labelCol = fgColor(45);
+
+    const dates = data.map(d => new Date(d.date).getTime());
+    const allVals = data.flatMap(d => [d.market_value_eur, d.net_worth_eur]);
+    const minV = Math.min(...allVals);
+    const maxV = Math.max(...allVals);
+    const pad = (maxV - minV) * 0.08 || 1000;
+    const lo = minV - pad;
+    const hi = maxV + pad;
+
+    const minT = Math.min(...dates);
+    const maxT = Math.max(...dates);
+
+    const x = ts => PAD.l + (ts - minT) / (maxT - minT || 1) * CW;
+    const y = v  => PAD.t + CH - (v - lo) / (hi - lo) * CH;
+
+    // Grid lines + Y labels
+    const ticks = 4;
+    let gridLines = "", yLabels = "";
+    for (let i = 0; i <= ticks; i++) {
+      const v = lo + (hi - lo) * (i / ticks);
+      const yy = y(v);
+      gridLines += `<line x1="${PAD.l}" y1="${yy}" x2="${VW - PAD.r}" y2="${yy}" stroke="${gridCol}" stroke-width="1" stroke-dasharray="4 4"/>`;
+      yLabels += `<text x="${PAD.l - 6}" y="${yy + 4}" text-anchor="end" font-size="10" fill="${labelCol}">${fmtEur(v)}</text>`;
+    }
+
+    // X labels — pick ~4 evenly spaced points
+    const xStep = Math.max(1, Math.floor(data.length / 4));
+    let xLabels = "";
+    for (let i = 0; i < data.length; i += xStep) {
+      const d = data[i];
+      const xp = x(new Date(d.date).getTime());
+      xLabels += `<text x="${xp}" y="${VH - PAD.b + 16}" text-anchor="middle" font-size="10" fill="${labelCol}">${fmtDateLabel(d.date, data)}</text>`;
+    }
+
+    // Area fill under market value line
+    const mvPts = data.map(d => `${x(new Date(d.date).getTime())},${y(d.market_value_eur)}`).join(" ");
+    const firstX = x(new Date(data[0].date).getTime());
+    const lastX  = x(new Date(data.at(-1).date).getTime());
+    const areaPath = `M ${firstX} ${y(data[0].market_value_eur)} L ${mvPts.replace(/^\S+,\S+\s*/, "")} L ${lastX} ${PAD.t + CH} L ${firstX} ${PAD.t + CH} Z`;
+
+    // Paths
+    const mvPath = "M " + data.map(d => `${x(new Date(d.date).getTime())},${y(d.market_value_eur)}`).join(" L ");
+    const nwPath = "M " + data.map(d => `${x(new Date(d.date).getTime())},${y(d.net_worth_eur)}`).join(" L ");
+
+    const gradId = "mv-grad";
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${accent}" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="${accent}" stop-opacity="0.01"/>
+        </linearGradient>
+        <clipPath id="chart-clip">
+          <rect x="${PAD.l}" y="${PAD.t}" width="${CW}" height="${CH}"/>
+        </clipPath>
+      </defs>
+      ${gridLines}
+      ${yLabels}
+      ${xLabels}
+      <g clip-path="url(#chart-clip)">
+        <path d="${areaPath}" fill="url(#${gradId})"/>
+        <path d="${mvPath}" fill="none" stroke="${accent}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="${nwPath}" fill="none" stroke="${accent}" stroke-width="1.5" stroke-dasharray="5 3" stroke-opacity="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+      </g>
+      <rect id="chart-hover-area" x="${PAD.l}" y="${PAD.t}" width="${CW}" height="${CH}" fill="transparent" style="cursor:crosshair"/>
+    `;
+
+    // Hover tooltip
+    const hoverArea = svg.querySelector("#chart-hover-area");
+    const tooltip = document.getElementById("chart-tooltip");
+
+    hoverArea.addEventListener("mousemove", e => {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = VW / rect.width;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const pct = (mx - PAD.l) / CW;
+      const idx = Math.round(pct * (data.length - 1));
+      const d = data[Math.max(0, Math.min(data.length - 1, idx))];
+      if (!d) return;
+
+      tooltip.innerHTML = `
+        <div class="font-medium mb-1">${new Date(d.date).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" })}</div>
+        <div class="flex gap-3">
+          <span class="text-foreground/60">Market</span><span class="font-medium">${fmtEur(d.market_value_eur)}</span>
+        </div>
+        <div class="flex gap-3">
+          <span class="text-foreground/60">Net worth</span><span class="font-medium">${fmtEur(d.net_worth_eur)}</span>
+        </div>
+      `;
+
+      const tooltipX = e.clientX - rect.left;
+      const tooltipY = e.clientY - rect.top;
+      const tw = tooltip.offsetWidth;
+      tooltip.style.left = `${Math.min(tooltipX + 12, rect.width - tw - 8)}px`;
+      tooltip.style.top  = `${tooltipY - 10}px`;
+      tooltip.classList.remove("hidden");
+    });
+
+    hoverArea.addEventListener("mouseleave", () => tooltip.classList.add("hidden"));
+  }
+
+  let activeRange = "ALL";
+
+  function setRange(range) {
+    activeRange = range;
+    document.querySelectorAll(".range-btn").forEach(btn => {
+      btn.classList.toggle("active-range", btn.dataset.range === range);
+    });
+    drawChart(filterData(range));
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll(".range-btn").forEach(btn => {
+      btn.addEventListener("click", () => setRange(btn.dataset.range));
+    });
+    setRange(activeRange);
+  });
+
+  // Redraw on theme change so colors stay correct
+  document.addEventListener("theme-change", () => drawChart(filterData(activeRange)));
+</script>

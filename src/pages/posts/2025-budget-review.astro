@@ -1,0 +1,536 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+---
+
+<Layout
+  title="How I Tracked Every Franc, Euro, and Pound I Spent in 2025 | Jeremie"
+  description="A deep-dive into consolidating four bank accounts across two countries into one honest picture of where my money actually went."
+>
+  <Header />
+
+  <div class="wrap">
+
+    <div class="article-header">
+      <p class="category-label">Personal Finance · Year in Review</p>
+      <h1>How I Tracked Every Franc, Euro, and Pound I Spent in 2025</h1>
+      <p class="subtitle">A deep-dive into consolidating four bank accounts across two countries into one honest picture of where my money actually went.</p>
+      <p class="byline">2025 · Lausanne, Switzerland</p>
+    </div>
+
+    <article class="article">
+
+      <p>I have a problem that's probably familiar to anyone who lives in one country, works internationally, and still has financial roots in another: my money lives everywhere. At the start of this year, I had a Swiss franc account for salary and daily life, a French euro account for travel and investing, a legacy BNP account holding a nearly-dead student loan, and a Revolut account I barely ever use. No single account told the full story.</p>
+
+      <p>So in early 2025, I decided to actually track everything. Not with a budgeting app (too manual, too fragile), but by exporting every transaction from every account and building a consolidated picture from scratch. With a bit of help from our new AI friends to parse, categorize, and reconcile across currencies, what followed was quite interesting to me.</p>
+
+      <p>This post is a write-up of the methodology and what I found. No absolute numbers, just percentages and patterns, in case the approach is useful to anyone else doing the same thing from Switzerland.</p>
+
+      <h2>The Setup: Four Accounts, Two Countries, Three Currencies</h2>
+
+      <p>The accounts involved were UBS in Switzerland (my main account — salary, rent, everyday CHF spending), Boursorama in France (euro-denominated, used for travel, routing money to my investment accounts, and French expenses), BNP Paribas (exists solely because that's where my French student loan lives), and Revolut (light usage, mostly Apple subscriptions and one London weekend).</p>
+
+      <p>The first challenge was currency. Any time money moved between accounts — which happened regularly via Wise — I needed to know the actual exchange rate I received, not a theoretical one. The solution was to match each CHF Wise outflow against the corresponding EUR inflow on the French side, which gave me ten real data points for the EUR/CHF rate throughout the year. I then interpolated between them daily. This meant every EUR transaction was converted at something very close to my actual received rate, not a generic average.</p>
+
+      <blockquote>"The goal wasn't perfect accounting. It was a clear enough picture to make better decisions."</blockquote>
+
+      <p>The second challenge was separating business from personal. I travel frequently for work — projects in Zurich, London trips, a multi-month Dijon project — and I front expenses that get reimbursed. Without stripping those out, my "restaurant spend" would look alarming. Restaurants during a Zurich work week, hotels during a London client visit, event dinners: all of these ended up tagged as business and treated as financially neutral. The reimbursements my employer paid matched the expenses identified to within about 2%. Close enough that the residual is essentially noise.</p>
+
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-number">1,321</span>
+          <span class="stat-label">Total transactions</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">4</span>
+          <span class="stat-label">Bank accounts</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">~2%</span>
+          <span class="stat-label">Business reconciliation gap</span>
+        </div>
+      </div>
+
+      <h2>Where the Money Went</h2>
+
+      <p>Once transfers, investment flows, and business expenses were stripped out, personal spending fell into three buckets: fixed essentials (things that happen whether I think about them or not), one-off items (things that happened once this year), and variable discretionary spending (everything else).</p>
+
+      <div class="donut-wrap">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--c-rule)" stroke-width="22"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--c-ink)" stroke-width="22"
+            stroke-dasharray="154.5 339.3"
+            stroke-dashoffset="0"
+            transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--c-accent)" stroke-width="22"
+            stroke-dasharray="131.3 339.3"
+            stroke-dashoffset="-154.5"
+            transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--c-muted)" stroke-width="22"
+            stroke-dasharray="53.3 339.3"
+            stroke-dashoffset="-285.8"
+            transform="rotate(-90 70 70)"/>
+          <text x="70" y="66" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-weight="700" fill="var(--c-ink)">3</text>
+          <text x="70" y="82" text-anchor="middle" font-size="9" fill="var(--c-muted)" letter-spacing="1">BUCKETS</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--c-ink)"></div>
+            <span class="legend-name">Variable / discretionary</span>
+            <span class="legend-pct">45.6%</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--c-accent)"></div>
+            <span class="legend-name">Fixed essentials</span>
+            <span class="legend-pct">38.7%</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--c-muted)"></div>
+            <span class="legend-name">One-off (car purchase)</span>
+            <span class="legend-pct">15.7%</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Fixed Essentials — 38.7% of total spend</h3>
+
+      <p>Rent dominates this bucket, accounting for just over half of it alone — roughly 21% of all personal spending. That's a Swiss reality, especially in an urban area. The rest is Pillar 3a contributions (more on that below), health insurance, a French student loan on its last legs, telecom, gym, and a handful of smaller recurring items.</p>
+
+      <div class="chart-section">
+        <p class="chart-title">Fixed essentials breakdown</p>
+        <div class="bar-item">
+          <span class="bar-label">Rent</span>
+          <div class="bar-track"><div class="bar-fill accent" style="width:100%"></div></div>
+          <span class="bar-pct">20.9%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Pillar 3a</span>
+          <div class="bar-track"><div class="bar-fill accent" style="width:29.7%"></div></div>
+          <span class="bar-pct">6.2%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Health insurance</span>
+          <div class="bar-track"><div class="bar-fill accent" style="width:23%"></div></div>
+          <span class="bar-pct">4.8%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Student loan</span>
+          <div class="bar-track"><div class="bar-fill accent" style="width:14.4%"></div></div>
+          <span class="bar-pct">3.0%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Everything else</span>
+          <div class="bar-track"><div class="bar-fill bar-muted" style="width:18.2%"></div></div>
+          <span class="bar-pct">3.8%</span>
+        </div>
+      </div>
+
+      <p>I maxed out the Pillar 3a annual contribution — the Swiss tax-advantaged pension savings vehicle. If you're employed in Switzerland, submitting a tax declaration, and not doing this, you're leaving a meaningful tax deduction on the table every year. I made the mistake of contributing in November and December rather than January (mostly because I forgot about it til then).</p>
+
+      <h3>One-offs — 15.7% of total spend</h3>
+
+      <p>This bucket is almost entirely a car. I bought one in February, funded by liquidating part of my investment portfolio rather than from current income. The rest of this bucket is a Mobility carshare damage excess — a minor scrape, the kind of thing that reminds you to always take the full insurance on carshare.</p>
+
+      <h3>Variable Spending — 45.6% of total spend</h3>
+
+      <p>This is the interesting one. Variable spending breaks down as follows within its own bucket:</p>
+
+      <div class="chart-section">
+        <p class="chart-title">Variable spending — share within category</p>
+        <div class="bar-item">
+          <span class="bar-label">Groceries</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+          <span class="bar-pct">15.5%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Restaurants / cafes</span>
+          <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+          <span class="bar-pct">12.4%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Hotels</span>
+          <div class="bar-track"><div class="bar-fill" style="width:58.7%"></div></div>
+          <span class="bar-pct">9.1%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Home / electronics</span>
+          <div class="bar-track"><div class="bar-fill" style="width:58.1%"></div></div>
+          <span class="bar-pct">9.0%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Flights</span>
+          <div class="bar-track"><div class="bar-fill" style="width:41.3%"></div></div>
+          <span class="bar-pct">6.4%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Travel (other)</span>
+          <div class="bar-track"><div class="bar-fill" style="width:36.8%"></div></div>
+          <span class="bar-pct">5.7%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Shopping (all)</span>
+          <div class="bar-track"><div class="bar-fill" style="width:51.6%"></div></div>
+          <span class="bar-pct">8.2%</span>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Everything else</span>
+          <div class="bar-track"><div class="bar-fill bar-muted" style="width:22%"></div></div>
+          <span class="bar-pct">33.7%</span>
+        </div>
+      </div>
+
+      <p>Restaurants at 12.4% of variable spend sounds like a lot, but most of this is genuinely social — dates, dinners out, weekend lunches, cafes with friends. When you live in Switzerland, eat out rather than meal prep despite your best efforts, and travel regularly, a restaurant line that size is more or less expected. The important thing is that work-related meals were stripped out before this number was calculated or that value would've been a lot scarier.</p>
+
+      <p>Hotels at 9.1% reflects a year with genuine travel: a solo week in Fuerteventura, a London personal weekend, a Paris stay, an amazing roadtrip through Italy and Croatia in May, and a few pre-booked trips for 2026 to Norway and Japan. Most business hotel stays were reimbursed separately. Flights at 6.4% includes bookings made in 2025 for 2026 trips which inflates the year slightly but represents real future value.</p>
+
+      <div class="divider">The numbers behind the numbers</div>
+
+      <h2>The Business Travel Problem</h2>
+
+      <p>One of the more technically interesting parts of this exercise was reconciling business expenses. My job involves regular travel — Zurich, London, Paris — and I typically front costs and get reimbursed monthly. Without treating these carefully, the analysis would be meaningless: restaurant spend looks catastrophic if you include a twelve-person client dinner you paid on your personal card and recovered the next week.</p>
+
+      <p>The approach was to tag known work windows (the multi-week Zurich project, the London client trips, the Dijon project) and sweep all location-specific spending during those windows into a business bucket. Reimbursements from my employer went into the same bucket. The result: business expense identified versus reimbursements received matched to within 2%, which is about as clean as you can get without receipt-level matching. I guess the next step would've been to scour my Concur account for all my expense reports and analyse those... Maybe next time!</p>
+
+      <blockquote>"Business expense identified versus reimbursements received: matched to within 2%."</blockquote>
+
+      <h2>Investing and Wealth-Building</h2>
+
+      <p>This is the part I care about most. The operational surplus (what's left after personal income minus fixed and variable personal spend) works out to roughly 10–12% of gross salary. That alone is a reasonable saving rate, but it understates the actual wealth-building picture significantly.</p>
+
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-number">~24%</span>
+          <span class="stat-label">Of gross salary to long-term wealth</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Of Pillar 3a annual max contributed</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Investment vehicles active</span>
+        </div>
+      </div>
+
+      <p>Pillar 3a contributions are counted in the "fixed essentials" bucket — they're non-negotiable for me, treated like rent. Broker and PEA contributions went through the French account during the year, including one larger investment made in August (13 shares of an S&P 500 ETF, if you're curious). The car was funded entirely by liquidating existing investments, not from current-year income — so while it shows up as a one-off spend, the actual operational impact was zero.</p>
+
+      <p>One thing worth clarifying on the PEA: I opened it while I was still working in France, where it comes with meaningful tax advantages on investment gains after a five-year holding period. Now that I live and work in Switzerland, those French tax benefits don't apply to me — I'm not fiscally resident there. So in practice the PEA functions as a regular brokerage account from my perspective, just one that happens to be domiciled in France and denominated in euros. I keep it active because the portfolio is there and the holding period clock is ticking, but I don't make investment decisions based on French tax logic anymore. If you're in a similar cross-border situation, it's worth being clear-eyed about this — the PEA is a great product for French residents, but the wrapper loses most of its meaning once you move.</p>
+
+      <p>The student loan will be fully paid off in 2027. At that point the BNP account — which I essentially maintain only because the loan is there — gets closed, and the monthly repayment amount frees up for investment. Small, but meaningful at the margin.</p>
+
+      <h2>What the Multi-Account Complexity Actually Costs</h2>
+
+      <p>Beyond the money itself, this exercise revealed something less quantifiable: the cognitive overhead of having your financial life spread across four institutions in two countries is real. Money moves through Wise between accounts, EUR-denominated spending needs converting, and understanding your actual net position at any moment requires mentally consolidating at least four balances plus a brokerage portfolio and a PEA.</p>
+
+      <p>I'm building a tool to solve this — a consolidated net worth view that pulls together bank balances, investment portfolio values, and the Pillar 3a balance into a single dashboard. The budget work here is essentially the transaction-level foundation for that. The goal is to make the question "where do I actually stand?" answerable in under thirty seconds.</p>
+
+      <h2>Things I'd Do Differently</h2>
+
+      <p><strong>The franchise decision is worth revisiting annually.</strong> Swiss health insurance premiums vary significantly by franchise level. I ran a Comparatis analysis when I arrived in Switzerland and chose a lower franchise based on that. A year of actual usage data makes the next analysis more grounded — I'll re-run it at year end.</p>
+
+      <p><strong>Q4 is always expensive.</strong> November was by far the worst cash flow month — a combination of a solo trip to recover from overwork, prepaying two 2026 holidays, and the annual Pillar 3a top-up all landing in the same window. Knowing this pattern in advance is useful for timing other decisions. I'll spread out my pension contributions throughout the year to avoid that this time around.</p>
+
+      <p><strong>Business expense tracking is worth doing properly.</strong> The near-perfect reconciliation between what I front and what I get reimbursed is only visible because I tracked it carefully. If you regularly advance work expenses, you should know what that float looks like — it's your money working for your employer interest-free.</p>
+
+      <div class="divider">Final thought</div>
+
+      <p>The honest summary: at my age, living alone in Lausanne on a single salary, I travelled frequently, ate well, bought a car, invested consistently, and still generated a meaningful surplus. The numbers are not perfect — there's always cash that disappears into ATM withdrawals or small transactions that resist categorization — but they're accurate enough to be useful.</p>
+
+      <p>The exercise took some time (mostly from hitting my usage limits on Claude) and required reconciling 1,321 transactions across four banks. I'll do it again next year, probably faster now that the methodology is established. If you're doing something similar and want to compare notes, I'm easy to find.</p>
+
+      <p class="footnote">Methodology note: All EUR amounts were converted to CHF using daily rates interpolated from actual Wise transfer pairs (UBS CHF outflow matched to Boursorama EUR inflow, same day). This gives the effective rate received rather than a theoretical mid-market rate. Business expenses were categorized by work-travel windows and specific known events; reimbursements from employer were matched to the same bucket. "Personal variable spending" excludes all business-reimbursed items.</p>
+
+    </article>
+  </div>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* ---- Design tokens: bridge article styles to site theme ---- */
+  .wrap {
+    --c-ink:    var(--foreground);
+    --c-bg:     var(--background);
+    --c-accent: #d97a45;
+    --c-muted:  color-mix(in srgb, var(--foreground) 50%, transparent);
+    --c-rule:   var(--border);
+    --c-hi:     var(--muted);
+  }
+
+  /* ---- Header ---- */
+  .article-header {
+    border-bottom: 1px solid var(--c-rule);
+    padding: 4rem 1rem 3rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .article-header::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 48px;
+    background: var(--c-accent);
+    margin: 0 auto 2rem;
+  }
+
+  .category-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .article-header h1 {
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    max-width: 680px;
+    margin: 0 auto 1.25rem;
+    color: var(--c-ink);
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: var(--c-muted);
+    max-width: 520px;
+    margin: 0 auto 1.5rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .byline {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--c-muted);
+    text-transform: uppercase;
+  }
+
+  /* ---- Article body ---- */
+  .article {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--c-ink);
+  }
+
+  .article p {
+    margin-bottom: 1.6rem;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .article h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 3.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--c-rule);
+    color: var(--c-ink);
+    letter-spacing: -0.01em;
+  }
+
+  .article h3 {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    margin: 2.5rem 0 0.8rem;
+  }
+
+  /* ---- Pullquote ---- */
+  blockquote {
+    border-left: 3px solid var(--c-accent);
+    padding: 0.4rem 0 0.4rem 1.5rem;
+    margin: 2.5rem 0;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--c-ink);
+    line-height: 1.6;
+  }
+
+  /* ---- Stat boxes ---- */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--c-rule);
+    margin: 2.5rem 0;
+    border: 1px solid var(--c-rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stat {
+    background: var(--c-hi);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--c-accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  /* ---- Bar chart ---- */
+  .chart-section {
+    background: var(--c-hi);
+    border: 1px solid var(--c-rule);
+    border-radius: 8px;
+    padding: 1.75rem;
+    margin: 2.5rem 0;
+  }
+
+  .chart-title {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-bottom: 1.4rem;
+  }
+
+  .bar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .bar-label {
+    font-size: 0.8rem;
+    min-width: 155px;
+    color: var(--c-ink);
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--c-rule);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--c-ink);
+    transform-origin: left;
+    animation: grow 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .bar-fill.accent   { background: var(--c-accent); }
+  .bar-fill.bar-muted { background: var(--c-muted); }
+
+  .bar-pct {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--c-muted);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  @keyframes grow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .bar-item:nth-child(2) .bar-fill { animation-delay: 0.07s; }
+  .bar-item:nth-child(3) .bar-fill { animation-delay: 0.14s; }
+  .bar-item:nth-child(4) .bar-fill { animation-delay: 0.21s; }
+  .bar-item:nth-child(5) .bar-fill { animation-delay: 0.28s; }
+  .bar-item:nth-child(6) .bar-fill { animation-delay: 0.35s; }
+  .bar-item:nth-child(7) .bar-fill { animation-delay: 0.42s; }
+  .bar-item:nth-child(8) .bar-fill { animation-delay: 0.49s; }
+
+  /* ---- Donut chart ---- */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: var(--c-hi);
+    border: 1px solid var(--c-rule);
+    border-radius: 8px;
+    padding: 1.75rem;
+    margin: 2.5rem 0;
+  }
+
+  .donut-wrap svg { flex-shrink: 0; }
+
+  .donut-legend { flex: 1; }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-name { flex: 1; color: var(--c-ink); }
+  .legend-pct  { font-weight: 600; color: var(--c-muted); }
+
+  /* ---- Divider ---- */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    color: var(--c-muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--c-rule);
+  }
+
+  /* ---- Footnote ---- */
+  .footnote {
+    font-size: 0.75rem;
+    color: var(--c-muted);
+    border-top: 1px solid var(--c-rule);
+    padding-top: 1rem;
+    margin-top: 3rem;
+    font-style: italic;
+    text-align: left !important;
+  }
+
+  .article strong { font-weight: 600; }
+
+  @media (max-width: 600px) {
+    .stat-row { grid-template-columns: 1fr 1fr; }
+    .donut-wrap { flex-direction: column; }
+    .bar-label { min-width: 110px; }
+  }
+</style>
