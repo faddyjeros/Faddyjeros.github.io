@@ -13,21 +13,19 @@ const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 const { title, description, ...props } = data;
 ---
 
-<li class="my-6">
+<li class="group my-3 rounded-xl border border-border/60 px-5 py-4 transition-all duration-200 hover:border-accent/30 hover:bg-muted/40">
   <a
     href={getPath(id, filePath)}
     class:list={[
-      "inline-block text-lg font-medium text-accent",
-      "decoration-dashed underline-offset-4 hover:underline",
+      "inline-block font-semibold text-foreground",
+      "transition-colors duration-150 hover:text-accent",
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
-    <Heading
-      style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
-    >
+    <Heading style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}>
       {title}
     </Heading>
   </a>
   <Datetime {...props} />
-  <p>{description}</p>
+  <p class="mt-1.5 text-sm leading-relaxed text-foreground/65">{description}</p>
 </li>

@@ -5,23 +5,24 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --accent: #6d28d9;
+  --muted: #f1f5f9;
+  --border: #e2e8f0;
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  --background: #0f1117;
+  --foreground: #dde1ea;
+  --accent: #a78bfa;
+  --muted: #1a2033;
+  --border: #2a3250;
 }
 
 @theme inline {
-  --font-app: var(--font-google-sans-code);
+  --font-app: var(--font-inter);
+  --font-mono: var(--font-google-sans-code);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
@@ -32,22 +33,33 @@ html[data-theme="dark"] {
 @layer base {
   * {
     @apply border-border outline-accent/75;
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-muted) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
   }
   html {
     @apply overflow-y-scroll scroll-smooth;
   }
   body {
-    @apply flex min-h-svh flex-col bg-background font-app text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-background font-app text-foreground antialiased;
+    selection-background-color: color-mix(in srgb, var(--accent) 25%, transparent);
+    ::selection {
+      background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+      color: var(--foreground);
+    }
   }
   a,
   button {
-    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-offset-1 outline-accent transition-colors duration-150 focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono), ui-monospace, monospace;
   }
 }
 
@@ -60,11 +72,9 @@ html[data-theme="dark"] {
 }
 
 .active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-8;
+  @apply text-accent underline decoration-accent/40 underline-offset-4;
 }
 
-/* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
-/* Anything that has been anchored to should have extra scroll margin */
 :target {
   scroll-margin-block: 1rem;
 }
