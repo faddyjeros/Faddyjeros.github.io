@@ -367,9 +367,26 @@ def compute_fx_decomposition(
 # Main portfolio build
 # ============================================================================
 
+def load_last_known_prices() -> dict[str, float]:
+    """Load prices from the existing portfolio.json as a fallback when yfinance fails."""
+    if not PORTFOLIO_OUT.exists():
+        return {}
+    try:
+        with open(PORTFOLIO_OUT) as f:
+            existing = json.load(f)
+        return {
+            p["ticker"]: p["price"]
+            for p in existing.get("positions", [])
+            if p.get("price") is not None
+        }
+    except Exception:
+        return {}
+
+
 def build_portfolio() -> dict:
     holdings = load_holdings()
     transactions = load_transactions()
+    last_known_prices = load_last_known_prices()
     positions = []
     total_value_base = 0.0
     total_cost_base = 0.0
@@ -391,7 +408,11 @@ def build_portfolio() -> dict:
             price = get_latest_close(ticker)
         except Exception as e:
             print(f"WARNING: failed to fetch {ticker}: {e}", file=sys.stderr)
-            continue
+            price = last_known_prices.get(ticker)
+            if price is None:
+                print(f"WARNING: no fallback price for {ticker}; skipping", file=sys.stderr)
+                continue
+            print(f"INFO: using last known price for {ticker}: {price}", file=sys.stderr)
 
         if is_bad_number(price):
             print(f"WARNING: {ticker} returned non-numeric price; skipping", file=sys.stderr)

@@ -5,7 +5,7 @@ title: "About"
 
 I'm Jeremie — an eDiscovery project manager based in Switzerland. I run litigation and investigation projects for law firms and companies: scoping the matter, managing timelines and budgets, and coordinating between legal teams and clients. I also run operations through every stage of collection, processing, review, and production.
 
-This site is a place for me to write about my work, share things I've tinkered with, and track my hobbies such as gaming, finace, and hiking! 
+This site is a place for me to write about my work, share things I've tinkered with, and track my hobbies such as gaming, finace, and hiking!
 For the finance part, I do need to disclose that this is not a portfolio site or a professional shopfront — just somewhere to collect the interesting bits I have.
 
 ## What I do

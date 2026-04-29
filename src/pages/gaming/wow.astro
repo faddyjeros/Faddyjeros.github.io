@@ -1,0 +1,474 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import wowData from "@/data/wow.json";
+
+const { characters, updated_at } = wowData;
+const updatedDate = new Date(updated_at).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const classColors: Record<string, string> = {
+  Warrior: "#C79C6E",
+  Hunter: "#ABD473",
+  Druid: "#FF7D0A",
+  Mage: "#69CCF0",
+  Paladin: "#F58CBA",
+  Priest: "#FFFFFF",
+  Rogue: "#FFF569",
+  Shaman: "#0070DE",
+  Warlock: "#9482C9",
+  "Death Knight": "#C41F3B",
+  "Demon Hunter": "#A330C9",
+  Monk: "#00FF96",
+  Evoker: "#33937F",
+};
+
+const difficultyOrder = ["Normal", "Heroic", "Mythic"];
+
+function ratingColor(rating: number): string {
+  if (rating >= 3000) return "#ff8000";
+  if (rating >= 2500) return "#a335ee";
+  if (rating >= 2000) return "#0070dd";
+  if (rating >= 1500) return "#1eff00";
+  return "#888";
+}
+
+function pvpColor(rating: number): string {
+  if (rating >= 2100) return "#ff8000";
+  if (rating >= 1800) return "#a335ee";
+  if (rating >= 1600) return "#0070dd";
+  if (rating >= 1400) return "#1eff00";
+  return "#888";
+}
+---
+
+<Layout title="WoW | Jeremie">
+  <Header />
+  <main class="wow-page">
+    <div class="page-header">
+      <h1>World of Warcraft</h1>
+      <span class="updated">Updated {updatedDate}</span>
+    </div>
+
+    <div class="characters">
+      {
+        characters.map(char => {
+          const color = classColors[char.class] ?? "#aaa";
+          return (
+            <div class="card" style={`--class-color: ${color}`}>
+              {/* Top banner with portrait */}
+              <div class="card-banner">
+                <div class="banner-left">
+                  {char.media_url && (
+                    <img
+                      src={char.media_url}
+                      alt={char.name}
+                      class="portrait"
+                    />
+                  )}
+                  <div class="banner-info">
+                    <span class="role-badge">{char.role}</span>
+                    <h2>{char.name}</h2>
+                    <p class="class-spec">
+                      {char.spec} {char.class}
+                    </p>
+                    <p class="realm">
+                      {char.realm} · {char.faction}
+                    </p>
+                  </div>
+                </div>
+                <div class="banner-right">
+                  <div class="ilvl-badge">
+                    <span class="ilvl-num">{char.equipped_item_level}</span>
+                    <span class="ilvl-label">ilvl</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content panels in a row */}
+              <div class="panels">
+                {/* Base stats panel — always shown */}
+                <div class="panel">
+                  <div class="panel-title">Character</div>
+                  <div class="stat-row">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-val">{char.level}</span>
+                  </div>
+                  <div class="stat-row">
+                    <span class="stat-label">Avg ilvl</span>
+                    <span class="stat-val">{char.item_level}</span>
+                  </div>
+                  <div class="stat-row">
+                    <span class="stat-label">Achievements</span>
+                    <span class="stat-val">
+                      {char.achievement_points.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* PvP panel */}
+                {char.pvp && (
+                  <div class="panel">
+                    <div class="panel-title">PvP</div>
+                    <div class="stat-row">
+                      <span class="stat-label">Solo Shuffle</span>
+                      <span
+                        class="stat-val"
+                        style={`color: ${pvpColor(char.pvp.solo_shuffle.rating)}`}
+                      >
+                        {char.pvp.solo_shuffle.rating} CR
+                      </span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-label">BG Blitz</span>
+                      <span
+                        class="stat-val"
+                        style={`color: ${pvpColor(char.pvp.blitz.rating)}`}
+                      >
+                        {char.pvp.blitz.rating} CR
+                      </span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-label">Blitz W/L</span>
+                      <span class="stat-val">
+                        {char.pvp.blitz.season_won}W/
+                        {char.pvp.blitz.season_lost}L
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* M+ panel */}
+                {char.mythic_plus && (
+                  <div class="panel panel-wide">
+                    <div class="panel-title">
+                      Mythic+
+                      <span
+                        class="panel-title-right"
+                        style={`color: ${ratingColor(char.mythic_plus.rating)}`}
+                      >
+                        {char.mythic_plus.rating}
+                      </span>
+                    </div>
+                    <div class="dungeon-grid">
+                      {char.mythic_plus.best_runs.map(run => (
+                        <div
+                          class={`dungeon-entry ${run.level === 0 ? "dungeon-empty" : ""} ${run.timed ? "dungeon-timed" : "dungeon-untimed"}`}
+                        >
+                          <span class="dungeon-name">{run.dungeon}</span>
+                          <span class="dungeon-level">
+                            {run.level > 0 ? `+${run.level}` : "—"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Raid panel */}
+                {char.raid_progress && char.raid_progress.length > 0 && (
+                  <div class="panel panel-wide">
+                    <div class="panel-title">Raid Progress</div>
+                    {char.raid_progress.map(raid => (
+                      <div class="raid-row">
+                        <span class="raid-name">{raid.raid}</span>
+                        <div class="raid-modes">
+                          {raid.modes
+                            .sort(
+                              (a, b) =>
+                                difficultyOrder.indexOf(a.difficulty) -
+                                difficultyOrder.indexOf(b.difficulty)
+                            )
+                            .map(mode => (
+                              <div
+                                class={`raid-mode ${mode.completed === mode.total ? "raid-clear" : "raid-prog"}`}
+                              >
+                                <span
+                                  class={`diff diff-${mode.difficulty.toLowerCase()}`}
+                                >
+                                  {mode.difficulty.slice(0, 1)}
+                                </span>
+                                <span class="raid-progress-text">
+                                  {mode.completed}/{mode.total}
+                                </span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .wow-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .page-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0;
+  }
+  .updated {
+    font-size: 0.8rem;
+    color: #666;
+  }
+  .characters {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .card {
+    border: 1px solid var(--class-color);
+    border-radius: 10px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--class-color) 4%, transparent);
+  }
+
+  /* Banner */
+  .card-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: color-mix(in srgb, var(--class-color) 18%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--class-color) 40%, transparent);
+  }
+  .banner-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .portrait {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    border: 2px solid var(--class-color);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .role-badge {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.6;
+    display: block;
+  }
+  .banner-info h2 {
+    margin: 0.1rem 0;
+    font-size: 1.5rem;
+    color: var(--class-color);
+  }
+  .class-spec {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+  .realm {
+    margin: 0.15rem 0 0;
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+  .banner-right {
+    text-align: right;
+  }
+  .ilvl-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: color-mix(in srgb, var(--class-color) 20%, transparent);
+    border: 1px solid var(--class-color);
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+  }
+  .ilvl-num {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--class-color);
+    line-height: 1;
+  }
+  .ilvl-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+  }
+
+  /* Panels row */
+  .panels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0;
+  }
+  .panel {
+    flex: 1;
+    min-width: 160px;
+    padding: 1rem 1.25rem;
+    border-right: 1px solid
+      color-mix(in srgb, var(--class-color) 20%, transparent);
+    overflow: hidden;
+  }
+  .panel:last-child {
+    border-right: none;
+  }
+  .panel-wide {
+    flex: 2;
+    min-width: 280px;
+    overflow: hidden;
+  }
+  .panel-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+    margin-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-title-right {
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 1;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .stat-label {
+    opacity: 0.65;
+  }
+  .stat-val {
+    font-weight: 600;
+  }
+
+  /* Dungeon grid */
+  .dungeon-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .dungeon-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .dungeon-timed {
+    border-left: 3px solid #1eff00;
+  }
+  .dungeon-untimed {
+    border-left: 3px solid #ff8000;
+  }
+  .dungeon-empty {
+    border-left: 3px solid #444;
+    opacity: 0.4;
+  }
+  .dungeon-name {
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+  }
+
+  /* Raid */
+  .raid-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.85rem;
+    gap: 0.5rem;
+  }
+  .raid-name {
+    opacity: 0.85;
+    flex: 1;
+  }
+  .raid-modes {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .raid-mode {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .diff {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+  .diff-normal {
+    background: #4a7c4e;
+    color: #fff;
+  }
+  .diff-heroic {
+    background: #1a6b9a;
+    color: #fff;
+  }
+  .diff-mythic {
+    background: #7a2d8c;
+    color: #fff;
+  }
+  .raid-progress-text {
+    font-size: 0.8rem;
+  }
+  .raid-clear .raid-progress-text {
+    color: #1eff00;
+  }
+  .raid-prog .raid-progress-text {
+    color: #ff8000;
+  }
+
+  @media (max-width: 600px) {
+    .panels {
+      flex-direction: column;
+    }
+    .panel {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .panel:last-child {
+      border-bottom: none;
+    }
+  }
+</style>

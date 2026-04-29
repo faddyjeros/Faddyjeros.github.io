@@ -14,5 +14,10 @@ export default [
     },
   },
   { rules: { "no-console": "error" } },
+  {
+    // Portfolio pages parse untyped YAML — allow `any` there
+    files: ["src/pages/portfolio.astro", "src/pages/portfolio/**/*.astro"],
+    rules: { "@typescript-eslint/no-explicit-any": "off" },
+  },
   { ignores: ["dist/**", ".astro", "public/pagefind/**"] },
 ];
