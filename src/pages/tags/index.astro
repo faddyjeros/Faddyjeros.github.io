@@ -15,16 +15,31 @@ let tags = getUniqueTags(posts);
 <Layout title={`Tags | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    {tags.length > 0 ? (
-      <ul class="flex flex-wrap gap-6">
-        {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} />)}
-      </ul>
-    ) : (
-      <div class="py-6 text-sm text-foreground/70 leading-relaxed">
-        <p>No tags yet — tags will appear here once I start writing blog posts.</p>
-        <p class="mt-2">Check back soon, or head to the <a href="/portfolio" class="underline underline-offset-4 hover:text-foreground">portfolio</a> in the meantime.</p>
-      </div>
-    )}
+    {
+      tags.length > 0 ? (
+        <ul class="flex flex-wrap gap-6">
+          {tags.map(({ tag, tagName }) => (
+            <Tag {tag} {tagName} />
+          ))}
+        </ul>
+      ) : (
+        <div class="py-6 text-sm leading-relaxed text-foreground/70">
+          <p>
+            No tags yet — tags will appear here once I start writing blog posts.
+          </p>
+          <p class="mt-2">
+            Check back soon, or head to the{" "}
+            <a
+              href="/portfolio"
+              class="underline underline-offset-4 hover:text-foreground"
+            >
+              portfolio
+            </a>{" "}
+            in the meantime.
+          </p>
+        </div>
+      )
+    }
   </Main>
   <Footer />
 </Layout>

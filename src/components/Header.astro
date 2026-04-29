@@ -29,7 +29,9 @@ const isActive = (path: string) => {
   Skip to content
 </a>
 
-<header class="app-layout flex flex-col items-center justify-between sm:flex-row">
+<header
+  class="app-layout flex flex-col items-center justify-between sm:flex-row"
+>
   <div
     id="top-nav-wrap"
     class:list={[
@@ -41,7 +43,7 @@ const isActive = (path: string) => {
   >
     <a
       href="/"
-      class="absolute py-1 text-lg font-semibold tracking-tight text-foreground whitespace-nowrap transition-colors hover:text-accent sm:static sm:my-auto sm:text-xl sm:leading-none"
+      class="absolute py-1 text-lg font-semibold tracking-tight whitespace-nowrap text-foreground transition-colors hover:text-accent sm:static sm:my-auto sm:text-xl sm:leading-none"
     >
       {SITE.title}
     </a>
@@ -74,7 +76,10 @@ const isActive = (path: string) => {
           </a>
         </li>
         <li class="col-span-2">
-          <a href="/portfolio" class:list={{ "active-nav": isActive("/portfolio") }}>
+          <a
+            href="/portfolio"
+            class:list={{ "active-nav": isActive("/portfolio") }}
+          >
             Portfolio
           </a>
         </li>
@@ -84,7 +89,10 @@ const isActive = (path: string) => {
           </a>
         </li>
         <li class="col-span-2">
-          <a href="/gaming/wow" class:list={{ "active-nav": isActive("/gaming/wow") }}>
+          <a
+            href="/gaming/wow"
+            class:list={{ "active-nav": isActive("/gaming/wow") }}
+          >
             WoW
           </a>
         </li>

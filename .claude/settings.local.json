@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322/)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "mcp__Claude_in_Chrome__tabs_create_mcp",
+      "Bash(git ls-tree *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322/gaming/wow)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322/portfolio)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('C:/Users/Jerem/Projects/faddyjeros.github.io/src/data/portfolio.json'\\)\\); print\\(len\\(d['positions']\\), 'positions:', [p['ticker'] for p in d['positions']]\\)\")",
+      "Bash(git -C \"C:/Users/Jerem/Projects/faddyjeros.github.io\" diff HEAD -- src/data/portfolio.json)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322/posts)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322/posts/2025-budget-review)",
+      "Bash(git -C \"C:/Users/Jerem/Projects/faddyjeros.github.io/.claude/worktrees/frosty-cray-b13878\" status --short)",
+      "Bash(git -C \"C:/Users/Jerem/Projects/faddyjeros.github.io/.claude/worktrees/frosty-cray-b13878\" log main..HEAD --oneline)",
+      "Read(//c/Users/Jerem/Projects/faddyjeros.github.io/**)",
+      "Bash(python scripts/backfill_history.py)",
+      "Bash(python -c ' *)",
+      "Bash(set PYTHONIOENCODING=utf-8)",
+      "Bash(copy \"C:\\\\Users\\\\Jerem\\\\Projects\\\\faddyjeros.github.io\\\\src\\\\data\\\\history.json\" \"C:\\\\Users\\\\Jerem\\\\Projects\\\\faddyjeros.github.io\\\\.claude\\\\worktrees\\\\frosty-cray-b13878\\\\src\\\\data\\\\history.json\")",
+      "Bash(gh pr *)",
+      "Bash(gh run *)",
+      "Bash(pnpm install *)",
+      "Bash(where pnpm *)",
+      "Bash(npm root *)"
+    ]
+  }
+}

@@ -41,7 +41,11 @@ html[data-theme="dark"] {
   }
   body {
     @apply flex min-h-svh flex-col bg-background font-app text-foreground antialiased;
-    selection-background-color: color-mix(in srgb, var(--accent) 25%, transparent);
+    selection-background-color: color-mix(
+      in srgb,
+      var(--accent) 25%,
+      transparent
+    );
     ::selection {
       background-color: color-mix(in srgb, var(--accent) 20%, transparent);
       color: var(--foreground);
