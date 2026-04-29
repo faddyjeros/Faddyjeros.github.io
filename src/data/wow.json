@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-26T16:24:55.996024+00:00",
+  "updated_at": "2026-04-29T23:29:36.622989+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -9,104 +9,11 @@
       "class": "Warrior",
       "spec": "Protection",
       "level": 90,
-      "item_level": 276,
-      "equipped_item_level": 276,
-      "achievement_points": 21280,
+      "item_level": 278,
+      "equipped_item_level": 277,
+      "achievement_points": 21310,
       "faction": "Alliance",
-      "realm": "Sylvanas",
-      "media_url": "https://render.worldofwarcraft.com/eu/character/sylvanas/88/217410392-avatar.jpg",
-      "mythic_plus": {
-        "rating": 3336.7,
-        "best_runs": [
-          {
-            "dungeon": "Windrunner Spire",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Maisara Caverns",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Magisters' Terrace",
-            "level": 16,
-            "timed": true
-          },
-          {
-            "dungeon": "Nexus-Point Xenas",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Algeth'ar Academy",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Seat of the Triumvirate",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Skyreach",
-            "level": 15,
-            "timed": true
-          },
-          {
-            "dungeon": "Pit of Saron",
-            "level": 16,
-            "timed": true
-          }
-        ]
-      },
-      "raid_progress": [
-        {
-          "raid": "The Dreamrift",
-          "modes": [
-            {
-              "difficulty": "Normal",
-              "completed": 1,
-              "total": 1
-            },
-            {
-              "difficulty": "Heroic",
-              "completed": 1,
-              "total": 1
-            }
-          ]
-        },
-        {
-          "raid": "The Voidspire",
-          "modes": [
-            {
-              "difficulty": "Normal",
-              "completed": 6,
-              "total": 6
-            },
-            {
-              "difficulty": "Heroic",
-              "completed": 6,
-              "total": 6
-            }
-          ]
-        },
-        {
-          "raid": "March on Quel'Danas",
-          "modes": [
-            {
-              "difficulty": "Normal",
-              "completed": 2,
-              "total": 2
-            },
-            {
-              "difficulty": "Heroic",
-              "completed": 1,
-              "total": 2
-            }
-          ]
-        }
-      ]
+      "realm": "Sylvanas"
     },
     {
       "name": "Faddhunt",
@@ -121,19 +28,16 @@
       "achievement_points": 20995,
       "faction": "Alliance",
       "realm": "Sylvanas",
-      "media_url": "https://render.worldofwarcraft.com/eu/character/sylvanas/200/265697224-avatar.jpg",
       "pvp": {
         "solo_shuffle": {
-          "rating": 1673,
-          "season_played": 49,
-          "season_won": 48,
-          "season_lost": 1
+          "rating": 0,
+          "season_played": 0,
+          "season_won": 0
         },
         "blitz": {
-          "rating": 1691,
-          "season_played": 48,
-          "season_won": 21,
-          "season_lost": 27
+          "rating": 0,
+          "season_played": 0,
+          "season_won": 0
         }
       }
     },
@@ -145,12 +49,11 @@
       "class": "Druid",
       "spec": "Feral",
       "level": 90,
-      "item_level": 234,
-      "equipped_item_level": 234,
-      "achievement_points": 21245,
+      "item_level": 255,
+      "equipped_item_level": 255,
+      "achievement_points": 21310,
       "faction": "Alliance",
-      "realm": "Sylvanas",
-      "media_url": "https://render.worldofwarcraft.com/eu/character/sylvanas/205/265676749-avatar.jpg"
+      "realm": "Sylvanas"
     }
   ]
 }
