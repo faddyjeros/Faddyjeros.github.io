@@ -1,5 +1,515 @@
 [
   {
+    "date": "2019-11-25",
+    "market_value_eur": 3779.01,
+    "net_worth_eur": 3779.01
+  },
+  {
+    "date": "2019-12-01",
+    "market_value_eur": 3782.5,
+    "net_worth_eur": 3782.5
+  },
+  {
+    "date": "2020-01-01",
+    "market_value_eur": 3787.63,
+    "net_worth_eur": 3787.63
+  },
+  {
+    "date": "2020-01-14",
+    "market_value_eur": 23690.0,
+    "net_worth_eur": 23690.0
+  },
+  {
+    "date": "2020-01-22",
+    "market_value_eur": 23968.98,
+    "net_worth_eur": 23968.98
+  },
+  {
+    "date": "2020-02-01",
+    "market_value_eur": 23165.2,
+    "net_worth_eur": 23165.2
+  },
+  {
+    "date": "2020-02-05",
+    "market_value_eur": 67538.06,
+    "net_worth_eur": 67538.06
+  },
+  {
+    "date": "2020-03-01",
+    "market_value_eur": 60525.45,
+    "net_worth_eur": 60525.45
+  },
+  {
+    "date": "2020-03-31",
+    "market_value_eur": 142248.0,
+    "net_worth_eur": 142248.0
+  },
+  {
+    "date": "2020-04-01",
+    "market_value_eur": 136168.27,
+    "net_worth_eur": 136168.27
+  },
+  {
+    "date": "2020-05-01",
+    "market_value_eur": 150500.6,
+    "net_worth_eur": 150500.6
+  },
+  {
+    "date": "2020-06-01",
+    "market_value_eur": 165038.35,
+    "net_worth_eur": 165038.35
+  },
+  {
+    "date": "2020-07-01",
+    "market_value_eur": 166399.19,
+    "net_worth_eur": 166399.19
+  },
+  {
+    "date": "2020-07-13",
+    "market_value_eur": 519489.96,
+    "net_worth_eur": 519489.96
+  },
+  {
+    "date": "2020-08-01",
+    "market_value_eur": 499249.59,
+    "net_worth_eur": 499249.59
+  },
+  {
+    "date": "2020-09-01",
+    "market_value_eur": 523634.51,
+    "net_worth_eur": 523634.51
+  },
+  {
+    "date": "2020-10-01",
+    "market_value_eur": 527576.78,
+    "net_worth_eur": 527576.78
+  },
+  {
+    "date": "2020-11-01",
+    "market_value_eur": 506686.75,
+    "net_worth_eur": 506686.75
+  },
+  {
+    "date": "2020-11-27",
+    "market_value_eur": 559226.05,
+    "net_worth_eur": 559226.05
+  },
+  {
+    "date": "2020-12-01",
+    "market_value_eur": 558735.26,
+    "net_worth_eur": 558735.26
+  },
+  {
+    "date": "2021-01-01",
+    "market_value_eur": 561635.39,
+    "net_worth_eur": 561635.39
+  },
+  {
+    "date": "2021-01-28",
+    "market_value_eur": 381428.88,
+    "net_worth_eur": 381428.88
+  },
+  {
+    "date": "2021-01-29",
+    "market_value_eur": 373082.42,
+    "net_worth_eur": 373082.42
+  },
+  {
+    "date": "2021-02-01",
+    "market_value_eur": 376747.26,
+    "net_worth_eur": 376747.26
+  },
+  {
+    "date": "2021-03-01",
+    "market_value_eur": 382020.89,
+    "net_worth_eur": 382020.89
+  },
+  {
+    "date": "2021-04-01",
+    "market_value_eur": 393013.18,
+    "net_worth_eur": 393013.18
+  },
+  {
+    "date": "2021-05-01",
+    "market_value_eur": 408243.73,
+    "net_worth_eur": 408243.73
+  },
+  {
+    "date": "2021-06-01",
+    "market_value_eur": 405096.98,
+    "net_worth_eur": 405096.98
+  },
+  {
+    "date": "2021-07-01",
+    "market_value_eur": 421032.4,
+    "net_worth_eur": 421032.4
+  },
+  {
+    "date": "2021-07-19",
+    "market_value_eur": 417861.9,
+    "net_worth_eur": 417861.9
+  },
+  {
+    "date": "2021-08-01",
+    "market_value_eur": 425714.46,
+    "net_worth_eur": 425714.46
+  },
+  {
+    "date": "2021-08-16",
+    "market_value_eur": 440327.36,
+    "net_worth_eur": 440327.36
+  },
+  {
+    "date": "2021-08-19",
+    "market_value_eur": 444920.74,
+    "net_worth_eur": 444920.74
+  },
+  {
+    "date": "2021-09-01",
+    "market_value_eur": 454814.63,
+    "net_worth_eur": 454814.63
+  },
+  {
+    "date": "2021-09-23",
+    "market_value_eur": 456343.67,
+    "net_worth_eur": 456343.67
+  },
+  {
+    "date": "2021-10-01",
+    "market_value_eur": 447216.76,
+    "net_worth_eur": 447216.76
+  },
+  {
+    "date": "2021-11-01",
+    "market_value_eur": 470882.65,
+    "net_worth_eur": 470882.65
+  },
+  {
+    "date": "2021-12-01",
+    "market_value_eur": 479486.88,
+    "net_worth_eur": 479486.88
+  },
+  {
+    "date": "2022-01-01",
+    "market_value_eur": 483803.44,
+    "net_worth_eur": 483803.44
+  },
+  {
+    "date": "2022-01-21",
+    "market_value_eur": 21679.88,
+    "net_worth_eur": 21679.88
+  },
+  {
+    "date": "2022-02-01",
+    "market_value_eur": 22043.64,
+    "net_worth_eur": 22043.64
+  },
+  {
+    "date": "2022-03-01",
+    "market_value_eur": 21390.57,
+    "net_worth_eur": 21390.57
+  },
+  {
+    "date": "2022-04-01",
+    "market_value_eur": 22713.74,
+    "net_worth_eur": 22713.74
+  },
+  {
+    "date": "2022-05-01",
+    "market_value_eur": 22118.68,
+    "net_worth_eur": 22118.68
+  },
+  {
+    "date": "2022-06-01",
+    "market_value_eur": 21243.6,
+    "net_worth_eur": 21243.6
+  },
+  {
+    "date": "2022-07-01",
+    "market_value_eur": 20162.08,
+    "net_worth_eur": 20162.08
+  },
+  {
+    "date": "2022-07-22",
+    "market_value_eur": 22860.05,
+    "net_worth_eur": 22860.05
+  },
+  {
+    "date": "2022-08-01",
+    "market_value_eur": 23567.84,
+    "net_worth_eur": 23567.84
+  },
+  {
+    "date": "2022-09-01",
+    "market_value_eur": 22836.32,
+    "net_worth_eur": 22836.32
+  },
+  {
+    "date": "2022-10-01",
+    "market_value_eur": 21680.17,
+    "net_worth_eur": 21680.17
+  },
+  {
+    "date": "2022-11-01",
+    "market_value_eur": 22786.95,
+    "net_worth_eur": 22786.95
+  },
+  {
+    "date": "2022-12-01",
+    "market_value_eur": 22461.86,
+    "net_worth_eur": 22461.86
+  },
+  {
+    "date": "2023-01-01",
+    "market_value_eur": 20398.6,
+    "net_worth_eur": 20398.6
+  },
+  {
+    "date": "2023-02-01",
+    "market_value_eur": 21404.12,
+    "net_worth_eur": 21404.12
+  },
+  {
+    "date": "2023-03-01",
+    "market_value_eur": 21164.26,
+    "net_worth_eur": 21164.26
+  },
+  {
+    "date": "2023-04-01",
+    "market_value_eur": 21677.89,
+    "net_worth_eur": 21677.89
+  },
+  {
+    "date": "2023-05-01",
+    "market_value_eur": 21510.45,
+    "net_worth_eur": 21510.45
+  },
+  {
+    "date": "2023-06-01",
+    "market_value_eur": 22573.11,
+    "net_worth_eur": 22573.11
+  },
+  {
+    "date": "2023-07-01",
+    "market_value_eur": 23533.81,
+    "net_worth_eur": 23533.81
+  },
+  {
+    "date": "2023-08-01",
+    "market_value_eur": 23992.86,
+    "net_worth_eur": 23992.86
+  },
+  {
+    "date": "2023-09-01",
+    "market_value_eur": 23962.56,
+    "net_worth_eur": 23962.56
+  },
+  {
+    "date": "2023-10-01",
+    "market_value_eur": 23334.49,
+    "net_worth_eur": 4724.39
+  },
+  {
+    "date": "2023-11-01",
+    "market_value_eur": 22759.61,
+    "net_worth_eur": 4538.77
+  },
+  {
+    "date": "2023-12-01",
+    "market_value_eur": 24063.15,
+    "net_worth_eur": 6231.86
+  },
+  {
+    "date": "2024-01-01",
+    "market_value_eur": 24688.2,
+    "net_worth_eur": 7246.75
+  },
+  {
+    "date": "2024-02-01",
+    "market_value_eur": 25557.81,
+    "net_worth_eur": 8506.49
+  },
+  {
+    "date": "2024-02-21",
+    "market_value_eur": 38035.14,
+    "net_worth_eur": 21374.24
+  },
+  {
+    "date": "2024-03-01",
+    "market_value_eur": 39150.36,
+    "net_worth_eur": 22489.46
+  },
+  {
+    "date": "2024-03-05",
+    "market_value_eur": 41269.33,
+    "net_worth_eur": 24999.14
+  },
+  {
+    "date": "2024-04-01",
+    "market_value_eur": 42667.39,
+    "net_worth_eur": 26397.2
+  },
+  {
+    "date": "2024-04-02",
+    "market_value_eur": 46294.16,
+    "net_worth_eur": 30023.97
+  },
+  {
+    "date": "2024-05-01",
+    "market_value_eur": 45663.63,
+    "net_worth_eur": 29784.44
+  },
+  {
+    "date": "2024-05-06",
+    "market_value_eur": 46719.27,
+    "net_worth_eur": 31231.37
+  },
+  {
+    "date": "2024-05-30",
+    "market_value_eur": 48323.42,
+    "net_worth_eur": 32835.52
+  },
+  {
+    "date": "2024-06-01",
+    "market_value_eur": 47960.87,
+    "net_worth_eur": 32472.97
+  },
+  {
+    "date": "2024-07-01",
+    "market_value_eur": 50528.08,
+    "net_worth_eur": 35431.76
+  },
+  {
+    "date": "2024-08-01",
+    "market_value_eur": 50312.03,
+    "net_worth_eur": 35607.58
+  },
+  {
+    "date": "2024-09-01",
+    "market_value_eur": 50464.75,
+    "net_worth_eur": 36152.46
+  },
+  {
+    "date": "2024-10-01",
+    "market_value_eur": 51281.48,
+    "net_worth_eur": 37361.64
+  },
+  {
+    "date": "2024-11-01",
+    "market_value_eur": 52577.0,
+    "net_worth_eur": 39049.9
+  },
+  {
+    "date": "2024-12-01",
+    "market_value_eur": 56667.45,
+    "net_worth_eur": 43533.38
+  },
+  {
+    "date": "2024-12-09",
+    "market_value_eur": 152358.16,
+    "net_worth_eur": 139617.42
+  },
+  {
+    "date": "2025-01-01",
+    "market_value_eur": 150812.03,
+    "net_worth_eur": 138071.29
+  },
+  {
+    "date": "2025-02-01",
+    "market_value_eur": 156107.84,
+    "net_worth_eur": 143760.72
+  },
+  {
+    "date": "2025-02-10",
+    "market_value_eur": 140895.53,
+    "net_worth_eur": 128942.32
+  },
+  {
+    "date": "2025-03-01",
+    "market_value_eur": 136659.24,
+    "net_worth_eur": 124706.03
+  },
+  {
+    "date": "2025-04-01",
+    "market_value_eur": 127258.45,
+    "net_worth_eur": 115699.44
+  },
+  {
+    "date": "2025-05-01",
+    "market_value_eur": 120650.13,
+    "net_worth_eur": 109485.61
+  },
+  {
+    "date": "2025-06-01",
+    "market_value_eur": 128575.19,
+    "net_worth_eur": 117805.46
+  },
+  {
+    "date": "2025-07-01",
+    "market_value_eur": 129127.18,
+    "net_worth_eur": 118752.53
+  },
+  {
+    "date": "2025-08-01",
+    "market_value_eur": 131573.52,
+    "net_worth_eur": 121594.24
+  },
+  {
+    "date": "2025-08-28",
+    "market_value_eur": 143712.64,
+    "net_worth_eur": 134129.03
+  },
+  {
+    "date": "2025-09-01",
+    "market_value_eur": 143020.59,
+    "net_worth_eur": 133436.98
+  },
+  {
+    "date": "2025-09-18",
+    "market_value_eur": 146494.94,
+    "net_worth_eur": 137307.29
+  },
+  {
+    "date": "2025-09-25",
+    "market_value_eur": 150310.57,
+    "net_worth_eur": 141122.92
+  },
+  {
+    "date": "2025-10-01",
+    "market_value_eur": 151846.61,
+    "net_worth_eur": 142658.96
+  },
+  {
+    "date": "2025-11-01",
+    "market_value_eur": 157002.58,
+    "net_worth_eur": 148211.18
+  },
+  {
+    "date": "2025-12-01",
+    "market_value_eur": 155871.88,
+    "net_worth_eur": 147477.03
+  },
+  {
+    "date": "2026-01-01",
+    "market_value_eur": 156353.08,
+    "net_worth_eur": 148355.07
+  },
+  {
+    "date": "2026-02-01",
+    "market_value_eur": 157023.99,
+    "net_worth_eur": 149423.12
+  },
+  {
+    "date": "2026-03-01",
+    "market_value_eur": 158483.8,
+    "net_worth_eur": 151280.36
+  },
+  {
+    "date": "2026-04-01",
+    "market_value_eur": 154098.71,
+    "net_worth_eur": 147293.0
+  },
+  {
     "date": "2026-04-17",
     "market_value_eur": 163105.27,
     "net_worth_eur": 156697.58
@@ -20,13 +530,8 @@
     "net_worth_eur": 156963.5
   },
   {
-    "date": "2026-04-25",
-    "market_value_eur": 163616.51,
-    "net_worth_eur": 157208.82
-  },
-  {
-    "date": "2026-04-26",
-    "market_value_eur": 163617.7,
-    "net_worth_eur": 157210.01
+    "date": "2026-04-24",
+    "market_value_eur": 163205.09,
+    "net_worth_eur": 156797.4
   }
 ]
