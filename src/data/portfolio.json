@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-01T23:29:24+00:00",
+  "last_updated": "2026-05-02T23:12:22+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -235,8 +235,8 @@
       "value_today_eur": 107253.93,
       "cost_eur_at_buy": 97218.03,
       "total_gain_eur": 10035.9,
-      "asset_gain_eur": 23058.37,
-      "fx_gain_eur": -13022.48,
+      "asset_gain_eur": 23058.39,
+      "fx_gain_eur": -13022.49,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     },
     {
