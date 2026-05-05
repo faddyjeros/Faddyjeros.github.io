@@ -4,7 +4,39 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import wowData from "@/data/wow.json";
 
-const { characters, updated_at } = wowData;
+// Loose shape — most of these fields are optional and only present on
+// some characters (e.g. only PvP characters carry pvp data, only main raiders
+// carry mythic_plus / raid_progress). The page guards each access with `&&`.
+interface WowCharacter {
+  name: string;
+  slug: string;
+  role: string;
+  focus: string;
+  class: string;
+  spec: string;
+  level: number;
+  item_level: number;
+  equipped_item_level: number;
+  achievement_points: number;
+  faction: string;
+  realm: string;
+  media_url?: string;
+  pvp?: {
+    solo_shuffle: { rating: number; season_played: number; season_won: number };
+    blitz: { rating: number; season_played: number; season_won: number };
+  };
+  mythic_plus?: {
+    rating: number;
+    best_runs: { dungeon: string; level: number; timed: boolean }[];
+  };
+  raid_progress?: {
+    raid: string;
+    modes: { difficulty: string; completed: number; total: number }[];
+  }[];
+}
+
+const characters = wowData.characters as WowCharacter[];
+const updated_at = wowData.updated_at;
 const updatedDate = new Date(updated_at).toLocaleDateString("en-GB", {
   day: "numeric",
   month: "long",
@@ -138,7 +170,8 @@ function pvpColor(rating: number): string {
                       <span class="stat-label">Blitz W/L</span>
                       <span class="stat-val">
                         {char.pvp.blitz.season_won}W/
-                        {char.pvp.blitz.season_lost}L
+                        {char.pvp.blitz.season_played -
+                          char.pvp.blitz.season_won}L
                       </span>
                     </div>
                   </div>
