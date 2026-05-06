@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-05T23:27:09.055031+00:00",
+  "updated_at": "2026-05-06T23:29:42.348187+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -11,7 +11,7 @@
       "level": 90,
       "item_level": 280,
       "equipped_item_level": 279,
-      "achievement_points": 21310,
+      "achievement_points": 21320,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
@@ -51,7 +51,7 @@
       "level": 90,
       "item_level": 255,
       "equipped_item_level": 255,
-      "achievement_points": 21310,
+      "achievement_points": 21320,
       "faction": "Alliance",
       "realm": "Sylvanas"
     }
