@@ -83,7 +83,12 @@ def get_latest_close(ticker: str) -> float:
     data = yf.Ticker(ticker).history(period="5d")
     if data.empty:
         raise RuntimeError(f"No price data for {ticker}")
-    return float(data["Close"].iloc[-1])
+    # Drop NaN rows — yfinance sometimes returns a final row with NaN close
+    # (e.g. for European tickers around market open/close transitions).
+    closes = data["Close"].dropna()
+    if closes.empty:
+        raise RuntimeError(f"All close prices NaN for {ticker}")
+    return float(closes.iloc[-1])
 
 
 def get_historical_close(ticker: str, date: pd.Timestamp) -> float:
@@ -408,15 +413,15 @@ def build_portfolio() -> dict:
             price = get_latest_close(ticker)
         except Exception as e:
             print(f"WARNING: failed to fetch {ticker}: {e}", file=sys.stderr)
-            price = last_known_prices.get(ticker)
-            if price is None:
-                print(f"WARNING: no fallback price for {ticker}; skipping", file=sys.stderr)
-                continue
-            print(f"INFO: using last known price for {ticker}: {price}", file=sys.stderr)
+            price = None
 
-        if is_bad_number(price):
-            print(f"WARNING: {ticker} returned non-numeric price; skipping", file=sys.stderr)
-            continue
+        if price is None or is_bad_number(price):
+            fallback = last_known_prices.get(ticker)
+            if fallback is None or is_bad_number(fallback):
+                print(f"WARNING: no usable fallback price for {ticker}; skipping", file=sys.stderr)
+                continue
+            print(f"INFO: using last known price for {ticker}: {fallback}", file=sys.stderr)
+            price = fallback
 
         current_prices[ticker] = price
         rate = fx_today(ccy)

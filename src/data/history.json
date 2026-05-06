@@ -1,15 +1,5 @@
 [
   {
-    "date": "2026-04-29",
-    "market_value_eur": 107614.85,
-    "net_worth_eur": 101207.16
-  },
-  {
-    "date": "2026-04-30",
-    "market_value_eur": 108274.29,
-    "net_worth_eur": 101866.6
-  },
-  {
     "date": "2026-05-01",
     "market_value_eur": 164092.26,
     "net_worth_eur": 157684.57
@@ -31,7 +21,7 @@
   },
   {
     "date": "2026-05-05",
-    "market_value_eur": 109270.14,
-    "net_worth_eur": 103260.77
+    "market_value_eur": 165376.79,
+    "net_worth_eur": 159367.42
   }
 ]
