@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-08T23:30:52.799719+00:00",
+  "updated_at": "2026-05-09T23:26:58.447881+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -9,7 +9,7 @@
       "class": "Warrior",
       "spec": "Protection",
       "level": 90,
-      "item_level": 280,
+      "item_level": 281,
       "equipped_item_level": 280,
       "achievement_points": 21320,
       "faction": "Alliance",
@@ -47,11 +47,11 @@
       "role": "Farmer",
       "focus": "achievements",
       "class": "Druid",
-      "spec": "Feral",
+      "spec": "Guardian",
       "level": 90,
-      "item_level": 255,
-      "equipped_item_level": 255,
-      "achievement_points": 21320,
+      "item_level": 263,
+      "equipped_item_level": 263,
+      "achievement_points": 21340,
       "faction": "Alliance",
       "realm": "Sylvanas"
     }
