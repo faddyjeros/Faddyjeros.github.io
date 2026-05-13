@@ -282,3 +282,11 @@ transactions:
     price: 86.95
     currency: USD
     note: Sold to deploy into GME squeeze
+
+  - date: 2026-05-12
+    action: buy
+    ticker: IWDA.AS
+    shares: 8
+    price: 119.52
+    currency: EUR
+    note: "First buy in monthly DCA plan"

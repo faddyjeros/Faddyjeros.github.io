@@ -49,3 +49,10 @@ holdings:
     name: Amundi MSCI World UCITS
     note: >
       Another world position in my PEA. I swapped to WPEA later due to lower cost basis and fees.
+
+  - ticker: IWDA.AS
+    shares: 8
+    bep: 119.52
+    currency: EUR
+    name: "iShares Core MSCI World UCITS"
+    bought: 2026-05-12
