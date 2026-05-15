@@ -58,7 +58,6 @@ jobs:
       - name: Deploy backend Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          appSourcePath: ./finance-app/backend
           containerAppName: finance-backend
           resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
           imageToDeploy: ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.TAG }}
@@ -70,7 +69,6 @@ jobs:
       - name: Deploy frontend Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          appSourcePath: ./finance-app/frontend
           containerAppName: finance-frontend
           resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
           imageToDeploy: ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.TAG }}
