@@ -4,12 +4,18 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
+    # Dynamic DNS re-resolution so nginx picks up backend restarts/scale-ups.
+    # NAMESERVER is injected by docker-entrypoint.sh from /etc/resolv.conf.
+    resolver ${NAMESERVER} valid=15s ipv6=off;
+    set $backend http://${BACKEND_HOST};
+
     location /api/ {
-        proxy_pass http://${BACKEND_HOST}/api/;
+        proxy_pass $backend/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         client_max_body_size 50M;
         proxy_read_timeout 120s;
+        proxy_connect_timeout 10s;
     }
 
     location / {
