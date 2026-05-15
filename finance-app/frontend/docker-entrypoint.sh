@@ -1,8 +1,17 @@
 #!/bin/sh
 set -e
 
-# Render nginx config (substitute BACKEND_HOST only; resolver is hardcoded)
-envsubst '${BACKEND_HOST}' \
+# Read the container's own DNS resolver (knows about internal Container Apps services)
+NAMESERVER=$(grep '^nameserver' /etc/resolv.conf | head -1 | awk '{print $2}')
+if [ -z "$NAMESERVER" ]; then
+  NAMESERVER="127.0.0.11"
+fi
+export NAMESERVER
+echo "DNS resolver: $NAMESERVER"
+echo "Backend host: $BACKEND_HOST"
+
+# Render nginx config
+envsubst '${BACKEND_HOST} ${NAMESERVER}' \
   < /etc/nginx/conf.d/default.conf.template \
   > /etc/nginx/conf.d/default.conf
 
