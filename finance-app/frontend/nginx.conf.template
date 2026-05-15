@@ -4,15 +4,15 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
-    # 168.63.129.16 is Azure's internal recursive DNS — available in all Azure VNets.
-    # Using a variable forces nginx to re-resolve the upstream on each request
-    # instead of caching the IP at startup (which breaks when backend scales from zero).
+    # 168.63.129.16 is Azure's internal recursive DNS.
+    # Variable forces re-resolution per request (avoids stale cached IPs).
     resolver 168.63.129.16 valid=15s ipv6=off;
-    set $backend http://${BACKEND_HOST};
+    set $backend https://${BACKEND_HOST};
 
     location /api/ {
         proxy_pass $backend/api/;
-        proxy_set_header Host $host;
+        proxy_ssl_verify off;
+        proxy_set_header Host ${BACKEND_HOST};
         proxy_set_header X-Real-IP $remote_addr;
         client_max_body_size 50M;
         proxy_read_timeout 120s;
