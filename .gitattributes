@@ -1,0 +1,6 @@
+# Ensure shell scripts always use LF (not CRLF) regardless of OS
+*.sh        text eol=lf
+*.sh.template text eol=lf
+Dockerfile  text eol=lf
+*.conf      text eol=lf
+*.template  text eol=lf
