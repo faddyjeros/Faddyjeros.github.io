@@ -56,26 +56,38 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy backend Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          containerAppName: finance-backend
-          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          imageToDeploy: ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.TAG }}
-          environmentVariables: |
-            DB_PATH=/data/finance.db
-            ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-            ACCOUNTING_XLSX=/data/accounting.xlsx
+        run: |
+          az containerapp registry set \
+            --name finance-backend \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --username ${{ secrets.ACR_USERNAME }} \
+            --password ${{ secrets.ACR_PASSWORD }}
+          az containerapp update \
+            --name finance-backend \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.TAG }} \
+            --set-env-vars \
+              "DB_PATH=/data/finance.db" \
+              "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" \
+              "ACCOUNTING_XLSX=/data/accounting.xlsx"
 
       - name: Deploy frontend Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          containerAppName: finance-frontend
-          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          imageToDeploy: ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.TAG }}
-          environmentVariables: |
-            BACKEND_HOST=finance-backend
-            AUTH_USER=${{ secrets.FINANCE_AUTH_USER }}
-            AUTH_PASS=${{ secrets.FINANCE_AUTH_PASS }}
+        run: |
+          az containerapp registry set \
+            --name finance-frontend \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --username ${{ secrets.ACR_USERNAME }} \
+            --password ${{ secrets.ACR_PASSWORD }}
+          az containerapp update \
+            --name finance-frontend \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.TAG }} \
+            --set-env-vars \
+              "BACKEND_HOST=finance-backend" \
+              "AUTH_USER=${{ secrets.FINANCE_AUTH_USER }}" \
+              "AUTH_PASS=${{ secrets.FINANCE_AUTH_PASS }}"
 
       - name: Health check
         run: |
