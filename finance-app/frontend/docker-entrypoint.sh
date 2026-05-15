@@ -25,4 +25,9 @@ else
   sed -i '/auth_basic_user_file/d' /etc/nginx/conf.d/default.conf
 fi
 
+# Write resolv.conf to a debug file (auth-protected by nginx)
+echo "NAMESERVER=$NAMESERVER" > /usr/share/nginx/html/debug-dns.txt
+echo "BACKEND_HOST=$BACKEND_HOST" >> /usr/share/nginx/html/debug-dns.txt
+cat /etc/resolv.conf >> /usr/share/nginx/html/debug-dns.txt
+
 exec nginx -g "daemon off;"
