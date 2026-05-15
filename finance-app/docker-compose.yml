@@ -20,7 +20,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - BACKEND_HOST=backend
+      - BACKEND_HOST=backend:8000
       - AUTH_USER=${AUTH_USER:-}
       - AUTH_PASS=${AUTH_PASS:-}
     depends_on:

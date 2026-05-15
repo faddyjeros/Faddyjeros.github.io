@@ -92,10 +92,10 @@ jobs:
       - name: Health check
         run: |
           echo "Waiting for deploy to settle..."
-          sleep 15
+          sleep 20
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -u "${{ secrets.FINANCE_AUTH_USER }}:${{ secrets.FINANCE_AUTH_PASS }}" \
-            "https://finance.faddyjeros.com" || echo "000")
+            "https://finance-frontend.purplepebble-68555cc9.northeurope.azurecontainerapps.io" || echo "000")
           echo "Health check: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "WARNING: health check returned $STATUS — app may still be starting"
