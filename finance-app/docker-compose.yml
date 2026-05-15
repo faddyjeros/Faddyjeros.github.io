@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/data/finance.db
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - ACCOUNTING_XLSX=${ACCOUNTING_XLSX:-}
+    volumes:
+      - finance_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - BACKEND_HOST=backend
+      - AUTH_USER=${AUTH_USER:-}
+      - AUTH_PASS=${AUTH_PASS:-}
+    depends_on:
+      - backend
+
+volumes:
+  finance_data:
