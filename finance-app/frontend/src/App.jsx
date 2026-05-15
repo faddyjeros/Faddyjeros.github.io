@@ -5,9 +5,11 @@ import AlertsPage from "./pages/AlertsPage";
 import BudgetsPage from "./pages/BudgetsPage";
 import WealthPage from "./pages/WealthPage";
 import SalaryPage from "./pages/SalaryPage";
+import AnalystPage from "./pages/AnalystPage";
 import DropZone from "./components/DropZone";
 
 const NAV = [
+  { to: "/analyst", label: "Analyst" },
   { to: "/", label: "Dashboard" },
   { to: "/transactions", label: "Transactions" },
   { to: "/wealth", label: "Wealth" },
@@ -29,7 +31,13 @@ export default function App() {
                 to={to}
                 end={to === "/"}
                 className={({ isActive }) =>
-                  isActive ? "text-brand-500 font-semibold" : "text-gray-400 hover:text-gray-100 transition-colors"
+                  to === "/analyst"
+                    ? isActive
+                      ? "text-amber-400 font-semibold"
+                      : "text-amber-500/70 hover:text-amber-400 transition-colors"
+                    : isActive
+                      ? "text-brand-500 font-semibold"
+                      : "text-gray-400 hover:text-gray-100 transition-colors"
                 }
               >
                 {label}
@@ -55,6 +63,7 @@ export default function App() {
         <main className="flex-1 px-6 py-6 max-w-7xl mx-auto w-full">
           <Routes>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/analyst" element={<AnalystPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
             <Route path="/wealth" element={<WealthPage />} />
             <Route path="/salary" element={<SalaryPage />} />

@@ -96,4 +96,13 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ monthly_target }),
     }),
+
+  // Analyst
+  getAnalystOverview: () => req("/analyst/overview"),
+  streamAnalystChat: (messages) =>
+    fetch(`${BASE}/analyst/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+    }),
 };
