@@ -85,7 +85,7 @@ jobs:
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.TAG }} \
             --set-env-vars \
-              "BACKEND_HOST=finance-backend" \
+              "BACKEND_HOST=finance-backend.internal.purplepebble-68555cc9.northeurope.azurecontainerapps.io" \
               "AUTH_USER=${{ secrets.FINANCE_AUTH_USER }}" \
               "AUTH_PASS=${{ secrets.FINANCE_AUTH_PASS }}"
 
