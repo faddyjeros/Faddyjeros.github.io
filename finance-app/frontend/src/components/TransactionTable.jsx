@@ -72,16 +72,16 @@ export default function TransactionTable({ transactions, categories, onUpdated }
               Contains &ldquo;{bulkPrompt.keyword}&rdquo; ({bulkPrompt.keywordCount} total)
             </button>
           )}
-          <button onClick={() => setBulkPrompt(null)} className="px-3 py-1.5 text-gray-500 hover:text-gray-300 text-xs">
+          <button onClick={() => setBulkPrompt(null)} className="px-3 py-1.5 text-zinc-500 hover:text-zinc-300 text-xs">
             Skip
           </button>
         </div>
       </div>
     )}
-    <div className="overflow-x-auto rounded-lg border border-gray-800">
+    <div className="overflow-x-auto rounded-xl border border-zinc-700">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-gray-900 text-gray-400 text-left">
+          <tr className="bg-zinc-800 text-zinc-400 text-left">
             <th className="px-3 py-2 font-medium">Date</th>
             <th className="px-3 py-2 font-medium">Bank</th>
             <th className="px-3 py-2 font-medium">Description</th>
@@ -96,18 +96,18 @@ export default function TransactionTable({ transactions, categories, onUpdated }
             return (
               <tr
                 key={tx.id}
-                className={`border-t border-gray-800 hover:bg-gray-900 transition-colors ${
+                className={`border-t border-zinc-700 hover:bg-zinc-800/50 transition-colors ${
                   tx.needs_annotation ? "bg-yellow-950/30" : ""
                 }`}
                 onClick={() => setEditing(isEditing ? null : tx.id)}
               >
-                <td className="px-3 py-2 text-gray-400 whitespace-nowrap">{tx.date}</td>
+                <td className="px-3 py-2 text-zinc-400 whitespace-nowrap">{tx.date}</td>
                 <td className="px-3 py-2">
-                  <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${BANK_COLORS[tx.bank] || "bg-gray-800 text-gray-300"}`}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${BANK_COLORS[tx.bank] || "bg-zinc-700 text-zinc-300"}`}>
                     {tx.bank}
                   </span>
                 </td>
-                <td className={`px-3 py-2 text-gray-200 ${isEditing ? "whitespace-normal break-words max-w-md" : "max-w-xs truncate"}`} title={isEditing ? undefined : tx.description}>
+                <td className={`px-3 py-2 text-zinc-200 ${isEditing ? "whitespace-normal break-words max-w-md" : "max-w-xs truncate"}`} title={isEditing ? undefined : tx.description}>
                   {tx.needs_annotation && (
                     <span className="mr-1 text-yellow-400" title="Needs annotation">⚠</span>
                   )}
@@ -116,7 +116,7 @@ export default function TransactionTable({ transactions, categories, onUpdated }
                 <td className="px-3 py-2">
                   {isEditing ? (
                     <select
-                      className="bg-gray-800 border border-gray-600 rounded px-2 py-0.5 text-xs"
+                      className="bg-zinc-800 border border-zinc-600 rounded px-2 py-0.5 text-xs"
                       defaultValue={tx.category || ""}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => save(tx.id, { category: e.target.value }, tx.description)}
@@ -127,7 +127,7 @@ export default function TransactionTable({ transactions, categories, onUpdated }
                       ))}
                     </select>
                   ) : (
-                    <span className="text-xs text-gray-400">{tx.category || "—"}</span>
+                    <span className="text-xs text-zinc-400">{tx.category || "—"}</span>
                   )}
                 </td>
                 <td className={`px-3 py-2 text-right font-mono font-medium whitespace-nowrap ${tx.amount < 0 ? "text-red-400" : "text-green-400"}`}>
@@ -136,14 +136,14 @@ export default function TransactionTable({ transactions, categories, onUpdated }
                 <td className="px-3 py-2">
                   {isEditing ? (
                     <input
-                      className="bg-gray-800 border border-gray-600 rounded px-2 py-0.5 text-xs w-36"
+                      className="bg-zinc-800 border border-zinc-600 rounded px-2 py-0.5 text-xs w-36"
                       defaultValue={tx.notes || ""}
                       placeholder="Add note..."
                       onClick={(e) => e.stopPropagation()}
                       onBlur={(e) => save(tx.id, { notes: e.target.value, needs_annotation: false }, null)}
                     />
                   ) : (
-                    <span className="text-xs text-gray-500">{tx.notes || ""}</span>
+                    <span className="text-xs text-zinc-500">{tx.notes || ""}</span>
                   )}
                 </td>
               </tr>

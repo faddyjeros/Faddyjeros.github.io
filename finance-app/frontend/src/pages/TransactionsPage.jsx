@@ -18,13 +18,13 @@ function AccountBar() {
   return (
     <div className="grid grid-cols-4 gap-3">
       {accounts.map((acc) => {
-        const meta = ACCOUNT_LABELS[acc.account] ?? { label: acc.account, color: "text-gray-300" };
+        const meta = ACCOUNT_LABELS[acc.account] ?? { label: acc.account, color: "text-zinc-300" };
         return (
-          <div key={acc.account} className="bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
-            <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">{meta.label}</p>
+          <div key={acc.account} className="bg-zinc-800 rounded-xl px-4 py-3">
+            <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{meta.label}</p>
             <p className={`text-lg font-bold font-mono ${meta.color}`}>{fmt(acc.amount_local)}</p>
             {acc.amount_eur !== acc.amount_local && (
-              <p className="text-xs text-gray-600 mt-0.5">≈ €{fmt(acc.amount_eur)}</p>
+              <p className="text-xs text-zinc-500 mt-0.5">≈ €{fmt(acc.amount_eur)}</p>
             )}
           </div>
         );
@@ -92,12 +92,12 @@ export default function TransactionsPage() {
           placeholder="Search description..."
           value={filters.search}
           onChange={(e) => setFilter("search", e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm w-56"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm w-56"
         />
         <select
           value={filters.bank}
           onChange={(e) => setFilter("bank", e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
         >
           <option value="">All banks</option>
           {banks.map((b) => <option key={b} value={b}>{b}</option>)}
@@ -105,7 +105,7 @@ export default function TransactionsPage() {
         <select
           value={filters.category}
           onChange={(e) => setFilter("category", e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
         >
           <option value="">All categories</option>
           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -114,22 +114,22 @@ export default function TransactionsPage() {
           type="date"
           value={filters.date_from}
           onChange={(e) => setFilter("date_from", e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
         />
-        <span className="text-gray-600">→</span>
+        <span className="text-zinc-500">→</span>
         <input
           type="date"
           value={filters.date_to}
           onChange={(e) => setFilter("date_to", e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
         />
-        <span className="text-xs text-gray-500 ml-auto">{transactions.length} transactions</span>
+        <span className="text-xs text-zinc-500 ml-auto">{transactions.length} transactions</span>
 
         <button
           onClick={runAICategorize}
           disabled={aiState === "running"}
           title="Send all 'Other' transactions to Claude for automatic categorization"
-          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-purple-900 hover:bg-purple-800 disabled:opacity-50 text-purple-200 transition-colors shrink-0"
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-50 text-amber-400 transition-colors shrink-0"
         >
           {aiState === "running" ? (
             <><span className="animate-pulse">✦</span> Categorizing...</>
@@ -146,7 +146,7 @@ export default function TransactionsPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-zinc-500 text-sm">Loading...</p>
       ) : (
         <TransactionTable
           transactions={transactions}

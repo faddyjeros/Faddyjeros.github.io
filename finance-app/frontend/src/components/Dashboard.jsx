@@ -127,5 +127,5 @@ export function SpendingByBank({ data }) {
 }
 
 function Empty() {
-  return <p className="text-gray-600 text-sm text-center py-6">No data</p>;
+  return <p className="text-zinc-500 text-sm text-center py-6">No data</p>;
 }

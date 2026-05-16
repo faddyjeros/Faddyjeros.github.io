@@ -33,3 +33,12 @@ public/pagefind
 *Transactions*.csv
 *Avis-d-op*.pdf
 *Personal_Accounting*
+.gstack/
+
+# Python
+__pycache__/
+*.pyc
+
+# Claude Code
+.claude/settings.local.json
+.claude/launch.json

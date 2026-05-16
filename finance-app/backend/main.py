@@ -1,4 +1,5 @@
 import re
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -7,9 +8,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import MonthlyBudget, SessionLocal, Transaction, create_tables
-from routers import alerts, ai_advice, budget_targets, budgets, dashboard, ingest, transactions, wealth
+from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, ingest, transactions, wealth
+from services.market_data import start_background_refresh, stop_background_refresh
 
-app = FastAPI(title="Finance Tracker")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    _migrate_categories()
+    _seed_budget_targets()
+    await start_background_refresh()
+    yield
+    await stop_background_refresh()
+
+
+app = FastAPI(title="Finance Tracker", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +39,7 @@ app.include_router(budgets.router, prefix="/api/budgets", tags=["budgets"])
 app.include_router(ai_advice.router, prefix="/api/ai", tags=["ai"])
 app.include_router(budget_targets.router, prefix="/api/budget-targets", tags=["budget-targets"])
 app.include_router(wealth.router, prefix="/api/wealth", tags=["wealth"])
+app.include_router(analyst.router, prefix="/api/analyst", tags=["analyst"])
 
 
 def _migrate_categories():
@@ -94,13 +108,6 @@ def _seed_budget_targets():
         db.commit()
     finally:
         db.close()
-
-
-@app.on_event("startup")
-def startup():
-    create_tables()
-    _migrate_categories()
-    _seed_budget_targets()
 
 
 @app.get("/api/health")

@@ -43,8 +43,8 @@ export default function DropZone() {
         {...getRootProps()}
         className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed cursor-pointer text-sm transition-colors ${
           isDragActive
-            ? "border-brand-500 bg-brand-50/10 text-brand-500"
-            : "border-gray-600 text-gray-400 hover:border-gray-400 hover:text-gray-200"
+            ? "border-amber-500 bg-amber-500/10 text-amber-500"
+            : "border-zinc-600 text-zinc-400 hover:border-zinc-400 hover:text-zinc-200"
         }`}
       >
         <input {...getInputProps()} />
@@ -61,12 +61,12 @@ export default function DropZone() {
       {history.length > 0 && (
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors"
+          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors"
         >
           <span className={`w-1.5 h-1.5 rounded-full ${history[0].ok ? "bg-green-400" : "bg-red-400"}`} />
           {history.length} import{history.length > 1 ? "s" : ""}
           {totalNew > 0 && <span className="text-green-400 font-semibold">· +{totalNew} new</span>}
-          <span className="text-gray-600">{open ? "▲" : "▼"}</span>
+          <span className="text-zinc-500">{open ? "▲" : "▼"}</span>
         </button>
       )}
 
@@ -74,7 +74,7 @@ export default function DropZone() {
       {history.length > 0 && (
         <button
           onClick={() => { setHistory([]); setOpen(false); }}
-          className="text-xs text-gray-700 hover:text-gray-400 transition-colors"
+          className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
         >
           Clear
         </button>
@@ -82,33 +82,33 @@ export default function DropZone() {
 
       {/* History panel — renders below via a portal-like wrapper in App, but inline works fine */}
       {open && history.length > 0 && (
-        <div className="w-full mt-1 bg-gray-950 border border-gray-800 rounded-xl overflow-hidden">
+        <div className="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-xl overflow-hidden">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-800 text-gray-600">
+              <tr className="border-b border-zinc-700 text-zinc-500">
                 <th className="px-3 py-1.5 text-left font-medium">Time</th>
                 <th className="px-3 py-1.5 text-left font-medium">Bank</th>
                 <th className="px-3 py-1.5 text-left font-medium">File</th>
                 <th className="px-3 py-1.5 text-right font-medium text-green-600">New</th>
-                <th className="px-3 py-1.5 text-right font-medium text-gray-600">Dupes</th>
+                <th className="px-3 py-1.5 text-right font-medium text-zinc-500">Dupes</th>
                 <th className="px-3 py-1.5 text-left font-medium">Notes</th>
               </tr>
             </thead>
             <tbody>
               {history.map((r, i) => (
-                <tr key={i} className="border-b border-gray-800/50 last:border-0">
-                  <td className="px-3 py-1.5 text-gray-600 font-mono">{r.ts}</td>
+                <tr key={i} className="border-b border-zinc-700/50 last:border-0">
+                  <td className="px-3 py-1.5 text-zinc-500 font-mono">{r.ts}</td>
                   <td className="px-3 py-1.5 font-semibold" style={{ color: BANK_COLOR[r.bank] ?? "#9ca3af" }}>
                     {r.ok ? r.bank : "—"}
                   </td>
-                  <td className="px-3 py-1.5 text-gray-500 max-w-48 truncate">{r.filename}</td>
+                  <td className="px-3 py-1.5 text-zinc-500 max-w-48 truncate">{r.filename}</td>
                   <td className="px-3 py-1.5 text-right font-mono font-semibold text-green-400">
                     {r.ok ? `+${r.new}` : <span className="text-red-400">error</span>}
                   </td>
-                  <td className="px-3 py-1.5 text-right font-mono text-gray-600">
+                  <td className="px-3 py-1.5 text-right font-mono text-zinc-500">
                     {r.ok ? r.duplicates : "—"}
                   </td>
-                  <td className="px-3 py-1.5 text-gray-500">
+                  <td className="px-3 py-1.5 text-zinc-500">
                     {!r.ok && r.error}
                     {r.ok && r.needs_annotation > 0 && `${r.needs_annotation} need annotation`}
                     {r.ok && r.errors?.length > 0 && `⚠ ${r.errors.slice(0, 2).join(" | ")}`}

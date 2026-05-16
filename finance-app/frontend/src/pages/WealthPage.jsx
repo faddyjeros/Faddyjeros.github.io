@@ -45,7 +45,7 @@ export default function WealthPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-gray-500 text-sm p-6">Loading wealth data…</p>;
+  if (loading) return <p className="text-zinc-500 text-sm p-6">Loading wealth data…</p>;
   if (error) return <p className="text-red-400 text-sm p-6">Could not load accounting file: {error}</p>;
 
   const latest = networth[networth.length - 1];
@@ -70,14 +70,14 @@ export default function WealthPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-gray-200">Net Worth & Wealth</h2>
+      <h2 className="text-lg font-semibold text-zinc-100">Net Worth & Wealth</h2>
 
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-4">
         <WKpi label="Net Worth" value={`€${fmtK(latest?.value ?? 0)}`} color="text-green-400"
           sub={delta != null ? `${delta >= 0 ? "+" : ""}€${fmtK(Math.abs(delta))} since last` : null}
           subColor={delta >= 0 ? "text-green-500" : "text-red-400"} />
-        <WKpi label="Investable Assets" value={`€${fmtK(investableTotal)}`} color="text-brand-400"
+        <WKpi label="Investable Assets" value={`€${fmtK(investableTotal)}`} color="text-amber-400"
           sub="Index funds + stocks" />
         <WKpi label="Loan Remaining" value={`€${fmtK(loanRemaining)}`} color="text-red-400"
           sub="Due Sep 2027" />
@@ -86,9 +86,9 @@ export default function WealthPage() {
       </div>
 
       {/* Net worth timeline */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-1">Net Worth Timeline</h3>
-        <p className="text-xs text-gray-600 mb-4">Excluding Boudou SCI · Pensions excluded from Feb 2026</p>
+      <div className="bg-zinc-800 rounded-xl p-4">
+        <h3 className="text-sm font-semibold text-zinc-100 mb-1">Net Worth Timeline</h3>
+        <p className="text-xs text-zinc-500 mb-4">Excluding Boudou SCI · Pensions excluded from Feb 2026</p>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={networth} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
@@ -117,58 +117,58 @@ export default function WealthPage() {
       <div className="grid grid-cols-2 gap-6">
 
         {/* Portfolio */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-4">Portfolio</h3>
+        <div className="bg-zinc-800 rounded-xl p-4">
+          <h3 className="text-sm font-semibold text-zinc-100 mb-4">Portfolio</h3>
           <div className="space-y-1 mb-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Live positions</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide">Live positions</p>
             {portfolio?.dynamic.map((h) => (
-              <div key={h.ticker} className="flex items-center justify-between py-1.5 border-b border-gray-800">
+              <div key={h.ticker} className="flex items-center justify-between py-1.5 border-b border-zinc-700">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-semibold w-14"
                     style={{ color: TYPE_COLORS[h.type] ?? "#9ca3af" }}>{h.ticker}</span>
-                  <span className="text-xs text-gray-500">{h.volume} × €{fmt(h.price)}</span>
+                  <span className="text-xs text-zinc-500">{h.volume} × €{fmt(h.price)}</span>
                 </div>
-                <span className="text-sm font-semibold text-gray-200">€{fmt(h.value_eur)}</span>
+                <span className="text-sm font-semibold text-zinc-200">€{fmt(h.value_eur)}</span>
               </div>
             ))}
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mt-3 mb-1">Other holdings</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide mt-3 mb-1">Other holdings</p>
             {portfolio?.flat.map((h) => (
-              <div key={h.name} className="flex items-center justify-between py-1 border-b border-gray-800">
+              <div key={h.name} className="flex items-center justify-between py-1 border-b border-zinc-700">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0"
                     style={{ background: TYPE_COLORS[h.type] ?? "#6b7280" }} />
-                  <span className="text-xs text-gray-400">{h.name}</span>
+                  <span className="text-xs text-zinc-400">{h.name}</span>
                 </div>
-                <span className={`text-sm font-semibold ${h.value_eur < 0 ? "text-red-400" : "text-gray-200"}`}>
+                <span className={`text-sm font-semibold ${h.value_eur < 0 ? "text-red-400" : "text-zinc-200"}`}>
                   {h.value_eur < 0 ? "-" : ""}€{fmt(Math.abs(h.value_eur))}
                 </span>
               </div>
             ))}
           </div>
-          <div className="flex justify-between pt-3 mt-2 border-t border-gray-700">
-            <span className="text-sm text-gray-400">Total (excl. Boudou)</span>
+          <div className="flex justify-between pt-3 mt-2 border-t border-zinc-700">
+            <span className="text-sm text-zinc-400">Total (excl. Boudou)</span>
             <span className="text-sm font-bold text-green-400">€{fmt(portfolio?.total_eur ?? 0)}</span>
           </div>
         </div>
 
         {/* Loan */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-1">Student Loan</h3>
-          <p className="text-xs text-gray-600 mb-3">Monthly repayment schedule · matures Aug 2027</p>
+        <div className="bg-zinc-800 rounded-xl p-4">
+          <h3 className="text-sm font-semibold text-zinc-100 mb-1">Student Loan</h3>
+          <p className="text-xs text-zinc-500 mb-3">Monthly repayment schedule · matures Aug 2027</p>
 
           {/* Progress bar */}
           <div className="mb-4">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="flex justify-between text-xs text-zinc-500 mb-1">
               <span>€{fmt(loan?.summary.capital_paid)} paid</span>
               <span>€{fmt(loan?.summary.capital_remaining)} left</span>
             </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
               <div className="h-full bg-green-500 rounded-full transition-all"
                 style={{ width: `${((loan?.summary.capital_paid ?? 0) / 19000) * 100}%` }} />
             </div>
-            <div className="flex justify-between text-xs text-gray-600 mt-1">
+            <div className="flex justify-between text-xs text-zinc-500 mt-1">
               <span>Aug 2021</span>
               <span className="text-green-500 font-semibold">
                 {Math.round(((loan?.summary.capital_paid ?? 0) / 19000) * 100)}% repaid
@@ -197,7 +197,7 @@ export default function WealthPage() {
             </ComposedChart>
           </ResponsiveContainer>
 
-          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-800 text-xs text-gray-500">
+          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-zinc-700 text-xs text-zinc-500">
             <span>Interest paid: €{fmt(loan?.summary.interest_paid)}</span>
             <span className="text-right">Interest left: €{fmt(loan?.summary.interest_remaining)}</span>
           </div>
@@ -209,10 +209,10 @@ export default function WealthPage() {
 
 function WKpi({ label, value, color, sub, subColor }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">{label}</p>
+    <div className="bg-zinc-800 rounded-xl p-4">
+      <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{label}</p>
       <p className={`text-2xl font-bold font-mono ${color}`}>{value}</p>
-      {sub && <p className={`text-xs mt-1 ${subColor ?? "text-gray-600"}`}>{sub}</p>}
+      {sub && <p className={`text-xs mt-1 ${subColor ?? "text-zinc-500"}`}>{sub}</p>}
     </div>
   );
 }
@@ -221,10 +221,10 @@ function CustomNWTooltip({ active, payload, label, data }) {
   if (!active || !payload?.length) return null;
   const point = data?.find((d) => d.date === label);
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 text-xs">
-      <p className="text-gray-400 mb-1">{label}</p>
+    <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-xs">
+      <p className="text-zinc-400 mb-1">{label}</p>
       <p className="text-green-400 font-semibold text-sm">€{fmt(payload[0]?.value)}</p>
-      {point?.comment && <p className="text-gray-500 mt-1 max-w-48">{point.comment}</p>}
+      {point?.comment && <p className="text-zinc-500 mt-1 max-w-48">{point.comment}</p>}
     </div>
   );
 }
