@@ -227,11 +227,20 @@ async def get_overview(db: Session = Depends(get_db)):
     if tickers:
         set_portfolio_tickers(tickers)
 
+    import asyncio
+
     live_prices = {}
-    for ticker in tickers:
-        quote = await get_quote(ticker)
-        if quote and "error" not in quote:
-            live_prices[ticker] = quote
+    if tickers:
+        async def _safe_quote(t):
+            try:
+                return t, await asyncio.wait_for(get_quote(t), timeout=8)
+            except Exception:
+                return t, None
+
+        results = await asyncio.gather(*[_safe_quote(t) for t in tickers])
+        for t, quote in results:
+            if quote and "error" not in quote:
+                live_prices[t] = quote
 
     for h in holdings.get("dynamic", []):
         ticker = h.get("ticker")
