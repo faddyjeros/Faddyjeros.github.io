@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-15T23:30:05+00:00",
+  "last_updated": "2026-05-16T23:31:09+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -22,15 +22,15 @@
       "name": "iShares Core S&P 500 UCITS (Acc)",
       "shares": 48.0,
       "currency": "EUR",
-      "price": 691.2,
+      "price": 687.43,
       "bep": 471.59,
-      "value_native": 33177.6,
-      "value_eur": 33177.6,
+      "value_native": 32996.64,
+      "value_eur": 32996.64,
       "cost_eur": 22636.32,
-      "gain_eur": 10541.28,
-      "gain_pct": 46.57,
+      "gain_eur": 10360.32,
+      "gain_pct": 45.77,
       "bought": null,
-      "allocation_pct": 19.38
+      "allocation_pct": 19.32
     },
     {
       "ticker": "WPEA.PA",
@@ -45,47 +45,47 @@
       "gain_eur": 13699.74,
       "gain_pct": 14.09,
       "bought": null,
-      "allocation_pct": 64.78
+      "allocation_pct": 64.93
     },
     {
       "ticker": "CW8.PA",
       "name": "Amundi MSCI World UCITS",
       "shares": 38.0,
       "currency": "EUR",
-      "price": 664.5435,
+      "price": 659.112,
       "bep": 484.39,
-      "value_native": 25252.65,
-      "value_eur": 25252.65,
+      "value_native": 25046.26,
+      "value_eur": 25046.26,
       "cost_eur": 18406.82,
-      "gain_eur": 6845.83,
-      "gain_pct": 37.19,
+      "gain_eur": 6639.44,
+      "gain_pct": 36.07,
       "bought": null,
-      "allocation_pct": 14.75
+      "allocation_pct": 14.66
     },
     {
       "ticker": "IWDA.AS",
       "name": "iShares Core MSCI World UCITS",
       "shares": 8.0,
       "currency": "EUR",
-      "price": 121.99,
+      "price": 121.0,
       "bep": 119.52,
-      "value_native": 975.92,
-      "value_eur": 975.92,
+      "value_native": 968.0,
+      "value_eur": 968.0,
       "cost_eur": 956.16,
-      "gain_eur": 19.76,
-      "gain_pct": 2.07,
+      "gain_eur": 11.84,
+      "gain_pct": 1.24,
       "bought": "2026-05-12",
       "allocation_pct": 0.57
     }
   ],
   "summary": {
-    "market_value_eur": 171214.97,
+    "market_value_eur": 170819.7,
     "total_cost_eur": 142518.96,
-    "total_gain_eur": 28696.01,
-    "total_gain_pct": 20.13,
+    "total_gain_eur": 28300.73,
+    "total_gain_pct": 19.86,
     "loan_remaining_eur": 6009.37,
     "loan_as_of": "2026-05-04",
-    "net_worth_eur": 165205.6,
+    "net_worth_eur": 164810.33,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -214,7 +214,7 @@
       "currency": "EUR",
       "avg_buy_date": "2022-10-06",
       "shares": 48.0,
-      "current_price": 691.2,
+      "current_price": 687.43,
       "bep": 471.59,
       "benchmark_ticker": "^SP500TR",
       "benchmark_name": "S&P 500 Total Return",
@@ -224,11 +224,11 @@
       "fx_at_buy": 1.009,
       "fx_today": 0.8598,
       "fx_change_pct": -14.79,
-      "value_today_eur": 33177.6,
+      "value_today_eur": 32996.64,
       "cost_eur_at_buy": 22636.32,
-      "total_gain_eur": 10541.28,
+      "total_gain_eur": 10360.32,
       "asset_gain_eur": 24508.58,
-      "fx_gain_eur": -13967.29,
+      "fx_gain_eur": -14148.26,
       "benchmark_note": "Decomposition uses S&P 500 Total Return as USD benchmark."
     },
     {
@@ -260,7 +260,7 @@
       "currency": "EUR",
       "avg_buy_date": "2024-03-02",
       "shares": 38.0,
-      "current_price": 664.5435,
+      "current_price": 659.112,
       "bep": 484.39,
       "benchmark_ticker": "URTH",
       "benchmark_name": "MSCI World (URTH proxy)",
@@ -270,11 +270,11 @@
       "fx_at_buy": 0.9255,
       "fx_today": 0.8598,
       "fx_change_pct": -7.1,
-      "value_today_eur": 25252.65,
+      "value_today_eur": 25046.26,
       "cost_eur_at_buy": 18406.82,
-      "total_gain_eur": 6845.83,
+      "total_gain_eur": 6639.44,
       "asset_gain_eur": 8402.05,
-      "fx_gain_eur": -1556.22,
+      "fx_gain_eur": -1762.62,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     }
   ]
