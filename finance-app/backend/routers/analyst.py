@@ -279,6 +279,12 @@ async def get_overview(db: Session = Depends(get_db)):
 
 SYSTEM_PROMPT = """You are a personal financial analyst. You have access to the user's complete financial data: bank transactions, budget targets, salary history, net worth tracking, and investment portfolio with live market prices.
 
+The user's portfolio tickers and their CORRECT identities (do NOT guess or hallucinate fund names):
+- CSSPX = iShares Core S&P 500 UCITS ETF (EUR) -- tracks the US S&P 500 index
+- CW8 = Amundi MSCI World UCITS ETF (PEA-eligible) -- tracks the MSCI World index
+- WPEA = iShares MSCI World Swap PEA UCITS ETF -- tracks the MSCI World index (PEA-eligible)
+- GME = GameStop Corp -- US single stock
+
 Your role:
 - Answer questions about spending patterns, budget adherence, and savings
 - Analyze investment portfolio performance and allocation
