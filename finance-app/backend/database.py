@@ -72,6 +72,80 @@ class MonthlyBudget(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+# ---------------------------------------------------------------------------
+# Wealth / Salary / Loan models (migrated from Excel)
+# ---------------------------------------------------------------------------
+
+class NetWorthSnapshot(Base):
+    __tablename__ = "net_worth_snapshots"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    date = Column(Date, nullable=False, index=True)
+    value = Column(Float, nullable=False)
+    comment = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class PortfolioHolding(Base):
+    __tablename__ = "portfolio_holdings"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    name = Column(String, nullable=False)
+    holding_type = Column(String, nullable=True)        # "Index", "Stock", "Pension", "SCI"
+    ticker = Column(String, nullable=True)               # e.g. "IWDA.AS"
+    volume = Column(Float, nullable=True)
+    price = Column(Float, nullable=True)
+    value_eur = Column(Float, nullable=False, default=0.0)
+    is_dynamic = Column(Boolean, default=False)          # ticker-based vs manual
+    sort_order = Column(Float, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class BankAccount(Base):
+    __tablename__ = "bank_accounts"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    account_name = Column(String, nullable=False)
+    amount_local = Column(Float, nullable=False, default=0.0)
+    amount_eur = Column(Float, nullable=False, default=0.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SalaryRecord(Base):
+    __tablename__ = "salary_records"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    date = Column(Date, nullable=False, index=True)
+    company = Column(String, nullable=True)
+    jurisdiction = Column(String, nullable=True)
+    gross = Column(Float, nullable=False, default=0.0)
+    overtime = Column(Float, nullable=False, default=0.0)
+    extras = Column(Float, nullable=False, default=0.0)
+    bonus = Column(Float, nullable=False, default=0.0)
+    net = Column(Float, nullable=False, default=0.0)
+    comment = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class LoanPayment(Base):
+    __tablename__ = "loan_payments"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    date = Column(Date, nullable=False, index=True)
+    capital = Column(Float, nullable=False, default=0.0)
+    interest = Column(Float, nullable=False, default=0.0)
+    insurance = Column(Float, nullable=False, default=0.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AppSetting(Base):
+    """Key-value store for app configuration (e.g. loan_initial_balance)."""
+    __tablename__ = "app_settings"
+
+    key = Column(String, primary_key=True)
+    value = Column(String, nullable=False)
+
+
 def create_tables():
     # Enable WAL mode and busy_timeout for better concurrency
     with engine.connect() as conn:

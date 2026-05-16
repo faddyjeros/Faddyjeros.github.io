@@ -182,7 +182,7 @@ TOOL_DEFINITIONS = [
 async def _execute_tool(name: str, input_data: dict, db: Session) -> str:
     try:
         if name == "get_portfolio_holdings":
-            result = get_portfolio_holdings()
+            result = get_portfolio_holdings(db)
         elif name == "get_stock_quote":
             result = await get_quote(input_data["ticker"])
         elif name == "get_stock_history":
@@ -202,9 +202,9 @@ async def _execute_tool(name: str, input_data: dict, db: Session) -> str:
         elif name == "get_budget_status":
             result = get_budget_status(db)
         elif name == "get_net_worth_history":
-            result = get_net_worth_history()
+            result = get_net_worth_history(db)
         elif name == "get_salary_history":
-            result = get_salary_history()
+            result = get_salary_history(db)
         elif name == "calculate_investable_amount":
             result = calculate_investable_amount(db)
         else:
@@ -216,10 +216,10 @@ async def _execute_tool(name: str, input_data: dict, db: Session) -> str:
 
 @router.get("/overview")
 async def get_overview(db: Session = Depends(get_db)):
-    holdings = get_portfolio_holdings()
-    accounts = get_accounts()
-    net_worth = get_net_worth_history()
-    salary = get_salary_history()
+    holdings = get_portfolio_holdings(db)
+    accounts = get_accounts(db)
+    net_worth = get_net_worth_history(db)
+    salary = get_salary_history(db)
     budget = get_budget_status(db)
     investable = calculate_investable_amount(db)
 

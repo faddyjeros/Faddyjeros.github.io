@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import DB_PATH, MonthlyBudget, SessionLocal, Transaction, create_tables
-from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, ingest, transactions, wealth
+from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, export, ingest, transactions, wealth
 from services.market_data import start_background_refresh, stop_background_refresh
 
 _sync_task = None
@@ -74,6 +74,7 @@ app.include_router(ai_advice.router, prefix="/api/ai", tags=["ai"])
 app.include_router(budget_targets.router, prefix="/api/budget-targets", tags=["budget-targets"])
 app.include_router(wealth.router, prefix="/api/wealth", tags=["wealth"])
 app.include_router(analyst.router, prefix="/api/analyst", tags=["analyst"])
+app.include_router(export.router, prefix="/api/export", tags=["export"])
 
 
 def _migrate_categories():
