@@ -9,13 +9,18 @@ from sqlalchemy import (
     DateTime,
     Float,
     String,
+    UniqueConstraint,
     create_engine,
+    event,
+    text,
 )
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
-from sqlalchemy import UniqueConstraint
 
 DB_PATH = os.environ.get("DB_PATH", "./finance.db")
-engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
+engine = create_engine(
+    f"sqlite:///{DB_PATH}",
+    connect_args={"check_same_thread": False, "timeout": 30},
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -68,6 +73,11 @@ class MonthlyBudget(Base):
 
 
 def create_tables():
+    # Enable WAL mode and busy_timeout for better concurrency
+    with engine.connect() as conn:
+        conn.execute(text("PRAGMA journal_mode=WAL"))
+        conn.execute(text("PRAGMA busy_timeout=5000"))
+        conn.commit()
     Base.metadata.create_all(bind=engine)
 
 

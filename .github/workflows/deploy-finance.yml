@@ -68,10 +68,9 @@ jobs:
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.TAG }} \
             --set-env-vars \
-              "DB_PATH=/data/finance.db" \
+              "MOUNT_DIR=/data" \
               "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" \
-              "FMP_API_KEY=${{ secrets.FMP_API_KEY }}" \
-              "ACCOUNTING_XLSX=/data/accounting.xlsx"
+              "FMP_API_KEY=${{ secrets.FMP_API_KEY }}"
 
       - name: Deploy frontend Container App
         run: |
