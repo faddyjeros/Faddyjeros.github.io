@@ -1,19 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 const fmt = (v) => v?.toLocaleString("fr-CH", { maximumFractionDigits: 2 }) ?? "";
 
 /**
  * Reusable editable table with add / edit / delete + export.
  *
- * Props:
- *  columns  - [{ key, label, type: "text"|"number"|"date"|"select", options?, editable?, width? }]
- *  data     - array of row objects (must have `id`)
- *  onSave   - (id, updatedRow) => Promise
- *  onCreate - (newRow) => Promise  (return the created row with id)
- *  onDelete - (id) => Promise
- *  exportEntity - string entity name for /api/export/{entity}
- *  title    - section header text
- *  defaultNew - default values for a new row
+ * Double-click a row to edit. Esc to cancel. Enter to save.
+ * No spinners on number fields — plain text inputs everywhere.
  */
 export default function EditableTable({
   columns,
@@ -29,11 +22,12 @@ export default function EditableTable({
   const [editRow, setEditRow] = useState({});
   const [isAdding, setIsAdding] = useState(false);
   const [newRow, setNewRow] = useState({});
-  const [flash, setFlash] = useState(null); // { id, type: "success"|"error" }
+  const [flash, setFlash] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const addRef = useRef(null);
+  const editRef = useRef(null);
 
   useEffect(() => {
     if (isAdding && addRef.current) {
@@ -41,24 +35,37 @@ export default function EditableTable({
     }
   }, [isAdding]);
 
+  // Focus first editable input when entering edit mode
+  useEffect(() => {
+    if (editingId && editRef.current) {
+      const firstInput = editRef.current.querySelector("input, select");
+      if (firstInput) firstInput.focus();
+    }
+  }, [editingId]);
+
+  // Global Esc handler to cancel editing
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") {
+        if (editingId) { setEditingId(null); setEditRow({}); }
+        if (isAdding) { setIsAdding(false); setNewRow({}); }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [editingId, isAdding]);
+
   const doFlash = (id, type) => {
     setFlash({ id, type });
     setTimeout(() => setFlash(null), 1200);
   };
 
-  const startEdit = (row) => {
+  const startEdit = useCallback((row) => {
     setEditingId(row.id);
     const vals = {};
-    columns.forEach((c) => {
-      vals[c.key] = row[c.key] ?? "";
-    });
+    columns.forEach((c) => { vals[c.key] = row[c.key] ?? ""; });
     setEditRow(vals);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditRow({});
-  };
+  }, [columns]);
 
   const saveEdit = async () => {
     setSaving(true);
@@ -105,13 +112,23 @@ export default function EditableTable({
     setSaving(false);
   };
 
+  const handleRowKeyDown = (e, isNew) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      isNew ? saveNew() : saveEdit();
+    }
+  };
+
   const renderCell = (col, value, onChange) => {
     const base =
-      "bg-zinc-700/50 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-200 focus:outline-none focus:ring-1 focus:ring-amber-500/60 w-full";
+      "bg-zinc-700/50 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-200 " +
+      "focus:outline-none focus:ring-1 focus:ring-amber-500/60 w-full " +
+      "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
     if (col.type === "select") {
       return (
         <select className={base} value={value ?? ""} onChange={(e) => onChange(e.target.value)}>
-          <option value="">—</option>
+          <option value="">--</option>
           {(col.options ?? []).map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
@@ -193,31 +210,30 @@ export default function EditableTable({
                     {c.label}
                   </th>
                 ))}
-                <th className="px-3 py-2 w-20"></th>
+                <th className="px-3 py-2 w-16"></th>
               </tr>
             </thead>
             <tbody>
               {/* New row form */}
               {isAdding && (
-                <tr ref={addRef} className={`border-b border-amber-600/30 bg-amber-950/20 ${flashClass("new")}`}>
+                <tr ref={addRef}
+                  className={`border-b border-amber-600/30 bg-amber-950/20 ${flashClass("new")}`}
+                  onKeyDown={(e) => handleRowKeyDown(e, true)}>
                   {columns.map((c) => (
-                    <td key={c.key} className="px-3 py-2">
+                    <td key={c.key} className="px-3 py-1.5">
                       {renderCell(c, newRow[c.key], (v) => setNewRow({ ...newRow, [c.key]: v }))}
                     </td>
                   ))}
-                  <td className="px-3 py-2">
-                    <div className="flex gap-1">
+                  <td className="px-3 py-1.5">
+                    <div className="flex gap-1.5 items-center">
                       <button onClick={saveNew} disabled={saving}
-                        className="text-green-400 hover:text-green-300 disabled:opacity-40" title="Save">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        className="text-[10px] font-semibold text-green-400 hover:text-green-300 disabled:opacity-40">
+                        Save
                       </button>
-                      <button onClick={() => setIsAdding(false)}
-                        className="text-red-400 hover:text-red-300" title="Cancel">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                      <span className="text-zinc-700">|</span>
+                      <button onClick={() => { setIsAdding(false); setNewRow({}); }}
+                        className="text-[10px] text-zinc-500 hover:text-zinc-300">
+                        Esc
                       </button>
                     </div>
                   </td>
@@ -229,58 +245,51 @@ export default function EditableTable({
                 const isEditing = editingId === row.id;
                 return (
                   <tr key={row.id}
-                    className={`border-b border-zinc-700/50 hover:bg-zinc-700/20 transition-colors ${flashClass(row.id)}`}>
+                    ref={isEditing ? editRef : undefined}
+                    className={`border-b border-zinc-700/50 transition-colors ${flashClass(row.id)} ${
+                      isEditing ? "bg-zinc-700/30" : "hover:bg-zinc-700/20 cursor-pointer"
+                    }`}
+                    onDoubleClick={() => { if (!isEditing) startEdit(row); }}
+                    onKeyDown={(e) => { if (isEditing) handleRowKeyDown(e, false); }}>
                     {columns.map((c) => (
-                      <td key={c.key} className="px-3 py-2">
+                      <td key={c.key} className="px-3 py-1.5">
                         {isEditing && c.editable !== false ? (
                           renderCell(c, editRow[c.key], (v) => setEditRow({ ...editRow, [c.key]: v }))
                         ) : (
                           <span className={`${c.type === "number" ? "font-mono text-right block" : ""} text-zinc-300`}>
-                            {c.type === "number" ? fmt(row[c.key]) : (row[c.key] ?? "—")}
+                            {c.type === "number" ? fmt(row[c.key]) : (row[c.key] ?? "--")}
                           </span>
                         )}
                       </td>
                     ))}
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-1.5">
                       {isEditing ? (
-                        <div className="flex gap-1">
+                        <div className="flex gap-1.5 items-center">
                           <button onClick={saveEdit} disabled={saving}
-                            className="text-green-400 hover:text-green-300 disabled:opacity-40" title="Save">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
+                            className="text-[10px] font-semibold text-green-400 hover:text-green-300 disabled:opacity-40">
+                            Save
                           </button>
-                          <button onClick={cancelEdit}
-                            className="text-red-400 hover:text-red-300" title="Cancel">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                          <span className="text-zinc-700">|</span>
+                          <button onClick={() => { setEditingId(null); setEditRow({}); }}
+                            className="text-[10px] text-zinc-500 hover:text-zinc-300">
+                            Esc
                           </button>
                         </div>
                       ) : deleteConfirm === row.id ? (
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <button onClick={() => confirmDelete(row.id)}
-                            className="text-[10px] text-red-400 hover:text-red-300 font-semibold">Delete?</button>
+                            className="text-[10px] text-red-400 hover:text-red-300 font-semibold">Yes</button>
+                          <span className="text-zinc-700">|</span>
                           <button onClick={() => setDeleteConfirm(null)}
                             className="text-[10px] text-zinc-500 hover:text-zinc-300">No</button>
                         </div>
                       ) : (
-                        <div className="flex gap-1.5">
-                          <button onClick={() => startEdit(row)}
-                            className="text-zinc-600 hover:text-amber-400 transition-colors" title="Edit">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                          <button onClick={() => setDeleteConfirm(row.id)}
-                            className="text-zinc-600 hover:text-red-400 transition-colors" title="Delete">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
+                        <button onClick={() => setDeleteConfirm(row.id)}
+                          className="text-zinc-700 hover:text-red-400 transition-colors" title="Delete">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
                       )}
                     </td>
                   </tr>
