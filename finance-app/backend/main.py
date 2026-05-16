@@ -1,4 +1,7 @@
+import asyncio
+import os
 import re
+import shutil
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -7,18 +10,49 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import MonthlyBudget, SessionLocal, Transaction, create_tables
+from database import DB_PATH, MonthlyBudget, SessionLocal, Transaction, create_tables
 from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, ingest, transactions, wealth
 from services.market_data import start_background_refresh, stop_background_refresh
+
+_sync_task = None
+
+
+async def _periodic_db_sync():
+    """Sync local DB back to Azure Files mount every 60 seconds."""
+    mount_dir = os.environ.get("MOUNT_DIR", "/data")
+    mount_db = os.path.join(mount_dir, "finance.db")
+    while True:
+        await asyncio.sleep(60)
+        try:
+            if os.path.isdir(mount_dir) and os.path.isfile(DB_PATH):
+                shutil.copy2(DB_PATH, mount_db)
+        except Exception as e:
+            print(f"[sync] Failed to sync DB to mount: {e}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global _sync_task
     create_tables()
     _migrate_categories()
     _seed_budget_targets()
     await start_background_refresh()
+    # Start periodic sync if running with local copy strategy
+    mount_dir = os.environ.get("MOUNT_DIR", "/data")
+    if os.path.isdir(mount_dir) and "localdata" in DB_PATH:
+        _sync_task = asyncio.create_task(_periodic_db_sync())
+        print(f"[sync] Periodic DB sync to {mount_dir} enabled")
     yield
+    # Shutdown: final sync + stop tasks
+    if _sync_task:
+        _sync_task.cancel()
+        try:
+            mount_db = os.path.join(mount_dir, "finance.db")
+            if os.path.isfile(DB_PATH):
+                shutil.copy2(DB_PATH, mount_db)
+                print("[sync] Final DB sync completed")
+        except Exception as e:
+            print(f"[sync] Final sync failed: {e}")
     await stop_background_refresh()
 
 
