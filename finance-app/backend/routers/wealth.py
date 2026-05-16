@@ -261,26 +261,30 @@ def get_loan(db: Session = Depends(get_db)):
     today = date.today()
     running = initial
     schedule = []
-    total_capital = 0.0
-    total_interest = 0.0
+    past_capital = 0.0
+    past_interest = 0.0
+    past_remaining = initial
 
     for r in rows:
         running = max(running - r.capital, 0)
-        total_capital += r.capital
-        total_interest += r.interest
+        is_past = r.date <= today
+        if is_past:
+            past_capital += r.capital
+            past_interest += r.interest
+            past_remaining = running
         schedule.append({
             **_row_to_dict(r),
             "remaining": round(running, 2),
-            "is_past": r.date <= today,
+            "is_past": is_past,
         })
 
     return {
         "schedule": schedule,
         "initial_balance": initial,
         "summary": {
-            "capital_paid": round(total_capital, 2),
-            "interest_paid": round(total_interest, 2),
-            "capital_remaining": round(running, 2),
+            "capital_paid": round(past_capital, 2),
+            "interest_paid": round(past_interest, 2),
+            "capital_remaining": round(past_remaining, 2),
         },
     }
 
