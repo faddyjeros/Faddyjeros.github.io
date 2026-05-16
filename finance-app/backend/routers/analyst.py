@@ -411,7 +411,7 @@ async def analyze_stock(ticker: str):
 
     async def event_stream():
         response = await client.messages.create(
-            model="claude-sonnet-4-5-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=6000,
             system=ANALYSIS_SYSTEM_PROMPT,
             messages=[{
@@ -467,7 +467,7 @@ async def chat(request: Request, db: Session = Depends(get_db)):
             rounds += 1
 
             response = await client.messages.create(
-                model="claude-sonnet-4-5-20250514",
+                model="claude-haiku-4-5-20251001",
                 max_tokens=4096,
                 system=SYSTEM_PROMPT,
                 tools=TOOL_DEFINITIONS,
