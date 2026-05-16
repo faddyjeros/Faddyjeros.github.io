@@ -7,7 +7,7 @@ server {
     # BACKEND_ADDR is resolved at container startup by docker-entrypoint.sh.
     # Using a static proxy_pass avoids nginx resolver issues in Azure Container Apps.
     location /api/ {
-        proxy_pass http://${BACKEND_ADDR}:8000/api/;
+        proxy_pass http://${BACKEND_ADDR}:80/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         client_max_body_size 50M;
