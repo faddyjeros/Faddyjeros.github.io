@@ -4,14 +4,10 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
-    # NAMESERVERS is read from /etc/resolv.conf by docker-entrypoint.sh.
-    # Using a variable for proxy_pass forces re-resolution per request.
-    # Multiple resolvers listed for redundancy (Azure Container Apps may use several).
-    resolver ${NAMESERVERS} valid=15s ipv6=off;
-    set $backend http://${BACKEND_HOST};
-
+    # BACKEND_ADDR is resolved at container startup by docker-entrypoint.sh.
+    # Using a static proxy_pass avoids nginx resolver issues in Azure Container Apps.
     location /api/ {
-        proxy_pass $backend/api/;
+        proxy_pass http://${BACKEND_ADDR}:8000/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         client_max_body_size 50M;
