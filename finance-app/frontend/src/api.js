@@ -105,4 +105,9 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages }),
     }),
+  streamStockAnalysis: (ticker) =>
+    fetch(`${BASE}/analyst/analyze/${encodeURIComponent(ticker)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    }),
 };

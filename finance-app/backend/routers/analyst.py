@@ -286,6 +286,151 @@ Style:
 - If data is stale or unavailable, say so clearly"""
 
 
+ANALYSIS_SYSTEM_PROMPT = """You are a senior equity research analyst. You've been given comprehensive financial data for a company. Produce a structured fundamental analysis report.
+
+Structure your report as:
+
+## Company Overview
+Brief description, sector, industry, market positioning.
+
+## Key Metrics
+Present a table with: Market Cap, P/E Ratio, EPS, Dividend Yield, Price-to-Book, Debt/Equity, ROE.
+
+## Financial Performance (3-5 Year Trend)
+Analyze revenue, net income, and operating income trends. Use a chart block to visualize revenue/income growth. Note growth rates and inflection points.
+
+## Balance Sheet Health
+Assess total assets vs liabilities, stockholders' equity trend, debt levels.
+
+## Cash Flow Analysis
+If available, assess operating cash flow, free cash flow generation, capex trends.
+
+## Valuation Assessment
+Is the stock fairly valued, overvalued, or undervalued based on P/E vs sector average, earnings growth, and price-to-book?
+
+## Risk Factors
+Top 3-5 risks based on the financial data (high leverage, declining margins, concentration, etc.).
+
+## Summary & Outlook
+2-3 sentence conclusion with a directional view (bullish/neutral/bearish) supported by the data.
+
+Style:
+- Be direct with specific numbers
+- Use tables and ```chart blocks for data visualization
+- If data is missing or unavailable, note it and work with what's available
+- Compare to sector averages where possible
+- Don't hedge everything — take a position based on the data"""
+
+
+@router.post("/analyze/{ticker}")
+async def analyze_stock(ticker: str):
+    """Run a full fundamental analysis on a given ticker. Pre-fetches all data then sends to Claude for structured analysis."""
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="ANTHROPIC_API_KEY not configured")
+
+    try:
+        from anthropic import AsyncAnthropic
+    except ImportError:
+        raise HTTPException(status_code=503, detail="anthropic package not installed")
+
+    ticker = ticker.upper().strip()
+
+    # Pre-fetch all available data in parallel
+    import asyncio
+    quote_task = get_quote(ticker)
+    fundamentals_task = get_fundamentals(ticker)
+    history_task = get_history(ticker, "2y")
+    income_task = get_financial_statements(ticker, "income")
+    balance_task = get_financial_statements(ticker, "balance")
+    cash_task = get_financial_statements(ticker, "cash")
+    facts_task = get_company_facts(ticker)
+    filings_task = get_sec_filing(ticker, "10-K", 3)
+
+    results = await asyncio.gather(
+        quote_task, fundamentals_task, history_task,
+        income_task, balance_task, cash_task,
+        facts_task, filings_task,
+        return_exceptions=True,
+    )
+
+    quote = results[0] if not isinstance(results[0], Exception) else {}
+    fundamentals = results[1] if not isinstance(results[1], Exception) else {}
+    history = results[2] if not isinstance(results[2], Exception) else []
+    income_stmt = results[3] if not isinstance(results[3], Exception) else []
+    balance_stmt = results[4] if not isinstance(results[4], Exception) else []
+    cash_stmt = results[5] if not isinstance(results[5], Exception) else []
+    facts = results[6] if not isinstance(results[6], Exception) else {}
+    filings = results[7] if not isinstance(results[7], Exception) else []
+
+    # Build the data package for Claude
+    data_sections = [f"# Financial Data for {ticker}\n"]
+
+    if quote and "error" not in quote:
+        data_sections.append(f"## Current Quote\n```json\n{json.dumps(quote, indent=2)}\n```\n")
+
+    if fundamentals and "error" not in fundamentals:
+        data_sections.append(f"## Fundamentals\n```json\n{json.dumps(fundamentals, indent=2)}\n```\n")
+
+    if income_stmt:
+        # Limit to avoid token overflow
+        data_sections.append(f"## Income Statements (Annual)\n```json\n{json.dumps(income_stmt[:5], indent=2, default=str)}\n```\n")
+
+    if balance_stmt:
+        data_sections.append(f"## Balance Sheets (Annual)\n```json\n{json.dumps(balance_stmt[:5], indent=2, default=str)}\n```\n")
+
+    if cash_stmt:
+        data_sections.append(f"## Cash Flow Statements (Annual)\n```json\n{json.dumps(cash_stmt[:5], indent=2, default=str)}\n```\n")
+
+    if facts and "facts" in facts:
+        data_sections.append(f"## SEC EDGAR XBRL Data\n```json\n{json.dumps(facts['facts'], indent=2, default=str)}\n```\n")
+
+    if filings:
+        data_sections.append(f"## Recent 10-K Filings\n```json\n{json.dumps(filings, indent=2)}\n```\n")
+
+    if history and len(history) > 0:
+        # Just send quarterly samples to avoid token overflow
+        sampled = history[::60] if len(history) > 20 else history
+        data_sections.append(f"## Price History (sampled)\n```json\n{json.dumps(sampled, indent=2)}\n```\n")
+
+    data_package = "\n".join(data_sections)
+
+    if len(data_sections) <= 1:
+        raise HTTPException(status_code=404, detail=f"No financial data found for ticker: {ticker}")
+
+    client = AsyncAnthropic(api_key=api_key)
+
+    async def event_stream():
+        response = await client.messages.create(
+            model="claude-sonnet-4-5-20250514",
+            max_tokens=6000,
+            system=ANALYSIS_SYSTEM_PROMPT,
+            messages=[{
+                "role": "user",
+                "content": f"Run a full fundamental analysis on {ticker} using this data:\n\n{data_package}",
+            }],
+            stream=True,
+        )
+
+        async for event in response:
+            if event.type == "content_block_delta":
+                if event.delta.type == "text_delta":
+                    yield f"data: {json.dumps({'type': 'text', 'content': event.delta.text})}\n\n"
+            elif event.type == "message_delta":
+                if event.delta.stop_reason == "end_turn":
+                    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @router.post("/chat")
 async def chat(request: Request, db: Session = Depends(get_db)):
     api_key = os.environ.get("ANTHROPIC_API_KEY")

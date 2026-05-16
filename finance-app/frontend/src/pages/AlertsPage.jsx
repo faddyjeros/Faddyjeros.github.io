@@ -27,7 +27,7 @@ export default function AlertsPage() {
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
         >
           {[currentYear, currentYear - 1, currentYear - 2].map((y) => (
             <option key={y} value={y}>{y}</option>
@@ -36,8 +36,8 @@ export default function AlertsPage() {
       </div>
 
       {/* Transaction gaps */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
-        <h3 className="font-semibold text-gray-200 mb-3">
+      <div className="bg-zinc-800 rounded-xl p-4">
+        <h3 className="font-semibold text-zinc-100 mb-3">
           Transaction Gaps
           {alerts?.gaps.length > 0 && (
             <span className="ml-2 text-xs bg-yellow-900 text-yellow-300 px-2 py-0.5 rounded-full">
@@ -46,7 +46,7 @@ export default function AlertsPage() {
           )}
         </h3>
         {!alerts ? (
-          <p className="text-sm text-gray-500">Loading...</p>
+          <p className="text-sm text-zinc-500">Loading...</p>
         ) : alerts.gaps.length === 0 ? (
           <p className="text-sm text-green-400">No suspicious gaps found.</p>
         ) : (
@@ -54,10 +54,10 @@ export default function AlertsPage() {
             {alerts.gaps.map((g, i) => (
               <li key={i} className="flex items-center gap-3 text-sm">
                 <span className="text-yellow-400">⚠</span>
-                <span className="text-gray-300">
+                <span className="text-zinc-300">
                   {g.start} → {g.end}
                 </span>
-                <span className="text-gray-500">{g.days} days with no transactions</span>
+                <span className="text-zinc-500">{g.days} days with no transactions</span>
               </li>
             ))}
           </ul>
@@ -65,8 +65,8 @@ export default function AlertsPage() {
       </div>
 
       {/* Cash / pending annotation queue */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
-        <h3 className="font-semibold text-gray-200 mb-3">
+      <div className="bg-zinc-800 rounded-xl p-4">
+        <h3 className="font-semibold text-zinc-100 mb-3">
           Pending Annotations — Cash & Withdrawals
           {alerts?.pending_annotations.length > 0 && (
             <span className="ml-2 text-xs bg-orange-900 text-orange-300 px-2 py-0.5 rounded-full">
@@ -74,7 +74,7 @@ export default function AlertsPage() {
             </span>
           )}
         </h3>
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-zinc-500 mb-3">
           Click a row to add a note and clear the warning flag.
         </p>
         {alerts?.pending_annotations.length > 0 ? (

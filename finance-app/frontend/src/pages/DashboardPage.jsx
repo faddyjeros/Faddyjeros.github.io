@@ -101,13 +101,13 @@ export default function DashboardPage() {
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm"
         >
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <button
           onClick={() => setMonth(null)}
-          className={`text-sm px-3 py-1.5 rounded-lg border transition-colors ${!month ? "border-brand-500 text-brand-500" : "border-gray-800 text-gray-500 hover:border-gray-600"}`}
+          className={`text-sm px-3 py-1.5 rounded-lg border transition-colors ${!month ? "border-amber-500 text-amber-500" : "border-zinc-800 text-zinc-500 hover:border-zinc-600"}`}
         >
           Full year
         </button>
@@ -115,14 +115,14 @@ export default function DashboardPage() {
           <button
             key={i}
             onClick={() => setMonth(i + 1)}
-            className={`text-sm px-2.5 py-1.5 rounded-lg border transition-colors ${month === i + 1 ? "border-brand-500 text-brand-500" : "border-gray-800 text-gray-500 hover:border-gray-600"}`}
+            className={`text-sm px-2.5 py-1.5 rounded-lg border transition-colors ${month === i + 1 ? "border-amber-500 text-amber-500" : "border-zinc-800 text-zinc-500 hover:border-zinc-600"}`}
           >
             {m}
           </button>
         ))}
       </div>
 
-      {loading && <p className="text-gray-600 text-sm">Loading…</p>}
+      {loading && <p className="text-zinc-500 text-sm">Loading…</p>}
 
       {summary && (
         <div className="flex gap-5">
@@ -147,21 +147,21 @@ export default function DashboardPage() {
                 color={summary.net >= 0 ? "text-green-400" : "text-red-400"} />
               <KpiCard label="Transfers"
                 value={`${summary.total_transfers >= 0 ? "+" : ""}${fmt(summary.total_transfers)}`}
-                color="text-gray-500" note="excluded" />
+                color="text-zinc-500" note="excluded" />
             </div>
 
             {/* AI conclusion bar */}
             {month && (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 flex items-center gap-3">
-                <div className="flex-1 text-sm text-gray-300">
+              <div className="bg-zinc-800 rounded-xl px-4 py-3 flex items-center gap-3">
+                <div className="flex-1 text-sm text-zinc-300">
                   {conclusion
                     ? conclusion.conclusion
-                    : <span className="text-gray-600 italic">No summary yet — click to generate</span>}
+                    : <span className="text-zinc-500 italic">No summary yet — click to generate</span>}
                 </div>
                 <button
                   onClick={fetchConclusion}
                   disabled={conclusionLoading}
-                  className="shrink-0 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-purple-900 hover:bg-purple-800 disabled:opacity-50 text-purple-200 transition-colors"
+                  className="shrink-0 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-50 text-amber-400 transition-colors"
                 >
                   {conclusionLoading ? <><span className="animate-pulse">✦</span> Generating…</> : <><span>✦</span> Summarise</>}
                 </button>
@@ -170,19 +170,19 @@ export default function DashboardPage() {
 
             {/* Stacked bar chart */}
             {summary.monthly_trend?.length > 0 && (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-gray-300 mb-3">Monthly Spending by Category</h3>
+              <div className="bg-zinc-800 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-zinc-100 mb-3">Monthly Spending by Category</h3>
                 <MonthlyTrend data={summary.monthly_trend} incomeTarget={incomeTarget} expenseTarget={expenseTarget} showAverage={!month} />
               </div>
             )}
 
             {/* Budget progress — full width */}
             <div className="grid grid-cols-1 gap-4">
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+              <div className="bg-zinc-800 rounded-xl p-4">
                 <div className="flex items-baseline gap-2 mb-3">
-                  <h3 className="text-sm font-semibold text-gray-300">Budget</h3>
+                  <h3 className="text-sm font-semibold text-zinc-100">Budget</h3>
                   {!month && (
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-zinc-500">
                       {year < currentYear ? "×12" : `×${currentMonth} (Jan–${MONTHS[currentMonth-1]})`}
                     </span>
                   )}
@@ -202,25 +202,25 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between mb-1">
                           <button
                             onClick={() => drillDown(cat)}
-                            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+                            className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
                           >
                             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
                             {cat}
                           </button>
                           <div className="flex items-center gap-1.5 text-xs">
-                            <span className={over ? "text-red-400 font-semibold" : "text-gray-300"}>{fmt(actual)}</span>
-                            <span className="text-gray-700">/</span>
+                            <span className={over ? "text-red-400 font-semibold" : "text-zinc-300"}>{fmt(actual)}</span>
+                            <span className="text-zinc-700">/</span>
                             {editingTarget === cat ? (
                               <form onSubmit={(e) => { e.preventDefault(); saveTarget(cat, editValue); }}>
                                 <input autoFocus type="number" value={editValue}
                                   onChange={(e) => setEditValue(e.target.value)}
                                   onBlur={() => saveTarget(cat, editValue)}
-                                  className="w-20 bg-gray-800 border border-brand-500 rounded px-1 py-0 text-xs text-right" />
+                                  className="w-20 bg-zinc-800 border border-amber-500 rounded px-1 py-0 text-xs text-right" />
                               </form>
                             ) : (
                               <button
                                 onClick={() => { setEditingTarget(cat); setEditValue(String(targets[cat] || "")); }}
-                                className="text-gray-600 hover:text-gray-400 underline decoration-dashed underline-offset-2"
+                                className="text-zinc-500 hover:text-zinc-300 underline decoration-dashed underline-offset-2"
                               >
                                 {target ? fmt(target) : "set"}
                               </button>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
                           </div>
                         </div>
                         {target > 0 && (
-                          <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
+                          <div className="h-1 bg-zinc-700 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${barColor}`}
                               style={{ width: `${pct}%`, background: barColor ? undefined : dotColor, opacity: 0.8 }}
@@ -255,21 +255,21 @@ export default function DashboardPage() {
               <NetWorthWidget netWorth={netWorth} onClick={() => navigate("/wealth")} />
             )}
 
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 sticky top-4">
+            <div className="bg-zinc-800 rounded-xl p-4 sticky top-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-300">Recent</h3>
-                <button onClick={() => navigate("/transactions")} className="text-xs text-gray-600 hover:text-brand-400 transition-colors">
+                <h3 className="text-sm font-semibold text-zinc-100">Recent</h3>
+                <button onClick={() => navigate("/transactions")} className="text-xs text-zinc-500 hover:text-amber-400 transition-colors">
                   View all →
                 </button>
               </div>
               <div className="space-y-2">
                 {recentTx.map((tx) => (
-                  <div key={tx.id} className="flex items-start justify-between gap-2 py-1.5 border-b border-gray-800 last:border-0">
+                  <div key={tx.id} className="flex items-start justify-between gap-2 py-1.5 border-b border-zinc-700 last:border-0">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-300 truncate">{tx.description.split("|")[0].trim()}</p>
-                      <p className="text-xs text-gray-600 mt-0.5">{tx.category}</p>
+                      <p className="text-xs text-zinc-300 truncate">{tx.description.split("|")[0].trim()}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{tx.category}</p>
                     </div>
-                    <span className={`text-xs font-mono shrink-0 ${tx.amount >= 0 ? "text-green-400" : "text-gray-400"}`}>
+                    <span className={`text-xs font-mono shrink-0 ${tx.amount >= 0 ? "text-green-400" : "text-zinc-400"}`}>
                       {tx.amount >= 0 ? "+" : ""}{tx.amount.toLocaleString("fr-CH", { maximumFractionDigits: 0 })}
                     </span>
                   </div>
@@ -288,16 +288,16 @@ function KpiCard({ label, value, color, note, target, delta }) {
   const deltaColor = delta == null ? "" : delta > 0 ? "text-green-400" : "text-red-400";
   const deltaSign = delta == null ? "" : delta > 0 ? "+" : "";
   return (
-    <div className="bg-gray-900 rounded-xl border border-gray-800 p-3">
-      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">{label}</p>
+    <div className="bg-zinc-800 rounded-xl p-3">
+      <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{label}</p>
       <p className={`text-xl font-bold font-mono ${color}`}>{value}</p>
-      {target && <p className="text-xs text-gray-700 mt-0.5">target {target}</p>}
+      {target && <p className="text-xs text-zinc-600 mt-0.5">target {target}</p>}
       {delta != null && (
         <p className={`text-xs font-semibold mt-0.5 ${deltaColor}`}>
           {deltaSign}{Math.round(delta).toLocaleString("fr-CH")}
         </p>
       )}
-      {note && <p className="text-xs text-gray-700 mt-0.5">{note}</p>}
+      {note && <p className="text-xs text-zinc-600 mt-0.5">{note}</p>}
     </div>
   );
 }
@@ -309,15 +309,15 @@ function NetWorthWidget({ netWorth, onClick }) {
   const fmtK = (v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : Math.round(v).toLocaleString("fr-CH");
   return (
     <button onClick={onClick}
-      className="w-full bg-gray-900 border border-gray-800 rounded-xl p-4 text-left hover:border-gray-700 transition-colors">
-      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Net Worth</p>
+      className="w-full bg-zinc-800 rounded-xl p-4 text-left hover:bg-zinc-700/50 transition-colors">
+      <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Net Worth</p>
       <p className="text-2xl font-bold font-mono text-green-400">€{fmtK(latest.value)}</p>
       {delta != null && (
         <p className={`text-xs mt-1 font-semibold ${delta >= 0 ? "text-green-500" : "text-red-400"}`}>
           {delta >= 0 ? "+" : ""}€{fmtK(Math.abs(delta))} since last snapshot
         </p>
       )}
-      <p className="text-xs text-gray-700 mt-1">{latest.date} · click to view →</p>
+      <p className="text-xs text-zinc-600 mt-1">{latest.date} · click to view →</p>
     </button>
   );
 }
