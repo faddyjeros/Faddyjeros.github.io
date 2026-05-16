@@ -114,7 +114,8 @@ export default function SalaryPage() {
       <EditableTable
         title="Salary Records"
         columns={SALARY_COLUMNS}
-        data={[...salary].reverse()}
+        data={salary}
+        defaultSort={{ key: "date", dir: "desc" }}
         exportEntity="salary"
         defaultNew={{
           date: new Date().toISOString().slice(0, 10),

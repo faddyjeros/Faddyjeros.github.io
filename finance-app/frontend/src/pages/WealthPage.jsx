@@ -222,6 +222,7 @@ export default function WealthPage() {
         columns={NW_COLUMNS}
         data={networth}
         exportEntity="networth"
+        defaultSort={{ key: "date", dir: "desc" }}
         defaultNew={{ date: new Date().toISOString().slice(0, 10), value: 0, comment: "" }}
         onSave={async (id, data) => { await api.updateNetWorth(id, data); reload(); }}
         onCreate={async (data) => { const r = await api.createNetWorth(data); reload(); return r; }}
@@ -233,6 +234,7 @@ export default function WealthPage() {
         columns={PORTFOLIO_COLUMNS}
         data={allHoldings}
         exportEntity="portfolio"
+        defaultSort={{ key: "value_eur", dir: "desc" }}
         defaultNew={{ name: "", holding_type: "Index", ticker: "", volume: 0, price: 0, value_eur: 0, is_dynamic: "true" }}
         onSave={async (id, data) => {
           const d = { ...data, is_dynamic: data.is_dynamic === "true" || data.is_dynamic === true };
@@ -264,6 +266,7 @@ export default function WealthPage() {
         columns={LOAN_COLUMNS}
         data={loan?.schedule ?? []}
         exportEntity="loan"
+        defaultSort={{ key: "date", dir: "desc" }}
         defaultNew={{ date: "", capital: 0, interest: 0, insurance: 0 }}
         onSave={async (id, data) => { await api.updateLoan(id, data); reload(); }}
         onCreate={async (data) => { const r = await api.createLoan(data); reload(); return r; }}

@@ -17,6 +17,7 @@ export default function EditableTable({
   exportEntity,
   title,
   defaultNew = {},
+  defaultSort = null,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [editRow, setEditRow] = useState({});
@@ -26,6 +27,8 @@ export default function EditableTable({
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [sortKey, setSortKey] = useState(defaultSort?.key ?? null);
+  const [sortDir, setSortDir] = useState(defaultSort?.dir ?? "desc");
   const addRef = useRef(null);
   const editRef = useRef(null);
 
@@ -119,6 +122,34 @@ export default function EditableTable({
     }
   };
 
+  const toggleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      // Default new sort: numbers & dates descending, text ascending
+      const col = columns.find((c) => c.key === key);
+      setSortDir(col?.type === "number" || col?.type === "date" ? "desc" : "asc");
+    }
+  };
+
+  const sortedData = (() => {
+    if (!sortKey) return data;
+    const col = columns.find((c) => c.key === sortKey);
+    const arr = [...data];
+    arr.sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      if (col?.type === "number") return sortDir === "asc" ? va - vb : vb - va;
+      va = String(va); vb = String(vb);
+      const cmp = va.localeCompare(vb);
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return arr;
+  })();
+
   const renderCell = (col, value, onChange) => {
     const base =
       "bg-zinc-700/50 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-200 " +
@@ -205,9 +236,22 @@ export default function EditableTable({
               <tr className="border-b border-zinc-700">
                 {columns.map((c) => (
                   <th key={c.key}
-                    className="px-3 py-2 text-left text-zinc-500 font-medium"
-                    style={c.width ? { width: c.width } : {}}>
-                    {c.label}
+                    className="px-3 py-2 text-left text-zinc-500 font-medium cursor-pointer select-none hover:text-zinc-300 transition-colors group"
+                    style={c.width ? { width: c.width } : {}}
+                    onClick={() => toggleSort(c.key)}>
+                    <span className="inline-flex items-center gap-1">
+                      {c.label}
+                      {sortKey === c.key ? (
+                        <svg className="w-3 h-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d={sortDir === "asc" ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+                        </svg>
+                      ) : (
+                        <svg className="w-3 h-3 opacity-0 group-hover:opacity-40 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                      )}
+                    </span>
                   </th>
                 ))}
                 <th className="px-3 py-2 w-16"></th>
@@ -241,7 +285,7 @@ export default function EditableTable({
               )}
 
               {/* Data rows */}
-              {data.map((row) => {
+              {sortedData.map((row) => {
                 const isEditing = editingId === row.id;
                 return (
                   <tr key={row.id}
