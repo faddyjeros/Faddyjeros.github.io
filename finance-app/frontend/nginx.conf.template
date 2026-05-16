@@ -4,9 +4,10 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
-    # NAMESERVER is read from /etc/resolv.conf by docker-entrypoint.sh.
+    # NAMESERVERS is read from /etc/resolv.conf by docker-entrypoint.sh.
     # Using a variable for proxy_pass forces re-resolution per request.
-    resolver ${NAMESERVER} valid=15s ipv6=off;
+    # Multiple resolvers listed for redundancy (Azure Container Apps may use several).
+    resolver ${NAMESERVERS} valid=15s ipv6=off;
     set $backend http://${BACKEND_HOST};
 
     location /api/ {
