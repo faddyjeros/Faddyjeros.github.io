@@ -7,6 +7,7 @@ import WealthPage from "./pages/WealthPage";
 import SalaryPage from "./pages/SalaryPage";
 import AnalystPage from "./pages/AnalystPage";
 import StockAnalysisPage from "./pages/StockAnalysisPage";
+import CategorizePage from "./pages/CategorizePage";
 import DropZone from "./components/DropZone";
 
 const NAV = [
@@ -18,6 +19,7 @@ const NAV = [
   { to: "/salary", label: "Salary" },
   { to: "/alerts", label: "Alerts" },
   { to: "/budgets", label: "Budgets" },
+  { to: "/categorize", label: "Categorize" },
 ];
 
 export default function App() {
@@ -68,6 +70,7 @@ export default function App() {
             <Route path="/salary" element={<SalaryPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/budgets" element={<BudgetsPage />} />
+            <Route path="/categorize" element={<CategorizePage />} />
           </Routes>
         </main>
       </div>
