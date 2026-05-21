@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import TransactionsPage from "./pages/TransactionsPage";
@@ -9,6 +10,7 @@ import AnalystPage from "./pages/AnalystPage";
 import StockAnalysisPage from "./pages/StockAnalysisPage";
 import CategorizePage from "./pages/CategorizePage";
 import DropZone from "./components/DropZone";
+import { api } from "./api";
 
 const NAV = [
   { to: "/analyst", label: "Analyst" },
@@ -23,6 +25,11 @@ const NAV = [
 ];
 
 export default function App() {
+  const [miscCount, setMiscCount] = useState(0);
+  useEffect(() => {
+    api.getUncategorizedCount().then((r) => setMiscCount(r.count)).catch(() => {});
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="min-h-screen flex flex-col">
@@ -41,6 +48,11 @@ export default function App() {
                 }
               >
                 {label}
+                {to === "/categorize" && miscCount > 0 && (
+                  <span className="ml-1.5 text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded-full font-bold">
+                    {miscCount}
+                  </span>
+                )}
               </NavLink>
             ))}
             <span className="text-zinc-700">|</span>

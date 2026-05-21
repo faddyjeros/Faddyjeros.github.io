@@ -18,9 +18,10 @@ function AccountBar() {
   return (
     <div className="grid grid-cols-4 gap-3">
       {accounts.map((acc) => {
-        const meta = ACCOUNT_LABELS[acc.account] ?? { label: acc.account, color: "text-zinc-300" };
+        const name = acc.account_name ?? acc.account;
+        const meta = ACCOUNT_LABELS[name] ?? { label: name, color: "text-zinc-300" };
         return (
-          <div key={acc.account} className="bg-zinc-800 rounded-xl px-4 py-3">
+          <div key={name} className="bg-zinc-800 rounded-xl px-4 py-3">
             <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{meta.label}</p>
             <p className={`text-lg font-bold font-mono ${meta.color}`}>{fmt(acc.amount_local)}</p>
             {acc.amount_eur !== acc.amount_local && (

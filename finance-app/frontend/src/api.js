@@ -31,6 +31,7 @@ export const api = {
       body: JSON.stringify(data),
     }),
   getCategories: () => req("/transactions/meta/categories"),
+  getUncategorizedCount: () => req("/transactions/meta/uncategorized-count"),
   getBanks: () => req("/transactions/meta/banks"),
   remapCategory: (from_category, to_category) =>
     req(`/transactions/remap-category?${new URLSearchParams({ from_category, to_category })}`, {

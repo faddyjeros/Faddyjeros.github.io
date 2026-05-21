@@ -33,7 +33,7 @@ export default function CategorizePage() {
     try {
       const txs = await api.getTransactions({
         category: "Miscellaneous",
-        limit: 500,
+        limit: 2000,
         sort: "desc",
       });
       setTransactions(txs);
