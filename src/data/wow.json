@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-20T23:50:21.639744+00:00",
+  "updated_at": "2026-05-21T23:36:37.449700+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -49,8 +49,8 @@
       "class": "Druid",
       "spec": "Guardian",
       "level": 90,
-      "item_level": 281,
-      "equipped_item_level": 281,
+      "item_level": 283,
+      "equipped_item_level": 283,
       "achievement_points": 22005,
       "faction": "Alliance",
       "realm": "Sylvanas"
