@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-23T23:32:29+00:00",
+  "last_updated": "2026-05-24T23:34:55+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -10,9 +10,9 @@
       "price": 21.96,
       "bep": 80.0,
       "value_native": 1054.08,
-      "value_eur": 908.3,
-      "cost_eur": 3308.93,
-      "gain_eur": -2400.63,
+      "value_eur": 904.93,
+      "cost_eur": 3296.64,
+      "gain_eur": -2391.71,
       "gain_pct": -72.55,
       "bought": "2021-01-29",
       "allocation_pct": 0.52
@@ -60,7 +60,7 @@
       "gain_eur": 7009.54,
       "gain_pct": 38.08,
       "bought": null,
-      "allocation_pct": 14.67
+      "allocation_pct": 14.68
     },
     {
       "ticker": "IWDA.AS",
@@ -79,13 +79,13 @@
     }
   ],
   "summary": {
-    "market_value_eur": 173195.57,
-    "total_cost_eur": 142526.26,
-    "total_gain_eur": 30669.31,
-    "total_gain_pct": 21.52,
+    "market_value_eur": 173192.2,
+    "total_cost_eur": 142513.97,
+    "total_gain_eur": 30678.23,
+    "total_gain_pct": 21.53,
     "loan_remaining_eur": 6009.37,
     "loan_as_of": "2026-05-04",
-    "net_worth_eur": 167186.2,
+    "net_worth_eur": 167182.83,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -199,13 +199,13 @@
       "current_price": 21.96,
       "bep": 80.0,
       "fx_at_buy": 0.8838,
-      "fx_today": 0.8617,
-      "fx_change_pct": -2.5,
-      "value_today_eur": 908.3,
+      "fx_today": 0.8585,
+      "fx_change_pct": -2.86,
+      "value_today_eur": 904.93,
       "cost_eur_at_buy": 3393.79,
-      "total_gain_eur": -2485.49,
+      "total_gain_eur": -2488.86,
       "asset_gain_eur": -2462.2,
-      "fx_gain_eur": -23.3,
+      "fx_gain_eur": -26.67,
       "benchmark_note": "Direct USD holding \u2014 FX computed against EUR/USD"
     },
     {
@@ -222,8 +222,8 @@
       "bench_today": 16694.89,
       "bench_return_pct": 110.17,
       "fx_at_buy": 1.009,
-      "fx_today": 0.8617,
-      "fx_change_pct": -14.6,
+      "fx_today": 0.8585,
+      "fx_change_pct": -14.91,
       "value_today_eur": 33349.92,
       "cost_eur_at_buy": 22636.32,
       "total_gain_eur": 10713.6,
@@ -245,8 +245,8 @@
       "bench_today": 202.54,
       "bench_return_pct": 27.35,
       "fx_at_buy": 0.9511,
-      "fx_today": 0.8617,
-      "fx_change_pct": -9.4,
+      "fx_today": 0.8585,
+      "fx_change_pct": -9.74,
       "value_today_eur": 112538.35,
       "cost_eur_at_buy": 97218.03,
       "total_gain_eur": 15320.32,
@@ -268,8 +268,8 @@
       "bench_today": 202.54,
       "bench_return_pct": 47.56,
       "fx_at_buy": 0.9255,
-      "fx_today": 0.8617,
-      "fx_change_pct": -6.89,
+      "fx_today": 0.8585,
+      "fx_change_pct": -7.24,
       "value_today_eur": 25416.36,
       "cost_eur_at_buy": 18406.82,
       "total_gain_eur": 7009.54,
