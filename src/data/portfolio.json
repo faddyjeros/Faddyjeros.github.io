@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-24T23:34:55+00:00",
+  "last_updated": "2026-05-25T23:41:05+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -10,9 +10,9 @@
       "price": 21.96,
       "bep": 80.0,
       "value_native": 1054.08,
-      "value_eur": 904.93,
-      "cost_eur": 3296.64,
-      "gain_eur": -2391.71,
+      "value_eur": 905.35,
+      "cost_eur": 3298.18,
+      "gain_eur": -2392.83,
       "gain_pct": -72.55,
       "bought": "2021-01-29",
       "allocation_pct": 0.52
@@ -30,22 +30,22 @@
       "gain_eur": 10713.6,
       "gain_pct": 47.33,
       "bought": null,
-      "allocation_pct": 19.26
+      "allocation_pct": 19.18
     },
     {
       "ticker": "WPEA.PA",
       "name": "iShares MSCI World Swap PEA UCITS",
       "shares": 16707.0,
       "currency": "EUR",
-      "price": 6.736,
+      "price": 6.776,
       "bep": 5.819,
-      "value_native": 112538.35,
-      "value_eur": 112538.35,
+      "value_native": 113206.63,
+      "value_eur": 113206.63,
       "cost_eur": 97218.03,
-      "gain_eur": 15320.32,
-      "gain_pct": 15.76,
+      "gain_eur": 15988.6,
+      "gain_pct": 16.45,
       "bought": null,
-      "allocation_pct": 64.98
+      "allocation_pct": 65.11
     },
     {
       "ticker": "CW8.PA",
@@ -60,7 +60,7 @@
       "gain_eur": 7009.54,
       "gain_pct": 38.08,
       "bought": null,
-      "allocation_pct": 14.68
+      "allocation_pct": 14.62
     },
     {
       "ticker": "IWDA.AS",
@@ -79,13 +79,13 @@
     }
   ],
   "summary": {
-    "market_value_eur": 173192.2,
-    "total_cost_eur": 142513.97,
-    "total_gain_eur": 30678.23,
-    "total_gain_pct": 21.53,
+    "market_value_eur": 173860.9,
+    "total_cost_eur": 142515.51,
+    "total_gain_eur": 31345.39,
+    "total_gain_pct": 21.99,
     "loan_remaining_eur": 6009.37,
     "loan_as_of": "2026-05-04",
-    "net_worth_eur": 167182.83,
+    "net_worth_eur": 167851.53,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -199,13 +199,13 @@
       "current_price": 21.96,
       "bep": 80.0,
       "fx_at_buy": 0.8838,
-      "fx_today": 0.8585,
-      "fx_change_pct": -2.86,
-      "value_today_eur": 904.93,
+      "fx_today": 0.8589,
+      "fx_change_pct": -2.82,
+      "value_today_eur": 905.35,
       "cost_eur_at_buy": 3393.79,
-      "total_gain_eur": -2488.86,
+      "total_gain_eur": -2488.44,
       "asset_gain_eur": -2462.2,
-      "fx_gain_eur": -26.67,
+      "fx_gain_eur": -26.25,
       "benchmark_note": "Direct USD holding \u2014 FX computed against EUR/USD"
     },
     {
@@ -222,8 +222,8 @@
       "bench_today": 16694.89,
       "bench_return_pct": 110.17,
       "fx_at_buy": 1.009,
-      "fx_today": 0.8585,
-      "fx_change_pct": -14.91,
+      "fx_today": 0.8589,
+      "fx_change_pct": -14.87,
       "value_today_eur": 33349.92,
       "cost_eur_at_buy": 22636.32,
       "total_gain_eur": 10713.6,
@@ -237,7 +237,7 @@
       "currency": "EUR",
       "avg_buy_date": "2024-12-05",
       "shares": 16707.0,
-      "current_price": 6.736,
+      "current_price": 6.776,
       "bep": 5.819,
       "benchmark_ticker": "URTH",
       "benchmark_name": "MSCI World (URTH proxy)",
@@ -245,13 +245,13 @@
       "bench_today": 202.54,
       "bench_return_pct": 27.35,
       "fx_at_buy": 0.9511,
-      "fx_today": 0.8585,
-      "fx_change_pct": -9.74,
-      "value_today_eur": 112538.35,
+      "fx_today": 0.8589,
+      "fx_change_pct": -9.69,
+      "value_today_eur": 113206.63,
       "cost_eur_at_buy": 97218.03,
-      "total_gain_eur": 15320.32,
+      "total_gain_eur": 15988.6,
       "asset_gain_eur": 26591.61,
-      "fx_gain_eur": -11271.29,
+      "fx_gain_eur": -10603.01,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     },
     {
@@ -268,8 +268,8 @@
       "bench_today": 202.54,
       "bench_return_pct": 47.56,
       "fx_at_buy": 0.9255,
-      "fx_today": 0.8585,
-      "fx_change_pct": -7.24,
+      "fx_today": 0.8589,
+      "fx_change_pct": -7.2,
       "value_today_eur": 25416.36,
       "cost_eur_at_buy": 18406.82,
       "total_gain_eur": 7009.54,
