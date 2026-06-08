@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-07T23:38:00+00:00",
+  "last_updated": "2026-06-08T23:48:52+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -7,15 +7,15 @@
       "name": "GameStop",
       "shares": 48.0,
       "currency": "USD",
-      "price": 21.8,
+      "price": 22.26,
       "bep": 80.0,
-      "value_native": 1046.4,
-      "value_eur": 908.17,
-      "cost_eur": 3332.74,
-      "gain_eur": -2424.57,
-      "gain_pct": -72.75,
+      "value_native": 1068.48,
+      "value_eur": 926.48,
+      "cost_eur": 3329.66,
+      "gain_eur": -2403.18,
+      "gain_pct": -72.17,
       "bought": "2021-01-29",
-      "allocation_pct": 0.52
+      "allocation_pct": 0.53
     },
     {
       "ticker": "CSPX.AS",
@@ -30,7 +30,7 @@
       "gain_eur": 10884.96,
       "gain_pct": 48.09,
       "bought": null,
-      "allocation_pct": 19.28
+      "allocation_pct": 19.27
     },
     {
       "ticker": "WPEA.PA",
@@ -45,7 +45,7 @@
       "gain_eur": 15754.7,
       "gain_pct": 16.21,
       "bought": null,
-      "allocation_pct": 64.96
+      "allocation_pct": 64.95
     },
     {
       "ticker": "CW8.PA",
@@ -79,13 +79,13 @@
     }
   ],
   "summary": {
-    "market_value_eur": 173907.1,
-    "total_cost_eur": 142550.07,
-    "total_gain_eur": 31357.03,
-    "total_gain_pct": 22.0,
+    "market_value_eur": 173925.41,
+    "total_cost_eur": 142547.0,
+    "total_gain_eur": 31378.41,
+    "total_gain_pct": 22.01,
     "loan_remaining_eur": 5610.76,
     "loan_as_of": "2026-06-04",
-    "net_worth_eur": 168296.34,
+    "net_worth_eur": 168314.65,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -196,16 +196,16 @@
       "currency": "USD",
       "avg_buy_date": "2021-12-29",
       "shares": 48.0,
-      "current_price": 21.8,
+      "current_price": 22.26,
       "bep": 80.0,
       "fx_at_buy": 0.8838,
-      "fx_today": 0.8679,
-      "fx_change_pct": -1.8,
-      "value_today_eur": 908.17,
+      "fx_today": 0.8671,
+      "fx_change_pct": -1.89,
+      "value_today_eur": 926.48,
       "cost_eur_at_buy": 3393.79,
-      "total_gain_eur": -2485.62,
-      "asset_gain_eur": -2468.98,
-      "fx_gain_eur": -16.64,
+      "total_gain_eur": -2467.31,
+      "asset_gain_eur": -2449.47,
+      "fx_gain_eur": -17.84,
       "benchmark_note": "Direct USD holding \u2014 FX computed against EUR/USD"
     },
     {
@@ -219,16 +219,16 @@
       "benchmark_ticker": "^SP500TR",
       "benchmark_name": "S&P 500 Total Return",
       "bench_at_buy": 7943.63,
-      "bench_today": 16503.96,
-      "bench_return_pct": 107.76,
+      "bench_today": 16553.78,
+      "bench_return_pct": 108.39,
       "fx_at_buy": 1.009,
-      "fx_today": 0.8679,
-      "fx_change_pct": -13.98,
+      "fx_today": 0.8671,
+      "fx_change_pct": -14.06,
       "value_today_eur": 33521.28,
       "cost_eur_at_buy": 22636.32,
       "total_gain_eur": 10884.96,
-      "asset_gain_eur": 24393.68,
-      "fx_gain_eur": -13508.72,
+      "asset_gain_eur": 24535.65,
+      "fx_gain_eur": -13650.69,
       "benchmark_note": "Decomposition uses S&P 500 Total Return as USD benchmark."
     },
     {
@@ -242,16 +242,16 @@
       "benchmark_ticker": "URTH",
       "benchmark_name": "MSCI World (URTH proxy)",
       "bench_at_buy": 159.04,
-      "bench_today": 200.38,
-      "bench_return_pct": 25.99,
+      "bench_today": 201.05,
+      "bench_return_pct": 26.42,
       "fx_at_buy": 0.9511,
-      "fx_today": 0.8679,
-      "fx_change_pct": -8.75,
+      "fx_today": 0.8671,
+      "fx_change_pct": -8.83,
       "value_today_eur": 112972.74,
       "cost_eur_at_buy": 97218.03,
       "total_gain_eur": 15754.7,
-      "asset_gain_eur": 25271.24,
-      "fx_gain_eur": -9516.54,
+      "asset_gain_eur": 25680.8,
+      "fx_gain_eur": -9926.1,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     },
     {
@@ -265,16 +265,16 @@
       "benchmark_ticker": "URTH",
       "benchmark_name": "MSCI World (URTH proxy)",
       "bench_at_buy": 137.26,
-      "bench_today": 200.38,
-      "bench_return_pct": 45.98,
+      "bench_today": 201.05,
+      "bench_return_pct": 46.47,
       "fx_at_buy": 0.9255,
-      "fx_today": 0.8679,
-      "fx_change_pct": -6.22,
+      "fx_today": 0.8671,
+      "fx_change_pct": -6.31,
       "value_today_eur": 25518.28,
       "cost_eur_at_buy": 18406.82,
       "total_gain_eur": 7111.46,
-      "asset_gain_eur": 8463.74,
-      "fx_gain_eur": -1352.28,
+      "asset_gain_eur": 8553.58,
+      "fx_gain_eur": -1442.12,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     }
   ]
