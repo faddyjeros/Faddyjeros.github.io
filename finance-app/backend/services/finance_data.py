@@ -1,23 +1,21 @@
-"""Shared financial data queries — all reads from SQLite."""
+"""Shared financial data queries used by both existing routers and analyst tool functions."""
 
 import math
+import os
 from datetime import date, timedelta
 
+import pandas as pd
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from database import (
-    AppSetting,
-    BankAccount,
-    LoanPayment,
-    MonthlyBudget,
-    NetWorthSnapshot,
-    PortfolioHolding,
-    SalaryRecord,
-    Transaction,
+from database import MonthlyBudget, Transaction
+
+XLSX_PATH = os.environ.get(
+    "ACCOUNTING_XLSX",
+    "/app/data/accounting.xlsx" if os.name != "nt" else r"C:\Users\Jerem\OneDrive\Documents\Money\2026_Personal Accounting.xlsx",
 )
 
-LOAN_INITIAL_DEFAULT = 19000.0
+LOAN_INITIAL = 19000.0
 
 EXCLUDE_FROM_TOTALS = {"Internal Transfer", "Transfers"}
 
@@ -28,6 +26,15 @@ def _f(val, default=0.0):
         return v if math.isfinite(v) else default
     except (TypeError, ValueError):
         return default
+
+
+def _read_sheet(name: str) -> pd.DataFrame | None:
+    if not os.path.exists(XLSX_PATH):
+        return None
+    try:
+        return pd.read_excel(XLSX_PATH, sheet_name=name, header=None)
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -134,38 +141,57 @@ def get_budget_status(db: Session) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Wealth queries (from SQLite — migrated from Excel)
+# Wealth queries (from Excel)
 # ---------------------------------------------------------------------------
 
-def get_net_worth_history(db: Session) -> list[dict]:
-    rows = db.query(NetWorthSnapshot).order_by(NetWorthSnapshot.date).all()
-    return [
-        {
-            "date": r.date.isoformat(),
-            "value": r.value,
-            "comment": r.comment,
-        }
-        for r in rows
-    ]
+def get_net_worth_history() -> list[dict]:
+    df = _read_sheet("Summary and tracking")
+    if df is None:
+        return []
+    rows = []
+    for _, row in df.iloc[1:].iterrows():
+        d = pd.to_datetime(row[0], errors="coerce")
+        if pd.isna(d):
+            continue
+        v = _f(row[1])
+        if v == 0:
+            continue
+        rows.append({
+            "date": d.strftime("%Y-%m-%d"),
+            "value": v,
+            "comment": str(row[2]) if pd.notna(row[2]) else None,
+        })
+    return rows
 
 
-def get_portfolio_holdings(db: Session) -> dict:
-    rows = db.query(PortfolioHolding).order_by(PortfolioHolding.sort_order).all()
+def get_portfolio_holdings() -> dict:
+    df = _read_sheet("Investments")
+    if df is None:
+        return {"dynamic": [], "flat": [], "total_eur": 0}
+
     dynamic = []
+    for _, row in df.iloc[1:5].iterrows():
+        ticker = str(row[7]).strip() if pd.notna(row[7]) else None
+        if not ticker or ticker == "nan":
+            continue
+        dynamic.append({
+            "ticker": ticker,
+            "type": str(row[1]) if pd.notna(row[1]) else None,
+            "volume": _f(row[2]),
+            "price": _f(row[3]),
+            "value_eur": _f(row[5]),
+        })
+
     flat = []
-    for r in rows:
-        entry = {
-            "name": r.name,
-            "type": r.holding_type,
-            "value_eur": r.value_eur,
-        }
-        if r.is_dynamic:
-            entry["ticker"] = r.ticker
-            entry["volume"] = r.volume
-            entry["price"] = r.price
-            dynamic.append(entry)
-        else:
-            flat.append(entry)
+    for _, row in df.iloc[7:11].iterrows():
+        name = str(row[0]).strip() if pd.notna(row[0]) else None
+        if not name or name == "nan":
+            continue
+        flat.append({
+            "name": name,
+            "type": str(row[1]) if pd.notna(row[1]) else None,
+            "value_eur": _f(row[5]),
+        })
 
     total = (
         sum(h["value_eur"] for h in dynamic)
@@ -174,57 +200,66 @@ def get_portfolio_holdings(db: Session) -> dict:
     return {"dynamic": dynamic, "flat": flat, "total_eur": round(total, 2)}
 
 
-def get_salary_history(db: Session) -> list[dict]:
-    rows = db.query(SalaryRecord).order_by(SalaryRecord.date).all()
-    return [
-        {
-            "date": r.date.isoformat(),
-            "company": r.company,
-            "jurisdiction": r.jurisdiction,
-            "gross": r.gross,
-            "overtime": r.overtime,
-            "extras": r.extras,
-            "bonus": r.bonus,
-            "net": r.net,
-            "comment": r.comment,
-        }
-        for r in rows
-    ]
+def get_salary_history() -> list[dict]:
+    df = _read_sheet("Salary tracker")
+    if df is None:
+        return []
+    rows = []
+    for _, row in df.iloc[1:].iterrows():
+        d = pd.to_datetime(row[0], dayfirst=True, errors="coerce")
+        if pd.isna(d):
+            continue
+        rows.append({
+            "date": d.strftime("%Y-%m-%d"),
+            "company": str(row[1]).strip() if pd.notna(row[1]) else None,
+            "jurisdiction": str(row[2]).strip() if pd.notna(row[2]) else None,
+            "gross": _f(row[3]),
+            "overtime": _f(row[4]),
+            "extras": _f(row[5]),
+            "bonus": _f(row[6]),
+            "net": _f(row[7]),
+            "comment": str(row[8]).strip() if pd.notna(row[8]) else None,
+        })
+    return rows
 
 
-def get_accounts(db: Session) -> list[dict]:
-    rows = db.query(BankAccount).order_by(BankAccount.account_name).all()
-    return [
-        {
-            "account": r.account_name,
-            "amount_local": r.amount_local,
-            "amount_eur": r.amount_eur,
-        }
-        for r in rows
-    ]
+def get_accounts() -> list[dict]:
+    df = _read_sheet("Bank accounts")
+    if df is None:
+        return []
+    accounts = []
+    for _, row in df.iloc[1:].iterrows():
+        name = str(row[0]).strip() if pd.notna(row[0]) else None
+        if not name or name == "nan":
+            continue
+        accounts.append({
+            "account": name,
+            "amount_local": _f(row[1]),
+            "amount_eur": _f(row[2]),
+        })
+    return accounts
 
 
 def calculate_investable_amount(db: Session) -> dict:
     budget = get_budget_status(db)
-    salary = get_salary_history(db)
+    salary = get_salary_history()
     latest_salary = salary[-1]["net"] if salary else 0
 
     total_spent = budget["total_spent"]
     total_budget = budget["total_budget"]
     remaining_budget = budget["total_remaining"]
 
-    # Get current month loan payment
-    today = date.today()
+    loan_df = _read_sheet("Loan")
     monthly_loan = 0.0
-    loan_row = (
-        db.query(LoanPayment)
-        .filter(
-            func.strftime("%Y-%m", LoanPayment.date) == today.strftime("%Y-%m")
-        )
-        .first()
-    )
-    if loan_row:
-        monthly_loan = loan_row.capital + loan_row.interest + loan_row.insurance
+    if loan_df is not None:
+        today = date.today()
+        for _, row in loan_df.iloc[2:].iterrows():
+            d = pd.to_datetime(row[0], errors="coerce")
+            if pd.isna(d):
+                continue
+            if d.month == today.month and d.year == today.year:
+                monthly_loan = _f(row[1]) + _f(row[2]) + _f(row[3])
+                break
 
     investable = latest_salary - total_spent - monthly_loan
     projected = latest_salary - total_budget - monthly_loan

@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from database import DB_PATH, MonthlyBudget, SessionLocal, Transaction, create_tables
-from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, export, ingest, transactions, wealth
+from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, ingest, transactions, wealth
 from services.market_data import start_background_refresh, stop_background_refresh
 
 _sync_task = None
@@ -78,7 +78,6 @@ app.include_router(ai_advice.router, prefix="/api/ai", tags=["ai"])
 app.include_router(budget_targets.router, prefix="/api/budget-targets", tags=["budget-targets"])
 app.include_router(wealth.router, prefix="/api/wealth", tags=["wealth"])
 app.include_router(analyst.router, prefix="/api/analyst", tags=["analyst"])
-app.include_router(export.router, prefix="/api/export", tags=["export"])
 
 
 def _migrate_categories():
@@ -166,6 +165,19 @@ async def restore_db(request: Request):
         f.write(body)
     create_tables()
     return {"status": "ok", "size": len(body)}
+
+
+@app.post("/api/upload-xlsx")
+async def upload_xlsx(request: Request):
+    """Upload the accounting Excel file for wealth data."""
+    from services.finance_data import XLSX_PATH
+    body = await request.body()
+    if len(body) < 100:
+        return Response(status_code=400, content="File too small")
+    os.makedirs(os.path.dirname(XLSX_PATH) or ".", exist_ok=True)
+    with open(XLSX_PATH, "wb") as f:
+        f.write(body)
+    return {"status": "ok", "path": XLSX_PATH, "size": len(body)}
 
 
 # --- Basic auth middleware (when AUTH_USER/AUTH_PASS are set) ---
