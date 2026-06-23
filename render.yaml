@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: finance-app
+    runtime: docker
+    dockerfilePath: ./finance-app/Dockerfile.render
+    dockerContext: ./finance-app
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: DB_PATH
+        value: /app/data/finance.db
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AUTH_USER
+        sync: false
+      - key: AUTH_PASS
+        sync: false
