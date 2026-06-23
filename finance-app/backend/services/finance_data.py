@@ -12,7 +12,7 @@ from database import MonthlyBudget, Transaction
 
 XLSX_PATH = os.environ.get(
     "ACCOUNTING_XLSX",
-    r"C:\Users\Jerem\OneDrive\Documents\Money\2026_Personal Accounting.xlsx",
+    "/app/data/accounting.xlsx" if os.name != "nt" else r"C:\Users\Jerem\OneDrive\Documents\Money\2026_Personal Accounting.xlsx",
 )
 
 LOAN_INITIAL = 19000.0

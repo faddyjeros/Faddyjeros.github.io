@@ -167,6 +167,19 @@ async def restore_db(request: Request):
     return {"status": "ok", "size": len(body)}
 
 
+@app.post("/api/upload-xlsx")
+async def upload_xlsx(request: Request):
+    """Upload the accounting Excel file for wealth data."""
+    from services.finance_data import XLSX_PATH
+    body = await request.body()
+    if len(body) < 100:
+        return Response(status_code=400, content="File too small")
+    os.makedirs(os.path.dirname(XLSX_PATH) or ".", exist_ok=True)
+    with open(XLSX_PATH, "wb") as f:
+        f.write(body)
+    return {"status": "ok", "path": XLSX_PATH, "size": len(body)}
+
+
 # --- Basic auth middleware (when AUTH_USER/AUTH_PASS are set) ---
 _AUTH_USER = os.environ.get("AUTH_USER", "")
 _AUTH_PASS = os.environ.get("AUTH_PASS", "")
