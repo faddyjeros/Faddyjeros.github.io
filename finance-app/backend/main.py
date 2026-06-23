@@ -153,6 +153,20 @@ def health():
     return {"status": "ok"}
 
 
+@app.post("/api/restore-db")
+async def restore_db(request: Request):
+    """Replace the running SQLite DB with an uploaded one."""
+    from database import engine
+    body = await request.body()
+    if len(body) < 100:
+        return Response(status_code=400, content="File too small")
+    engine.dispose()
+    with open(DB_PATH, "wb") as f:
+        f.write(body)
+    create_tables()
+    return {"status": "ok", "size": len(body)}
+
+
 # --- Basic auth middleware (when AUTH_USER/AUTH_PASS are set) ---
 _AUTH_USER = os.environ.get("AUTH_USER", "")
 _AUTH_PASS = os.environ.get("AUTH_PASS", "")
