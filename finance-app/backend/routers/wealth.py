@@ -348,7 +348,7 @@ def migrate_from_excel(db: Session = Depends(get_db)):
 
     xlsx_path = os.environ.get(
         "ACCOUNTING_XLSX",
-        r"C:\Users\Jerem\OneDrive\Documents\Money\2026_Personal Accounting.xlsx",
+        "/app/data/accounting.xlsx" if os.name != "nt" else r"C:\Users\Jerem\OneDrive\Documents\Money\2026_Personal Accounting.xlsx",
     )
     if not os.path.exists(xlsx_path):
         raise HTTPException(404, f"Excel file not found: {xlsx_path}")
