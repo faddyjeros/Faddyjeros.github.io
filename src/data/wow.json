@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-14T23:30:49.463405+00:00",
+  "updated_at": "2026-06-25T23:54:40.701731+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -9,9 +9,9 @@
       "class": "Warrior",
       "spec": "Protection",
       "level": 90,
-      "item_level": 285,
-      "equipped_item_level": 284,
-      "achievement_points": 21900,
+      "item_level": 288,
+      "equipped_item_level": 288,
+      "achievement_points": 22005,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
@@ -23,9 +23,9 @@
       "class": "Hunter",
       "spec": "Beast Mastery",
       "level": 90,
-      "item_level": 247,
-      "equipped_item_level": 247,
-      "achievement_points": 21975,
+      "item_level": 249,
+      "equipped_item_level": 248,
+      "achievement_points": 22005,
       "faction": "Alliance",
       "realm": "Sylvanas",
       "pvp": {
@@ -49,9 +49,9 @@
       "class": "Druid",
       "spec": "Guardian",
       "level": 90,
-      "item_level": 275,
-      "equipped_item_level": 275,
-      "achievement_points": 21900,
+      "item_level": 289,
+      "equipped_item_level": 289,
+      "achievement_points": 22115,
       "faction": "Alliance",
       "realm": "Sylvanas"
     }

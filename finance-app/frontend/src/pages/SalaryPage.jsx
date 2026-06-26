@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
-  Bar, BarChart, CartesianGrid, Cell, Line, ComposedChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, ReferenceLine,
+  Bar, BarChart, CartesianGrid,
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { api } from "../api";
+import EditableTable from "../components/EditableTable";
 
 const fmt = (v) => v?.toLocaleString("fr-CH", { maximumFractionDigits: 0 }) ?? "—";
 
@@ -14,33 +15,47 @@ const COMPANY_COLORS = {
 };
 
 const JURISDICTION_LABELS = {
-  Germany: "🇩🇪",
-  France:  "🇫🇷",
-  Swiss:   "🇨🇭",
+  Germany: "DE",
+  France:  "FR",
+  Swiss:   "CH",
 };
+
+const SALARY_COLUMNS = [
+  { key: "date", label: "Date", type: "date", width: "120px" },
+  { key: "company", label: "Company", type: "text", width: "110px" },
+  { key: "jurisdiction", label: "Country", type: "select", options: ["France", "Germany", "Swiss", "UK", "US"], width: "100px" },
+  { key: "gross", label: "Gross", type: "number", width: "100px" },
+  { key: "overtime", label: "Overtime", type: "number", width: "90px" },
+  { key: "extras", label: "Extras", type: "number", width: "90px" },
+  { key: "bonus", label: "Bonus", type: "number", width: "90px" },
+  { key: "net", label: "Net", type: "number", width: "100px" },
+  { key: "comment", label: "Notes", type: "text" },
+];
 
 export default function SalaryPage() {
   const [salary, setSalary] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const reload = useCallback(() => {
+    setLoading(true);
     api.getSalary()
       .then(setSalary)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-zinc-500 text-sm p-6">Loading salary data…</p>;
+  useEffect(() => { reload(); }, [reload]);
+
+  if (loading) return <p className="text-zinc-500 text-sm p-6">Loading salary data...</p>;
   if (error) return <p className="text-red-400 text-sm p-6">Could not load: {error}</p>;
 
   const latest = [...salary].reverse().find((s) => s.net > 0);
   const latestNormal = [...salary].reverse().find((s) => s.net > 0 && !s.bonus && !s.overtime);
   const totalNet = salary.reduce((s, r) => s + r.net, 0);
-  const totalGross = salary.reduce((s, r) => s + r.gross + r.overtime + r.bonus + r.extras, 0);
   const totalBonus = salary.reduce((s, r) => s + r.bonus, 0);
 
-  // Chart data — stacked gross components + net line
+  // Chart data
   const chartData = salary.map((s) => ({
     date: s.date.slice(0, 7),
     base: s.gross,
@@ -60,17 +75,17 @@ export default function SalaryPage() {
         <SKpi label="Current Gross / mo" value={fmt(latest?.gross)}
           sub={`~${fmt(latestNormal?.net)} net / mo`} color="text-green-400" />
         <SKpi label="Current Company" value={latest?.company ?? "—"}
-          sub={`${JURISDICTION_LABELS[latest?.jurisdiction] ?? ""} ${latest?.jurisdiction}`} color="text-amber-400" />
-        <SKpi label="Total Net Earned" value={`${fmt(Math.round(totalNet))}`}
+          sub={`${JURISDICTION_LABELS[latest?.jurisdiction] ?? ""} ${latest?.jurisdiction ?? ""}`} color="text-amber-400" />
+        <SKpi label="Total Net Earned" value={fmt(Math.round(totalNet))}
           sub="since Aug 2019" color="text-zinc-200" />
-        <SKpi label="Total Bonuses" value={`${fmt(Math.round(totalBonus))}`}
+        <SKpi label="Total Bonuses" value={fmt(Math.round(totalBonus))}
           sub="across all jobs" color="text-yellow-400" />
       </div>
 
       {/* Bar chart */}
       <div className="bg-zinc-800 rounded-xl p-4">
         <h3 className="text-sm font-semibold text-zinc-100 mb-1">Gross Pay Breakdown per Month</h3>
-        <p className="text-xs text-zinc-500 mb-4">Stacked by component · dashed line = net after tax</p>
+        <p className="text-xs text-zinc-500 mb-4">Stacked by component</p>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
@@ -85,7 +100,6 @@ export default function SalaryPage() {
           </BarChart>
         </ResponsiveContainer>
 
-        {/* Legend */}
         <div className="flex gap-4 mt-3 justify-center flex-wrap">
           {[["Base","#4361ee"],["Overtime","#ffd166"],["Bonus","#f72585"],["Extras","#06d6a0"]].map(([label, color]) => (
             <div key={label} className="flex items-center gap-1.5">
@@ -96,55 +110,23 @@ export default function SalaryPage() {
         </div>
       </div>
 
-      {/* Full history table */}
-      <div className="bg-zinc-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-zinc-700">
-          <h3 className="text-sm font-semibold text-zinc-100">Full History</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-zinc-700">
-                {["Date","Company","Country","Gross","Overtime","Bonus","Extras","Net","Notes"].map((h) => (
-                  <th key={h} className="px-3 py-2 text-left text-zinc-500 font-medium">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[...salary].reverse().map((row, i) => {
-                const color = COMPANY_COLORS[row.company] ?? "#6b7280";
-                return (
-                  <tr key={i} className="border-b border-zinc-700/50 hover:bg-zinc-700/30 transition-colors">
-                    <td className="px-3 py-2 text-zinc-400 font-mono">{row.date.slice(0, 7)}</td>
-                    <td className="px-3 py-2">
-                      <span className="font-semibold" style={{ color }}>{row.company}</span>
-                    </td>
-                    <td className="px-3 py-2 text-zinc-500">
-                      {JURISDICTION_LABELS[row.jurisdiction] ?? ""} {row.jurisdiction}
-                    </td>
-                    <td className="px-3 py-2 text-zinc-300 font-mono text-right">{fmt(row.gross)}</td>
-                    <td className="px-3 py-2 text-right font-mono"
-                      style={{ color: row.overtime ? "#ffd166" : "#4b5563" }}>
-                      {row.overtime ? fmt(row.overtime) : "—"}
-                    </td>
-                    <td className="px-3 py-2 text-right font-mono"
-                      style={{ color: row.bonus ? "#f72585" : "#4b5563" }}>
-                      {row.bonus ? fmt(row.bonus) : "—"}
-                    </td>
-                    <td className="px-3 py-2 text-right font-mono text-zinc-500">
-                      {row.extras ? fmt(row.extras) : "—"}
-                    </td>
-                    <td className="px-3 py-2 text-right font-mono text-green-400 font-semibold">
-                      {fmt(row.net)}
-                    </td>
-                    <td className="px-3 py-2 text-zinc-500 max-w-48 truncate">{row.comment ?? ""}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Editable salary table */}
+      <EditableTable
+        title="Salary Records"
+        columns={SALARY_COLUMNS}
+        data={salary}
+        defaultSort={{ key: "date", dir: "desc" }}
+        exportEntity="salary"
+        defaultNew={{
+          date: new Date().toISOString().slice(0, 10),
+          company: latest?.company ?? "",
+          jurisdiction: latest?.jurisdiction ?? "",
+          gross: 0, overtime: 0, extras: 0, bonus: 0, net: 0, comment: "",
+        }}
+        onSave={async (id, data) => { await api.updateSalary(id, data); reload(); }}
+        onCreate={async (data) => { const r = await api.createSalary(data); reload(); return r; }}
+        onDelete={async (id) => { await api.deleteSalary(id); reload(); }}
+      />
     </div>
   );
 }

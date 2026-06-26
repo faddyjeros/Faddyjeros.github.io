@@ -47,6 +47,12 @@ def get_categories():
     return CATEGORIES
 
 
+@router.get("/meta/uncategorized-count")
+def uncategorized_count(db: Session = Depends(get_db)):
+    count = db.query(Transaction).filter(Transaction.category == "Miscellaneous").count()
+    return {"count": count}
+
+
 @router.get("/meta/banks")
 def get_banks(db: Session = Depends(get_db)):
     rows = db.query(Transaction.bank).distinct().all()

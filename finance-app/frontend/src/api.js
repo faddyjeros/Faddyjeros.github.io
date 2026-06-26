@@ -31,6 +31,7 @@ export const api = {
       body: JSON.stringify(data),
     }),
   getCategories: () => req("/transactions/meta/categories"),
+  getUncategorizedCount: () => req("/transactions/meta/uncategorized-count"),
   getBanks: () => req("/transactions/meta/banks"),
   remapCategory: (from_category, to_category) =>
     req(`/transactions/remap-category?${new URLSearchParams({ from_category, to_category })}`, {
@@ -82,10 +83,31 @@ export const api = {
 
   // Wealth
   getNetWorth: () => req("/wealth/networth"),
+  createNetWorth: (data) => req("/wealth/networth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  updateNetWorth: (id, data) => req(`/wealth/networth/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  deleteNetWorth: (id) => fetch(`${BASE}/wealth/networth/${id}`, { method: "DELETE" }),
+
   getPortfolio: () => req("/wealth/portfolio"),
+  createPortfolio: (data) => req("/wealth/portfolio", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  updatePortfolio: (id, data) => req(`/wealth/portfolio/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  deletePortfolio: (id) => fetch(`${BASE}/wealth/portfolio/${id}`, { method: "DELETE" }),
+
   getAccounts: () => req("/wealth/accounts"),
+  createAccount: (data) => req("/wealth/accounts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  updateAccount: (id, data) => req(`/wealth/accounts/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  deleteAccount: (id) => fetch(`${BASE}/wealth/accounts/${id}`, { method: "DELETE" }),
+
   getSalary: () => req("/wealth/salary"),
+  createSalary: (data) => req("/wealth/salary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  updateSalary: (id, data) => req(`/wealth/salary/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  deleteSalary: (id) => fetch(`${BASE}/wealth/salary/${id}`, { method: "DELETE" }),
+
   getLoan: () => req("/wealth/loan"),
+  createLoan: (data) => req("/wealth/loan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  updateLoan: (id, data) => req(`/wealth/loan/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+  deleteLoan: (id) => fetch(`${BASE}/wealth/loan/${id}`, { method: "DELETE" }),
+
+  migrateFromExcel: () => req("/wealth/migrate-from-excel", { method: "POST" }),
 
   // Budget targets
   getBudgetTargets: () => req("/budget-targets/"),

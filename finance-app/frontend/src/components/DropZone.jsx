@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { Link } from "react-router-dom";
 import { api } from "../api";
 
 const TS = () => new Date().toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" });
@@ -35,6 +36,7 @@ export default function DropZone() {
   });
 
   const totalNew = history.filter((r) => r.ok).reduce((s, r) => s + (r.new ?? 0), 0);
+  const totalNeedsAnnotation = history.filter((r) => r.ok).reduce((s, r) => s + (r.needs_annotation ?? 0), 0);
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -68,6 +70,16 @@ export default function DropZone() {
           {totalNew > 0 && <span className="text-green-400 font-semibold">· +{totalNew} new</span>}
           <span className="text-zinc-500">{open ? "▲" : "▼"}</span>
         </button>
+      )}
+
+      {/* Categorize CTA */}
+      {totalNew > 0 && (
+        <Link
+          to="/categorize"
+          className="text-xs px-3 py-1 rounded-lg bg-amber-600/80 hover:bg-amber-600 text-white transition-colors font-medium"
+        >
+          Categorize {totalNew} new →
+        </Link>
       )}
 
       {/* Clear */}
