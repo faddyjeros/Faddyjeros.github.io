@@ -80,7 +80,7 @@ export const api = {
   getMonthlyConclusion: (year, month) =>
     req(`/ai/monthly-conclusion?year=${year}&month=${month}`, { method: "POST" }),
 
-  // Wealth (Excel)
+  // Wealth
   getNetWorth: () => req("/wealth/networth"),
   getPortfolio: () => req("/wealth/portfolio"),
   getAccounts: () => req("/wealth/accounts"),

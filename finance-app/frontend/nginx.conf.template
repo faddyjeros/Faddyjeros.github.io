@@ -4,10 +4,8 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
-    # 168.63.129.16 is Azure's internal recursive DNS — available in all Azure VNets.
-    # Using a variable forces nginx to re-resolve the upstream on each request
-    # instead of caching the IP at startup (which breaks when backend scales from zero).
-    resolver 168.63.129.16 valid=15s ipv6=off;
+    # Docker's internal DNS; re-resolve on each request via variable.
+    resolver 127.0.0.11 valid=15s ipv6=off;
     set $backend http://${BACKEND_HOST};
 
     location /api/ {

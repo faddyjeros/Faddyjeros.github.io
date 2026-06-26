@@ -52,8 +52,8 @@ export default function WealthPage() {
   const prev = networth[networth.length - 2];
   const delta = latest && prev ? latest.value - prev.value : null;
 
-  const investableTotal = portfolio?.dynamic.reduce((s, h) => s + h.value_eur, 0) ?? 0;
-  const loanRemaining = loan?.summary.capital_remaining ?? 0;
+  const investableTotal = portfolio?.dynamic?.reduce((s, h) => s + h.value_eur, 0) ?? 0;
+  const loanRemaining = loan?.summary?.capital_remaining ?? 0;
 
   // Loan chart data: past = solid area, future = dashed line
   const loanChart = (loan?.schedule ?? []).map((p) => ({
@@ -161,17 +161,17 @@ export default function WealthPage() {
           {/* Progress bar */}
           <div className="mb-4">
             <div className="flex justify-between text-xs text-zinc-500 mb-1">
-              <span>€{fmt(loan?.summary.capital_paid)} paid</span>
-              <span>€{fmt(loan?.summary.capital_remaining)} left</span>
+              <span>€{fmt(loan?.summary?.capital_paid)} paid</span>
+              <span>€{fmt(loan?.summary?.capital_remaining)} left</span>
             </div>
             <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
               <div className="h-full bg-green-500 rounded-full transition-all"
-                style={{ width: `${((loan?.summary.capital_paid ?? 0) / 19000) * 100}%` }} />
+                style={{ width: `${((loan?.summary?.capital_paid ?? 0) / 19000) * 100}%` }} />
             </div>
             <div className="flex justify-between text-xs text-zinc-500 mt-1">
               <span>Aug 2021</span>
               <span className="text-green-500 font-semibold">
-                {Math.round(((loan?.summary.capital_paid ?? 0) / 19000) * 100)}% repaid
+                {Math.round(((loan?.summary?.capital_paid ?? 0) / 19000) * 100)}% repaid
               </span>
               <span>Aug 2027</span>
             </div>
@@ -198,8 +198,8 @@ export default function WealthPage() {
           </ResponsiveContainer>
 
           <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-zinc-700 text-xs text-zinc-500">
-            <span>Interest paid: €{fmt(loan?.summary.interest_paid)}</span>
-            <span className="text-right">Interest left: €{fmt(loan?.summary.interest_remaining)}</span>
+            <span>Interest paid: €{fmt(loan?.summary?.interest_paid)}</span>
+            <span className="text-right">Interest left: €{fmt(loan?.summary?.interest_remaining)}</span>
           </div>
         </div>
       </div>

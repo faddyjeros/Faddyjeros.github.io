@@ -1,9 +1,7 @@
-import asyncio
 import base64
 import os
 import re
 import secrets
-import shutil
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -12,51 +10,19 @@ load_dotenv()
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
-from database import DB_PATH, MonthlyBudget, SessionLocal, Transaction, create_tables
+from database import MonthlyBudget, SessionLocal, Transaction, create_tables
 from routers import alerts, ai_advice, analyst, budget_targets, budgets, dashboard, ingest, transactions, wealth
 from services.market_data import start_background_refresh, stop_background_refresh
-
-_sync_task = None
-
-
-async def _periodic_db_sync():
-    """Sync local DB back to Azure Files mount every 60 seconds."""
-    mount_dir = os.environ.get("MOUNT_DIR", "/data")
-    mount_db = os.path.join(mount_dir, "finance.db")
-    while True:
-        await asyncio.sleep(60)
-        try:
-            if os.path.isdir(mount_dir) and os.path.isfile(DB_PATH):
-                shutil.copy2(DB_PATH, mount_db)
-        except Exception as e:
-            print(f"[sync] Failed to sync DB to mount: {e}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _sync_task
     create_tables()
     _migrate_categories()
     _seed_budget_targets()
     await start_background_refresh()
-    # Start periodic sync if running with local copy strategy
-    mount_dir = os.environ.get("MOUNT_DIR", "/data")
-    if os.path.isdir(mount_dir) and "localdata" in DB_PATH:
-        _sync_task = asyncio.create_task(_periodic_db_sync())
-        print(f"[sync] Periodic DB sync to {mount_dir} enabled")
     yield
-    # Shutdown: final sync + stop tasks
-    if _sync_task:
-        _sync_task.cancel()
-        try:
-            mount_db = os.path.join(mount_dir, "finance.db")
-            if os.path.isfile(DB_PATH):
-                shutil.copy2(DB_PATH, mount_db)
-                print("[sync] Final DB sync completed")
-        except Exception as e:
-            print(f"[sync] Final sync failed: {e}")
     await stop_background_refresh()
 
 
@@ -153,43 +119,20 @@ def health():
     return {"status": "ok"}
 
 
-@app.post("/api/restore-db")
-async def restore_db(request: Request):
-    """Replace the running SQLite DB with an uploaded one."""
-    from database import engine
-    body = await request.body()
-    if len(body) < 100:
-        return Response(status_code=400, content="File too small")
-    engine.dispose()
-    with open(DB_PATH, "wb") as f:
-        f.write(body)
-    create_tables()
-    return {"status": "ok", "size": len(body)}
-
-
-@app.post("/api/upload-xlsx")
-async def upload_xlsx(request: Request):
-    """Upload the accounting Excel file for wealth data."""
-    from services.finance_data import XLSX_PATH
-    body = await request.body()
-    if len(body) < 100:
-        return Response(status_code=400, content="File too small")
-    os.makedirs(os.path.dirname(XLSX_PATH) or ".", exist_ok=True)
-    with open(XLSX_PATH, "wb") as f:
-        f.write(body)
-    return {"status": "ok", "path": XLSX_PATH, "size": len(body)}
-
-
 # --- Basic auth middleware (when AUTH_USER/AUTH_PASS are set) ---
 _AUTH_USER = os.environ.get("AUTH_USER", "")
 _AUTH_PASS = os.environ.get("AUTH_PASS", "")
+
+
+_AUTH_EXEMPT = {"/api/health", "/api/ingest"}
 
 
 @app.middleware("http")
 async def basic_auth_middleware(request: Request, call_next):
     if not _AUTH_USER or not _AUTH_PASS:
         return await call_next(request)
-    if request.url.path == "/api/health":
+    path = request.url.path
+    if path in _AUTH_EXEMPT or not path.startswith("/api/"):
         return await call_next(request)
     auth = request.headers.get("Authorization", "")
     if auth.startswith("Basic "):

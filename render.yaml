@@ -7,8 +7,8 @@ services:
     plan: free
     region: frankfurt
     envVars:
-      - key: DB_PATH
-        value: /app/data/finance.db
+      - key: DATABASE_URL
+        sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: AUTH_USER

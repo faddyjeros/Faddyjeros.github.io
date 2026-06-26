@@ -2,47 +2,27 @@
 
 Monorepo containing:
 - **Portfolio site** (`/src`, `astro.config.ts`) — Astro/React, deployed to GitHub Pages via `.github/workflows/deploy.yml`
-- **Finance app** (`/finance-app`) — FastAPI backend + React/Vite frontend, deployed to Azure Container Apps
+- **Finance app** (`/finance-app`) — FastAPI backend + React/Vite frontend, deployed to Render (free tier)
 
-## Deploy Configuration (configured by /setup-deploy)
+## Deploy Configuration
 
-- Platform: Azure Container Apps
-- Production URL: https://finance.faddyjeros.com
-- Deploy workflow: .github/workflows/deploy-finance.yml (auto-deploy on push to main when finance-app/** changes)
-- Deploy status command: az containerapp show --name finance-frontend --resource-group finance-rg --query "properties.runningStatus"
+- Platform: Render (free tier, combined Docker image)
+- Production URL: https://finance-app-0ivv.onrender.com
+- Database: Neon PostgreSQL (free tier, persistent)
+- Deploy: auto-deploy on push to main via Render Git integration
 - Merge method: squash
 - Project type: web app (FastAPI + React)
-- Post-deploy health check: https://finance.faddyjeros.com
 
-### Custom deploy hooks
+### Render Environment Variables
 
-- Pre-merge: none
-- Deploy trigger: automatic on push to main (paths: finance-app/**)
-- Deploy status: az containerapp show --name finance-frontend --resource-group finance-rg
-- Health check: https://finance.faddyjeros.com
-
-### Azure Resources
-
-- Resource Group: finance-rg (westeurope)
-- Container Registry: financeregistry<random>.azurecr.io
-- Container Apps Environment: finance-env
-- Backend Container App: finance-backend (internal ingress, port 8000)
-- Frontend Container App: finance-frontend (external ingress, port 80)
-- Storage: Azure Files share `finance-data` mounted at /data (SQLite persistence)
-
-### GitHub Secrets required
-
-- AZURE_CREDENTIALS — service principal JSON (from azure-setup.sh output)
-- AZURE_RESOURCE_GROUP — finance-rg
-- ACR_LOGIN_SERVER — <registry>.azurecr.io
-- ACR_USERNAME / ACR_PASSWORD — from azure-setup.sh output
+- DATABASE_URL — Neon PostgreSQL connection string
 - ANTHROPIC_API_KEY — Anthropic API key
-- FINANCE_AUTH_USER / FINANCE_AUTH_PASS — HTTP basic auth credentials
+- AUTH_USER / AUTH_PASS — HTTP basic auth credentials
 
 ### Local dev
 
 ```bash
-# Terminal 1
+# Terminal 1 (uses local SQLite when DATABASE_URL is not set)
 cd finance-app/backend && uvicorn main:app --reload --port 8000
 
 # Terminal 2
@@ -52,12 +32,13 @@ cd finance-app/frontend && npm run dev
 cd finance-app && docker-compose up --build
 ```
 
-### First deploy checklist
+### Database migration
 
-1. Run `finance-app/azure-setup.sh` (requires Azure CLI + az login)
-2. Add all printed values as GitHub Secrets
-3. Point `finance.faddyjeros.com` CNAME → Azure frontend FQDN
-4. Push to main — GitHub Actions builds + deploys automatically
+To migrate local SQLite data to Neon PostgreSQL:
+```bash
+cd finance-app/backend
+python migrate_to_postgres.py "postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require" ./finance.db
+```
 
 ## Skill routing
 
