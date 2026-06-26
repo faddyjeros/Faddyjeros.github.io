@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from database import MonthlyBudget, Transaction, get_db
+from database import MonthlyBudget, Transaction, date_month, date_year, get_db
 from models import CATEGORIES
 
 router = APIRouter()
@@ -127,8 +127,8 @@ def get_advice(
     rows = (
         db.query(Transaction)
         .filter(
-            func.strftime("%Y", Transaction.date) == str(year),
-            func.strftime("%m", Transaction.date) == f"{month:02d}",
+            date_year(Transaction.date) == str(year),
+            date_month(Transaction.date) == f"{month:02d}",
         )
         .all()
     )
@@ -201,8 +201,8 @@ def monthly_conclusion(
     rows = (
         db.query(Transaction)
         .filter(
-            func.strftime("%Y", Transaction.date) == str(year),
-            func.strftime("%m", Transaction.date) == f"{month:02d}",
+            date_year(Transaction.date) == str(year),
+            date_month(Transaction.date) == f"{month:02d}",
         )
         .all()
     )
