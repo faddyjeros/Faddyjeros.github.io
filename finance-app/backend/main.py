@@ -125,6 +125,7 @@ _AUTH_PASS = os.environ.get("AUTH_PASS", "")
 
 
 _AUTH_EXEMPT = {"/api/health", "/api/ingest"}
+_STATIC_EXTS = {".js", ".css", ".png", ".jpg", ".svg", ".ico", ".woff", ".woff2", ".map"}
 
 
 @app.middleware("http")
@@ -132,7 +133,9 @@ async def basic_auth_middleware(request: Request, call_next):
     if not _AUTH_USER or not _AUTH_PASS:
         return await call_next(request)
     path = request.url.path
-    if path in _AUTH_EXEMPT or not path.startswith("/api/"):
+    if path in _AUTH_EXEMPT:
+        return await call_next(request)
+    if any(path.endswith(ext) for ext in _STATIC_EXTS):
         return await call_next(request)
     auth = request.headers.get("Authorization", "")
     if auth.startswith("Basic "):
