@@ -81,7 +81,7 @@ export const api = {
   getMonthlyConclusion: (year, month) =>
     req(`/ai/monthly-conclusion?year=${year}&month=${month}`, { method: "POST" }),
 
-  // Wealth (SQL — full CRUD)
+  // Wealth
   getNetWorth: () => req("/wealth/networth"),
   createNetWorth: (data) => req("/wealth/networth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
   updateNetWorth: (id, data) => req(`/wealth/networth/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),

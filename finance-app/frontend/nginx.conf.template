@@ -4,11 +4,13 @@ server {
     auth_basic "Finance";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
-    # BACKEND_ADDR is resolved at container startup by docker-entrypoint.sh.
+    # Docker's internal DNS; re-resolve on each request via variable.
+    resolver 127.0.0.11 valid=15s ipv6=off;
+    set $backend http://${BACKEND_HOST};
+
     location /api/ {
-        proxy_pass http://${BACKEND_ADDR}:80/api/;
-        # Host header MUST match the backend app name for Azure Envoy routing
-        proxy_set_header Host ${BACKEND_HOST};
+        proxy_pass $backend/api/;
+        proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         client_max_body_size 50M;
         proxy_read_timeout 120s;

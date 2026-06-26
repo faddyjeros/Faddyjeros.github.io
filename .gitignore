@@ -39,6 +39,11 @@ public/pagefind
 __pycache__/
 *.pyc
 
+# SQLite databases (contain real financial data)
+*.db
+*.db-shm
+*.db-wal
+
 # Claude Code
 .claude/settings.local.json
 .claude/launch.json

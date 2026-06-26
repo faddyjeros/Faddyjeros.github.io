@@ -82,7 +82,7 @@ export default function WealthPage() {
   const prev = networth[networth.length - 2];
   const delta = latest && prev ? latest.value - prev.value : null;
 
-  const investableTotal = portfolio?.dynamic.reduce((s, h) => s + h.value_eur, 0) ?? 0;
+  const investableTotal = portfolio?.dynamic?.reduce((s, h) => s + h.value_eur, 0) ?? 0;
   const loanRemaining = loan?.summary?.capital_remaining ?? 0;
 
   // Loan chart data
@@ -187,8 +187,8 @@ export default function WealthPage() {
           <p className="text-xs text-zinc-500 mb-3">Repayment schedule</p>
           <div className="mb-4">
             <div className="flex justify-between text-xs text-zinc-500 mb-1">
-              <span>{fmt(loan?.summary?.capital_paid)} paid</span>
-              <span>{fmt(loan?.summary?.capital_remaining)} left</span>
+              <span>€{fmt(loan?.summary?.capital_paid)} paid</span>
+              <span>€{fmt(loan?.summary?.capital_remaining)} left</span>
             </div>
             <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
               <div className="h-full bg-green-500 rounded-full transition-all"
@@ -213,6 +213,11 @@ export default function WealthPage() {
                 strokeDasharray="4 4" label={{ value: "Today", fill: "#6b7280", fontSize: 9 }} />
             </ComposedChart>
           </ResponsiveContainer>
+
+          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-zinc-700 text-xs text-zinc-500">
+            <span>Interest paid: €{fmt(loan?.summary?.interest_paid)}</span>
+            <span className="text-right">Interest left: €{fmt(loan?.summary?.interest_remaining)}</span>
+          </div>
         </div>
       </div>
 
