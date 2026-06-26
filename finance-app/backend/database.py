@@ -10,7 +10,10 @@ from sqlalchemy import (
     Float,
     String,
     UniqueConstraint,
+    cast,
     create_engine,
+    extract,
+    func,
     text,
 )
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
@@ -31,6 +34,18 @@ else:
     _is_sqlite = True
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def date_year(col):
+    if _is_sqlite:
+        return func.strftime("%Y", col)
+    return cast(extract("year", col), String)
+
+
+def date_month(col):
+    if _is_sqlite:
+        return func.strftime("%m", col)
+    return func.lpad(cast(extract("month", col), String), 2, "0")
 
 
 class Base(DeclarativeBase):

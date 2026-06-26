@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from database import Transaction, get_db
+from database import Transaction, date_year, get_db
 from models import AlertsOut, TransactionOut
 
 router = APIRouter()
@@ -20,12 +20,12 @@ def get_alerts(
 ):
     # Fetch all transaction dates for the year
     rows = (
-        db.query(func.date(Transaction.date))
-        .filter(func.strftime("%Y", Transaction.date) == str(year))
+        db.query(Transaction.date)
+        .filter(date_year(Transaction.date) == str(year))
         .distinct()
         .all()
     )
-    tx_dates = sorted({date.fromisoformat(r[0]) for r in rows if r[0]})
+    tx_dates = sorted({r[0] if isinstance(r[0], date) else date.fromisoformat(r[0]) for r in rows if r[0]})
 
     gaps = []
     if tx_dates:

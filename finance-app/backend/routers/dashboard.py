@@ -2,10 +2,9 @@ from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from database import Transaction, get_db
+from database import Transaction, date_month, date_year, get_db
 from models import DashboardSummary
 
 router = APIRouter()
@@ -17,9 +16,9 @@ def summary(
     month: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    q = db.query(Transaction).filter(func.strftime("%Y", Transaction.date) == str(year))
+    q = db.query(Transaction).filter(date_year(Transaction.date) == str(year))
     if month:
-        q = q.filter(func.strftime("%m", Transaction.date) == f"{month:02d}")
+        q = q.filter(date_month(Transaction.date) == f"{month:02d}")
     rows = q.all()
 
     EXCLUDE_FROM_TOTALS = {"Internal Transfer", "Transfers"}
@@ -68,5 +67,5 @@ def summary(
 
 @router.get("/years")
 def available_years(db: Session = Depends(get_db)):
-    rows = db.query(func.strftime("%Y", Transaction.date)).distinct().all()
+    rows = db.query(date_year(Transaction.date)).distinct().all()
     return sorted([r[0] for r in rows if r[0]], reverse=True)
