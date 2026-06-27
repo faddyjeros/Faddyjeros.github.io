@@ -152,8 +152,8 @@ export default function EditableTable({
 
   const renderCell = (col, value, onChange) => {
     const base =
-      "bg-zinc-700/50 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-200 " +
-      "focus:outline-none focus:ring-1 focus:ring-amber-500/60 w-full " +
+      "bg-surface-hover/50 border border-line rounded px-2 py-1 text-xs text-content " +
+      "focus:outline-none focus:ring-1 focus:ring-accent/60 w-full " +
       "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
     if (col.type === "select") {
@@ -192,37 +192,37 @@ export default function EditableTable({
   };
 
   return (
-    <div className="bg-zinc-800 rounded-xl overflow-hidden">
+    <div className="bg-surface rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-line">
         <button onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-2 text-sm font-semibold text-zinc-100 hover:text-amber-400 transition-colors">
+          className="flex items-center gap-2 text-sm font-semibold text-content hover:text-accent transition-colors">
           <svg className={`w-4 h-4 transition-transform ${collapsed ? "-rotate-90" : ""}`}
             fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
           {title}
-          <span className="text-xs text-zinc-500 font-normal">({data.length})</span>
+          <span className="text-xs text-content-muted font-normal">({data.length})</span>
         </button>
         <div className="flex items-center gap-2">
           {exportEntity && (
             <div className="relative group">
-              <button className="text-xs text-zinc-500 hover:text-zinc-300 px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500 transition-colors">
+              <button className="text-xs text-content-muted hover:text-content-secondary px-2 py-1 rounded border border-line hover:border-line transition-colors">
                 Export ↓
               </button>
-              <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-700 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute right-0 top-full mt-1 bg-base border border-line rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                 <a href={`/api/export/${exportEntity}?format=csv`}
-                  className="block px-4 py-2 text-xs text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 whitespace-nowrap"
+                  className="block px-4 py-2 text-xs text-content-secondary hover:text-accent hover:bg-surface-hover whitespace-nowrap"
                   download>CSV</a>
                 <a href={`/api/export/${exportEntity}?format=xlsx`}
-                  className="block px-4 py-2 text-xs text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 whitespace-nowrap"
+                  className="block px-4 py-2 text-xs text-content-secondary hover:text-accent hover:bg-surface-hover whitespace-nowrap"
                   download>Excel</a>
               </div>
             </div>
           )}
           {!isAdding && (
             <button onClick={startAdd}
-              className="text-xs bg-amber-600/80 hover:bg-amber-600 text-white px-3 py-1 rounded transition-colors">
+              className="text-xs bg-accent/80 hover:bg-accent-hover text-white px-3 py-1 rounded transition-colors">
               + Add
             </button>
           )}
@@ -233,16 +233,16 @@ export default function EditableTable({
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-zinc-700">
+              <tr className="border-b border-line">
                 {columns.map((c) => (
                   <th key={c.key}
-                    className="px-3 py-2 text-left text-zinc-500 font-medium cursor-pointer select-none hover:text-zinc-300 transition-colors group"
+                    className="px-3 py-2 text-left text-content-muted font-medium cursor-pointer select-none hover:text-content-secondary transition-colors group"
                     style={c.width ? { width: c.width } : {}}
                     onClick={() => toggleSort(c.key)}>
                     <span className="inline-flex items-center gap-1">
                       {c.label}
                       {sortKey === c.key ? (
-                        <svg className="w-3 h-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                             d={sortDir === "asc" ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                         </svg>
@@ -261,7 +261,7 @@ export default function EditableTable({
               {/* New row form */}
               {isAdding && (
                 <tr ref={addRef}
-                  className={`border-b border-amber-600/30 bg-amber-950/20 ${flashClass("new")}`}
+                  className={`border-b border-accent/30 bg-accent/15 ${flashClass("new")}`}
                   onKeyDown={(e) => handleRowKeyDown(e, true)}>
                   {columns.map((c) => (
                     <td key={c.key} className="px-3 py-1.5">
@@ -271,12 +271,12 @@ export default function EditableTable({
                   <td className="px-3 py-1.5">
                     <div className="flex gap-1.5 items-center">
                       <button onClick={saveNew} disabled={saving}
-                        className="text-[10px] font-semibold text-green-400 hover:text-green-300 disabled:opacity-40">
+                        className="text-[10px] font-semibold text-accent hover:text-accent disabled:opacity-40">
                         Save
                       </button>
-                      <span className="text-zinc-700">|</span>
+                      <span className="text-content-muted">|</span>
                       <button onClick={() => { setIsAdding(false); setNewRow({}); }}
-                        className="text-[10px] text-zinc-500 hover:text-zinc-300">
+                        className="text-[10px] text-content-muted hover:text-content-secondary">
                         Esc
                       </button>
                     </div>
@@ -290,8 +290,8 @@ export default function EditableTable({
                 return (
                   <tr key={row.id}
                     ref={isEditing ? editRef : undefined}
-                    className={`border-b border-zinc-700/50 transition-colors ${flashClass(row.id)} ${
-                      isEditing ? "bg-zinc-700/30" : "hover:bg-zinc-700/20 cursor-pointer"
+                    className={`border-b border-line/50 transition-colors ${flashClass(row.id)} ${
+                      isEditing ? "bg-surface-hover/30" : "hover:bg-surface-hover/20 cursor-pointer"
                     }`}
                     onDoubleClick={() => { if (!isEditing) startEdit(row); }}
                     onKeyDown={(e) => { if (isEditing) handleRowKeyDown(e, false); }}>
@@ -300,7 +300,7 @@ export default function EditableTable({
                         {isEditing && c.editable !== false ? (
                           renderCell(c, editRow[c.key], (v) => setEditRow({ ...editRow, [c.key]: v }))
                         ) : (
-                          <span className={`${c.type === "number" ? "font-mono text-right block" : ""} text-zinc-300`}>
+                          <span className={`${c.type === "number" ? "font-mono text-right block" : ""} text-content-secondary`}>
                             {c.type === "number" ? fmt(row[c.key]) : (row[c.key] ?? "--")}
                           </span>
                         )}
@@ -310,12 +310,12 @@ export default function EditableTable({
                       {isEditing ? (
                         <div className="flex gap-1.5 items-center">
                           <button onClick={saveEdit} disabled={saving}
-                            className="text-[10px] font-semibold text-green-400 hover:text-green-300 disabled:opacity-40">
+                            className="text-[10px] font-semibold text-accent hover:text-accent disabled:opacity-40">
                             Save
                           </button>
-                          <span className="text-zinc-700">|</span>
+                          <span className="text-content-muted">|</span>
                           <button onClick={() => { setEditingId(null); setEditRow({}); }}
-                            className="text-[10px] text-zinc-500 hover:text-zinc-300">
+                            className="text-[10px] text-content-muted hover:text-content-secondary">
                             Esc
                           </button>
                         </div>
@@ -323,13 +323,13 @@ export default function EditableTable({
                         <div className="flex items-center gap-1.5">
                           <button onClick={() => confirmDelete(row.id)}
                             className="text-[10px] text-red-400 hover:text-red-300 font-semibold">Yes</button>
-                          <span className="text-zinc-700">|</span>
+                          <span className="text-content-muted">|</span>
                           <button onClick={() => setDeleteConfirm(null)}
-                            className="text-[10px] text-zinc-500 hover:text-zinc-300">No</button>
+                            className="text-[10px] text-content-muted hover:text-content-secondary">No</button>
                         </div>
                       ) : (
                         <button onClick={() => setDeleteConfirm(row.id)}
-                          className="text-zinc-700 hover:text-red-400 transition-colors" title="Delete">
+                          className="text-content-muted hover:text-red-400 transition-colors" title="Delete">
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
@@ -342,8 +342,8 @@ export default function EditableTable({
 
               {data.length === 0 && !isAdding && (
                 <tr>
-                  <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-zinc-600 text-sm">
-                    No data yet. Click <span className="text-amber-500">+ Add</span> to get started.
+                  <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-content-muted text-sm">
+                    No data yet. Click <span className="text-accent">+ Add</span> to get started.
                   </td>
                 </tr>
               )}

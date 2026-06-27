@@ -99,12 +99,12 @@ export default function AnalystChat() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         {messages.length === 0 && (
           <div className="space-y-2 pt-4">
-            <p className="text-zinc-500 text-xs">Try asking:</p>
+            <p className="text-content-muted text-xs">Try asking:</p>
             {SUGGESTED_QUERIES.map((q) => (
               <button
                 key={q}
                 onClick={() => sendMessage(q)}
-                className="block w-full text-left text-xs bg-zinc-700/50 hover:bg-zinc-700 text-zinc-300 rounded-lg px-3 py-2 transition-colors"
+                className="block w-full text-left text-xs bg-surface-hover/50 hover:bg-surface-hover text-content-secondary rounded-lg px-3 py-2 transition-colors"
               >
                 {q}
               </button>
@@ -117,7 +117,7 @@ export default function AnalystChat() {
         ))}
 
         {streaming && toolCalls.length > 0 && (
-          <div className="text-xs text-zinc-500 space-y-1">
+          <div className="text-xs text-content-muted space-y-1">
             {toolCalls.map((tc, i) => (
               <div key={i} className="flex items-center gap-2">
                 <span className="animate-pulse">●</span>
@@ -128,12 +128,12 @@ export default function AnalystChat() {
         )}
 
         {streaming && toolCalls.length === 0 && messages[messages.length - 1]?.role === "user" && (
-          <div className="text-zinc-500 text-sm animate-pulse">Thinking...</div>
+          <div className="text-content-muted text-sm animate-pulse">Thinking...</div>
         )}
       </div>
 
       {/* Input */}
-      <div className="border-t border-zinc-700 p-3">
+      <div className="border-t border-line p-3">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -147,12 +147,12 @@ export default function AnalystChat() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your finances..."
             disabled={streaming}
-            className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 disabled:opacity-50"
+            className="flex-1 bg-base border border-line rounded-lg px-3 py-2 text-sm text-content placeholder-zinc-500 focus:outline-none focus:border-accent disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={streaming || !input.trim()}
-            className="bg-amber-500 hover:bg-amber-600 disabled:bg-zinc-600 text-zinc-900 font-medium px-3 py-2 rounded-lg text-sm transition-colors"
+            className="bg-accent hover:bg-accent-hover disabled:bg-line text-zinc-900 font-medium px-3 py-2 rounded-lg text-sm transition-colors"
           >
             Send
           </button>

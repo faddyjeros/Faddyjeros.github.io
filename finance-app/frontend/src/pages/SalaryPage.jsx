@@ -47,7 +47,7 @@ export default function SalaryPage() {
 
   useEffect(() => { reload(); }, [reload]);
 
-  if (loading) return <p className="text-zinc-500 text-sm p-6">Loading salary data...</p>;
+  if (loading) return <p className="text-content-muted text-sm p-6">Loading salary data...</p>;
   if (error) return <p className="text-red-400 text-sm p-6">Could not load: {error}</p>;
 
   const latest = [...salary].reverse().find((s) => s.net > 0);
@@ -68,24 +68,24 @@ export default function SalaryPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-zinc-100">Salary History</h2>
+      <h2 className="text-lg font-semibold text-content">Salary History</h2>
 
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-4">
         <SKpi label="Current Gross / mo" value={fmt(latest?.gross)}
-          sub={`~${fmt(latestNormal?.net)} net / mo`} color="text-green-400" />
+          sub={`~${fmt(latestNormal?.net)} net / mo`} color="text-accent" />
         <SKpi label="Current Company" value={latest?.company ?? "—"}
-          sub={`${JURISDICTION_LABELS[latest?.jurisdiction] ?? ""} ${latest?.jurisdiction ?? ""}`} color="text-amber-400" />
+          sub={`${JURISDICTION_LABELS[latest?.jurisdiction] ?? ""} ${latest?.jurisdiction ?? ""}`} color="text-accent" />
         <SKpi label="Total Net Earned" value={fmt(Math.round(totalNet))}
-          sub="since Aug 2019" color="text-zinc-200" />
+          sub="since Aug 2019" color="text-content" />
         <SKpi label="Total Bonuses" value={fmt(Math.round(totalBonus))}
           sub="across all jobs" color="text-yellow-400" />
       </div>
 
       {/* Bar chart */}
-      <div className="bg-zinc-800 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-zinc-100 mb-1">Gross Pay Breakdown per Month</h3>
-        <p className="text-xs text-zinc-500 mb-4">Stacked by component</p>
+      <div className="bg-surface rounded-xl p-4">
+        <h3 className="text-sm font-semibold text-content mb-1">Gross Pay Breakdown per Month</h3>
+        <p className="text-xs text-content-muted mb-4">Stacked by component</p>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
@@ -104,7 +104,7 @@ export default function SalaryPage() {
           {[["Base","#4361ee"],["Overtime","#ffd166"],["Bonus","#f72585"],["Extras","#06d6a0"]].map(([label, color]) => (
             <div key={label} className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-sm" style={{ background: color }} />
-              <span className="text-xs text-zinc-500">{label}</span>
+              <span className="text-xs text-content-muted">{label}</span>
             </div>
           ))}
         </div>
@@ -133,10 +133,10 @@ export default function SalaryPage() {
 
 function SKpi({ label, value, sub, color }) {
   return (
-    <div className="bg-zinc-800 rounded-xl p-4">
-      <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{label}</p>
+    <div className="bg-surface rounded-xl p-4">
+      <p className="text-xs text-content-muted uppercase tracking-wide mb-1">{label}</p>
       <p className={`text-xl font-bold font-mono ${color}`}>{value}</p>
-      {sub && <p className="text-xs text-zinc-500 mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-content-muted mt-1">{sub}</p>}
     </div>
   );
 }
@@ -146,16 +146,16 @@ function SalaryTooltip({ active, payload, label }) {
   const d = payload[0]?.payload;
   const total = (d?.base ?? 0) + (d?.overtime ?? 0) + (d?.bonus ?? 0) + (d?.extras ?? 0);
   return (
-    <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-xs space-y-1">
-      <p className="text-zinc-400 font-semibold">{label}</p>
+    <div className="bg-base border border-line rounded-lg p-3 text-xs space-y-1">
+      <p className="text-content-secondary font-semibold">{label}</p>
       <p className="font-semibold" style={{ color: COMPANY_COLORS[d?.company] ?? "#9ca3af" }}>{d?.company}</p>
-      <div className="border-t border-zinc-700 pt-1 mt-1 space-y-0.5">
+      <div className="border-t border-line pt-1 mt-1 space-y-0.5">
         <p className="text-blue-400">Base: {fmt(d?.base)}</p>
         {d?.overtime > 0 && <p className="text-yellow-400">Overtime: +{fmt(d.overtime)}</p>}
         {d?.bonus > 0 && <p className="text-pink-400">Bonus: +{fmt(d.bonus)}</p>}
-        {d?.extras > 0 && <p className="text-green-400">Extras: +{fmt(d.extras)}</p>}
-        <p className="text-zinc-300 font-semibold border-t border-zinc-700 pt-1">Total gross: {fmt(total)}</p>
-        <p className="text-zinc-500">Net: ~{fmt(d?.net)}</p>
+        {d?.extras > 0 && <p className="text-accent">Extras: +{fmt(d.extras)}</p>}
+        <p className="text-content-secondary font-semibold border-t border-line pt-1">Total gross: {fmt(total)}</p>
+        <p className="text-content-muted">Net: ~{fmt(d?.net)}</p>
       </div>
     </div>
   );

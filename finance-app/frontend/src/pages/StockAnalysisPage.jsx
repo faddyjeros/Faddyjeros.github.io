@@ -76,13 +76,13 @@ export default function StockAnalysisPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-zinc-50">Fundamental Analysis</h1>
-        <p className="text-zinc-400 text-sm mt-1">
+        <p className="text-content-secondary text-sm mt-1">
           Enter a ticker symbol for a comprehensive financial analysis using live market data, financial statements, and SEC filings.
         </p>
       </div>
 
       {/* Input */}
-      <div className="bg-zinc-800 rounded-xl p-5">
+      <div className="bg-surface rounded-xl p-5">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -96,12 +96,12 @@ export default function StockAnalysisPage() {
             onChange={(e) => setTicker(e.target.value.toUpperCase())}
             placeholder="Enter ticker (e.g., AAPL, MSFT, NVDA)"
             disabled={loading}
-            className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 disabled:opacity-50 text-lg font-mono"
+            className="flex-1 bg-base border border-line rounded-lg px-4 py-3 text-content placeholder-zinc-500 focus:outline-none focus:border-accent disabled:opacity-50 text-lg font-mono"
           />
           <button
             type="submit"
             disabled={loading || !ticker.trim()}
-            className="bg-amber-500 hover:bg-amber-600 disabled:bg-zinc-600 text-zinc-900 font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="bg-accent hover:bg-accent-hover disabled:bg-line text-zinc-900 font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             {loading ? "Analyzing..." : "Run Analysis"}
           </button>
@@ -117,7 +117,7 @@ export default function StockAnalysisPage() {
                 runAnalysis(t);
               }}
               disabled={loading}
-              className="text-xs bg-zinc-700/50 hover:bg-zinc-700 disabled:opacity-50 text-zinc-300 rounded-md px-2.5 py-1.5 font-mono transition-colors"
+              className="text-xs bg-surface-hover/50 hover:bg-surface-hover disabled:opacity-50 text-content-secondary rounded-md px-2.5 py-1.5 font-mono transition-colors"
             >
               {t}
             </button>
@@ -127,7 +127,7 @@ export default function StockAnalysisPage() {
 
       {/* Status */}
       {loading && dataStatus && (
-        <div className="flex items-center gap-3 text-amber-400 text-sm">
+        <div className="flex items-center gap-3 text-accent text-sm">
           <span className="animate-pulse">●</span>
           <span>{dataStatus}</span>
         </div>
@@ -142,7 +142,7 @@ export default function StockAnalysisPage() {
 
       {/* Report */}
       {report && (
-        <div ref={scrollRef} className="bg-zinc-800 rounded-xl p-6 overflow-y-auto max-h-[calc(100vh-320px)]">
+        <div ref={scrollRef} className="bg-surface rounded-xl p-6 overflow-y-auto max-h-[calc(100vh-320px)]">
           <ChatMessage message={{ role: "assistant", content: report }} />
         </div>
       )}

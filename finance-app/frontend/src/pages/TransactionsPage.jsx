@@ -5,7 +5,7 @@ import TransactionTable from "../components/TransactionTable";
 
 const ACCOUNT_LABELS = {
   "UBS Debit":              { label: "UBS",        color: "text-red-400" },
-  "BNP Courant":            { label: "BNP",        color: "text-green-400" },
+  "BNP Courant":            { label: "BNP",        color: "text-accent" },
   "Boursobank Courant":     { label: "BOURSO",     color: "text-blue-400" },
   "Revolut Consolidated":   { label: "REVOLUT",    color: "text-purple-400" },
 };
@@ -19,13 +19,13 @@ function AccountBar() {
     <div className="grid grid-cols-4 gap-3">
       {accounts.map((acc) => {
         const name = acc.account_name ?? acc.account;
-        const meta = ACCOUNT_LABELS[name] ?? { label: name, color: "text-zinc-300" };
+        const meta = ACCOUNT_LABELS[name] ?? { label: name, color: "text-content-secondary" };
         return (
-          <div key={name} className="bg-zinc-800 rounded-xl px-4 py-3">
-            <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{meta.label}</p>
+          <div key={name} className="bg-surface rounded-xl px-4 py-3">
+            <p className="text-xs text-content-muted uppercase tracking-wide mb-1">{meta.label}</p>
             <p className={`text-lg font-bold font-mono ${meta.color}`}>{fmt(acc.amount_local)}</p>
             {acc.amount_eur !== acc.amount_local && (
-              <p className="text-xs text-zinc-500 mt-0.5">≈ €{fmt(acc.amount_eur)}</p>
+              <p className="text-xs text-content-muted mt-0.5">≈ €{fmt(acc.amount_eur)}</p>
             )}
           </div>
         );
@@ -93,12 +93,12 @@ export default function TransactionsPage() {
           placeholder="Search description..."
           value={filters.search}
           onChange={(e) => setFilter("search", e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm w-56"
+          className="bg-base border border-line rounded-lg px-3 py-1.5 text-sm w-56"
         />
         <select
           value={filters.bank}
           onChange={(e) => setFilter("bank", e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-base border border-line rounded-lg px-3 py-1.5 text-sm"
         >
           <option value="">All banks</option>
           {banks.map((b) => <option key={b} value={b}>{b}</option>)}
@@ -106,7 +106,7 @@ export default function TransactionsPage() {
         <select
           value={filters.category}
           onChange={(e) => setFilter("category", e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-base border border-line rounded-lg px-3 py-1.5 text-sm"
         >
           <option value="">All categories</option>
           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -115,22 +115,22 @@ export default function TransactionsPage() {
           type="date"
           value={filters.date_from}
           onChange={(e) => setFilter("date_from", e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-base border border-line rounded-lg px-3 py-1.5 text-sm"
         />
-        <span className="text-zinc-500">→</span>
+        <span className="text-content-muted">→</span>
         <input
           type="date"
           value={filters.date_to}
           onChange={(e) => setFilter("date_to", e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm"
+          className="bg-base border border-line rounded-lg px-3 py-1.5 text-sm"
         />
-        <span className="text-xs text-zinc-500 ml-auto">{transactions.length} transactions</span>
+        <span className="text-xs text-content-muted ml-auto">{transactions.length} transactions</span>
 
         <button
           onClick={runAICategorize}
           disabled={aiState === "running"}
           title="Send all 'Other' transactions to Claude for automatic categorization"
-          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-50 text-amber-400 transition-colors shrink-0"
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-accent/10 hover:bg-accent/20 disabled:opacity-50 text-accent transition-colors shrink-0"
         >
           {aiState === "running" ? (
             <><span className="animate-pulse">✦</span> Categorizing...</>
@@ -139,7 +139,7 @@ export default function TransactionsPage() {
           )}
         </button>
         {aiState === "done" && aiResult && (
-          <span className="text-xs text-green-400">{aiResult.message}</span>
+          <span className="text-xs text-accent">{aiResult.message}</span>
         )}
         {aiState === "error" && aiResult && (
           <span className="text-xs text-red-400">{aiResult.message}</span>
@@ -147,7 +147,7 @@ export default function TransactionsPage() {
       </div>
 
       {loading ? (
-        <p className="text-zinc-500 text-sm">Loading...</p>
+        <p className="text-content-muted text-sm">Loading...</p>
       ) : (
         <TransactionTable
           transactions={transactions}

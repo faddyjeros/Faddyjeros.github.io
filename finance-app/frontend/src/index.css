@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme tokens (RGB channel triplets so Tailwind /opacity works) ── */
+/* Dark mode (default) */
+.dark {
+  --color-base: 9 9 11;
+  --color-surface: 24 24 27;
+  --color-surface-hover: 31 31 35;
+  --color-border: 39 39 42;
+  --color-border-subtle: 30 30 33;
+  --color-text: 250 250 250;
+  --color-text-secondary: 161 161 170;
+  --color-text-muted: 113 113 122;
+  --color-accent: 16 185 129;
+  --color-accent-hover: 52 211 153;
+}
+
+/* Light mode */
+.light {
+  --color-base: 250 250 250;
+  --color-surface: 255 255 255;
+  --color-surface-hover: 244 244 245;
+  --color-border: 228 228 231;
+  --color-border-subtle: 240 240 242;
+  --color-text: 9 9 11;
+  --color-text-secondary: 82 82 91;
+  --color-text-muted: 161 161 170;
+  --color-accent: 5 150 105;
+  --color-accent-hover: 16 185 129;
+}
+
 body {
-  @apply bg-zinc-900 text-zinc-100;
+  @apply bg-base text-content font-sans;
+  font-feature-settings: "cv01", "cv03", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numeric data uses tabular figures for clean column alignment */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Hidden scrollbar — swipeable tab bars on mobile ─────────── */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
