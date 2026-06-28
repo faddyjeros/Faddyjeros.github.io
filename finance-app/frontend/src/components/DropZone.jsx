@@ -45,17 +45,20 @@ export default function DropZone() {
         {...getRootProps()}
         className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed cursor-pointer text-sm transition-colors ${
           isDragActive
-            ? "border-amber-500 bg-amber-500/10 text-amber-500"
-            : "border-zinc-600 text-zinc-400 hover:border-zinc-400 hover:text-zinc-200"
+            ? "border-accent bg-accent/10 text-accent"
+            : "border-line text-content-secondary hover:border-content-muted hover:text-content"
         }`}
       >
         <input {...getInputProps()} />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+        </svg>
         {loading ? (
           <span className="animate-pulse">Importing…</span>
         ) : isDragActive ? (
           <span>Drop to import</span>
         ) : (
-          <span>Drop bank exports here (CSV / XLS / XLSX)</span>
+          <span>Drop bank exports here <span className="text-content-muted">(CSV / XLS / XLSX)</span></span>
         )}
       </div>
 
@@ -63,12 +66,12 @@ export default function DropZone() {
       {history.length > 0 && (
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors"
+          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-surface hover:bg-surface-hover text-content-secondary transition-colors"
         >
           <span className={`w-1.5 h-1.5 rounded-full ${history[0].ok ? "bg-green-400" : "bg-red-400"}`} />
           {history.length} import{history.length > 1 ? "s" : ""}
-          {totalNew > 0 && <span className="text-green-400 font-semibold">· +{totalNew} new</span>}
-          <span className="text-zinc-500">{open ? "▲" : "▼"}</span>
+          {totalNew > 0 && <span className="text-accent font-semibold">· +{totalNew} new</span>}
+          <span className="text-content-muted">{open ? "▲" : "▼"}</span>
         </button>
       )}
 
@@ -76,7 +79,7 @@ export default function DropZone() {
       {totalNew > 0 && (
         <Link
           to="/categorize"
-          className="text-xs px-3 py-1 rounded-lg bg-amber-600/80 hover:bg-amber-600 text-white transition-colors font-medium"
+          className="text-xs px-3 py-1 rounded-lg bg-accent/80 hover:bg-accent-hover text-white transition-colors font-medium"
         >
           Categorize {totalNew} new →
         </Link>
@@ -86,7 +89,7 @@ export default function DropZone() {
       {history.length > 0 && (
         <button
           onClick={() => { setHistory([]); setOpen(false); }}
-          className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+          className="text-xs text-content-muted hover:text-content-secondary transition-colors"
         >
           Clear
         </button>
@@ -94,33 +97,33 @@ export default function DropZone() {
 
       {/* History panel — renders below via a portal-like wrapper in App, but inline works fine */}
       {open && history.length > 0 && (
-        <div className="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-xl overflow-hidden">
+        <div className="w-full mt-1 bg-base border border-line rounded-xl overflow-hidden">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-zinc-700 text-zinc-500">
+              <tr className="border-b border-line text-content-muted">
                 <th className="px-3 py-1.5 text-left font-medium">Time</th>
                 <th className="px-3 py-1.5 text-left font-medium">Bank</th>
                 <th className="px-3 py-1.5 text-left font-medium">File</th>
-                <th className="px-3 py-1.5 text-right font-medium text-green-600">New</th>
-                <th className="px-3 py-1.5 text-right font-medium text-zinc-500">Dupes</th>
+                <th className="px-3 py-1.5 text-right font-medium text-accent">New</th>
+                <th className="px-3 py-1.5 text-right font-medium text-content-muted">Dupes</th>
                 <th className="px-3 py-1.5 text-left font-medium">Notes</th>
               </tr>
             </thead>
             <tbody>
               {history.map((r, i) => (
-                <tr key={i} className="border-b border-zinc-700/50 last:border-0">
-                  <td className="px-3 py-1.5 text-zinc-500 font-mono">{r.ts}</td>
+                <tr key={i} className="border-b border-line/50 last:border-0">
+                  <td className="px-3 py-1.5 text-content-muted font-mono">{r.ts}</td>
                   <td className="px-3 py-1.5 font-semibold" style={{ color: BANK_COLOR[r.bank] ?? "#9ca3af" }}>
                     {r.ok ? r.bank : "—"}
                   </td>
-                  <td className="px-3 py-1.5 text-zinc-500 max-w-48 truncate">{r.filename}</td>
-                  <td className="px-3 py-1.5 text-right font-mono font-semibold text-green-400">
+                  <td className="px-3 py-1.5 text-content-muted max-w-48 truncate">{r.filename}</td>
+                  <td className="px-3 py-1.5 text-right font-mono font-semibold text-accent">
                     {r.ok ? `+${r.new}` : <span className="text-red-400">error</span>}
                   </td>
-                  <td className="px-3 py-1.5 text-right font-mono text-zinc-500">
+                  <td className="px-3 py-1.5 text-right font-mono text-content-muted">
                     {r.ok ? r.duplicates : "—"}
                   </td>
-                  <td className="px-3 py-1.5 text-zinc-500">
+                  <td className="px-3 py-1.5 text-content-muted">
                     {!r.ok && r.error}
                     {r.ok && r.needs_annotation > 0 && `${r.needs_annotation} need annotation`}
                     {r.ok && r.errors?.length > 0 && `⚠ ${r.errors.slice(0, 2).join(" | ")}`}

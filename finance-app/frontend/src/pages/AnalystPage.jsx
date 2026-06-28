@@ -6,15 +6,17 @@ import {
 } from "recharts";
 import { api } from "../api";
 import AnalystChat from "../components/AnalystChat";
+import { CHART_ACCENT, useChartTheme } from "../chartTheme";
 
-const COLORS = ["#f59e0b", "#fbbf24", "#4ade80", "#fb923c", "#a78bfa", "#60a5fa"];
+// Emerald-anchored categorical palette, consistent with the rest of the app.
+const COLORS = ["#10b981", "#0ea5e9", "#f59e0b", "#f43f5e", "#8b5cf6", "#a1a1aa"];
 
 function SummaryCard({ label, value, sublabel }) {
   return (
-    <div className="bg-zinc-800 rounded-xl p-4">
-      <div className="text-zinc-400 text-xs uppercase tracking-wide">{label}</div>
+    <div className="bg-surface rounded-xl p-4">
+      <div className="text-content-secondary text-xs uppercase tracking-wide">{label}</div>
       <div className="text-2xl font-bold text-zinc-50 mt-1">{value}</div>
-      {sublabel && <div className="text-xs text-zinc-500 mt-1">{sublabel}</div>}
+      {sublabel && <div className="text-xs text-content-muted mt-1">{sublabel}</div>}
     </div>
   );
 }
@@ -25,6 +27,7 @@ function fmt(n) {
 }
 
 export default function AnalystPage() {
+  const theme = useChartTheme();
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,7 +43,7 @@ export default function AnalystPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-zinc-400 animate-pulse">Loading analyst data...</div>
+        <div className="text-content-secondary animate-pulse">Loading analyst data...</div>
       </div>
     );
   }
@@ -77,23 +80,23 @@ export default function AnalystPage() {
 
         {/* Net worth trend */}
         {net_worth_history && net_worth_history.length > 0 && (
-          <div className="bg-zinc-800 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-zinc-300 mb-3">Net Worth Trend</h3>
+          <div className="bg-surface rounded-xl p-4">
+            <h3 className="text-sm font-medium text-content-secondary mb-3">Net Worth Trend</h3>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={net_worth_history}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "#a1a1aa", fontSize: 11 }}
+                  tick={{ fill: theme.axis, fontSize: 11 }}
                   tickFormatter={(d) => d.slice(0, 7)}
                 />
-                <YAxis tick={{ fill: "#a1a1aa", fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <YAxis tick={{ fill: theme.axis, fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }}
-                  labelStyle={{ color: "#fafafa" }}
+                  contentStyle={theme.tooltip}
+                  labelStyle={{ color: theme.text }}
                   formatter={(v) => [fmt(v), "Net Worth"]}
                 />
-                <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="value" stroke={CHART_ACCENT} strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -103,8 +106,8 @@ export default function AnalystPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Allocation pie */}
           {allocationData.length > 0 && (
-            <div className="bg-zinc-800 rounded-xl p-4">
-              <h3 className="text-sm font-medium text-zinc-300 mb-3">Allocation</h3>
+            <div className="bg-surface rounded-xl p-4">
+              <h3 className="text-sm font-medium text-content-secondary mb-3">Allocation</h3>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
@@ -127,12 +130,12 @@ export default function AnalystPage() {
           )}
 
           {/* Holdings table */}
-          <div className="bg-zinc-800 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-zinc-300 mb-3">Holdings</h3>
+          <div className="bg-surface rounded-xl p-4">
+            <h3 className="text-sm font-medium text-content-secondary mb-3">Holdings</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-zinc-500 text-xs uppercase">
+                  <tr className="text-content-muted text-xs uppercase">
                     <th className="text-left pb-2">Ticker</th>
                     <th className="text-right pb-2">Price</th>
                     <th className="text-right pb-2">Change</th>
@@ -144,15 +147,15 @@ export default function AnalystPage() {
                     const quote = live_prices?.[h.ticker];
                     const change = quote?.changePercent;
                     return (
-                      <tr key={h.ticker} className="border-t border-zinc-700">
-                        <td className="py-2 text-zinc-200 font-medium">{h.ticker}</td>
-                        <td className="py-2 text-right text-zinc-300">
+                      <tr key={h.ticker} className="border-t border-line">
+                        <td className="py-2 text-content font-medium">{h.ticker}</td>
+                        <td className="py-2 text-right text-content-secondary">
                           {quote?.price ? `$${quote.price.toFixed(2)}` : "—"}
                         </td>
-                        <td className={`py-2 text-right ${change > 0 ? "text-green-400" : change < 0 ? "text-orange-400" : "text-zinc-400"}`}>
+                        <td className={`py-2 text-right ${change > 0 ? "text-accent" : change < 0 ? "text-orange-400" : "text-content-secondary"}`}>
                           {change != null ? `${change > 0 ? "+" : ""}${change.toFixed(2)}%` : "—"}
                         </td>
-                        <td className="py-2 text-right text-zinc-300">
+                        <td className="py-2 text-right text-content-secondary">
                           {fmt(h.live_value || h.value_eur)}
                         </td>
                       </tr>
@@ -167,17 +170,17 @@ export default function AnalystPage() {
 
       {/* Chat sidebar */}
       {chatOpen ? (
-        <div className="w-[380px] shrink-0 flex flex-col bg-zinc-800 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
-            <h3 className="text-sm font-medium text-amber-400">AI Analyst</h3>
-            <button onClick={() => setChatOpen(false)} className="text-zinc-500 hover:text-zinc-300 text-lg">×</button>
+        <div className="w-[380px] shrink-0 flex flex-col bg-surface rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+            <h3 className="text-sm font-medium text-accent">AI Analyst</h3>
+            <button onClick={() => setChatOpen(false)} className="text-content-muted hover:text-content-secondary text-lg">×</button>
           </div>
           <AnalystChat />
         </div>
       ) : (
         <button
           onClick={() => setChatOpen(true)}
-          className="fixed bottom-6 right-6 bg-amber-500 hover:bg-amber-600 text-zinc-900 font-medium px-4 py-3 rounded-full shadow-lg transition-colors"
+          className="fixed bottom-6 right-6 bg-accent hover:bg-accent-hover text-zinc-900 font-medium px-4 py-3 rounded-full shadow-lg transition-colors"
         >
           AI Analyst
         </button>

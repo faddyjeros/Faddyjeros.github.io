@@ -1,30 +1,33 @@
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { CHART_ACCENT, useChartTheme } from "../chartTheme";
 
-const CHART_COLORS = ["#f59e0b", "#4ade80", "#fb923c", "#60a5fa", "#a78bfa", "#f472b6"];
+// Emerald-anchored categorical palette, consistent with the rest of the app.
+const CHART_COLORS = ["#10b981", "#0ea5e9", "#f59e0b", "#f43f5e", "#8b5cf6", "#a1a1aa"];
 
 function InlineChart({ config }) {
+  const theme = useChartTheme();
   const { type, data, xKey, yKey, title } = config;
   if (!data || !Array.isArray(data) || data.length === 0) return null;
 
   return (
-    <div className="my-3 bg-zinc-900 rounded-lg p-3">
-      {title && <div className="text-xs text-zinc-400 mb-2">{title}</div>}
+    <div className="my-3 bg-base rounded-lg p-3">
+      {title && <div className="text-xs text-content-secondary mb-2">{title}</div>}
       <ResponsiveContainer width="100%" height={160}>
         {type === "line" ? (
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-            <XAxis dataKey={xKey} tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }} />
-            <Line type="monotone" dataKey={yKey} stroke="#f59e0b" strokeWidth={2} dot={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
+            <XAxis dataKey={xKey} tick={{ fill: theme.axis, fontSize: 10 }} />
+            <YAxis tick={{ fill: theme.axis, fontSize: 10 }} />
+            <Tooltip contentStyle={theme.tooltip} itemStyle={{ color: theme.text }} />
+            <Line type="monotone" dataKey={yKey} stroke={CHART_ACCENT} strokeWidth={2} dot={false} />
           </LineChart>
         ) : type === "bar" ? (
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-            <XAxis dataKey={xKey} tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }} />
-            <Bar dataKey={yKey} fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
+            <XAxis dataKey={xKey} tick={{ fill: theme.axis, fontSize: 10 }} />
+            <YAxis tick={{ fill: theme.axis, fontSize: 10 }} />
+            <Tooltip contentStyle={theme.tooltip} itemStyle={{ color: theme.text }} />
+            <Bar dataKey={yKey} fill={CHART_ACCENT} radius={[4, 4, 0, 0]} />
           </BarChart>
         ) : type === "pie" ? (
           <PieChart>
@@ -90,15 +93,15 @@ function MarkdownText({ text }) {
             <thead>
               <tr>
                 {headers.map((h, i) => (
-                  <th key={i} className="text-left pb-1 text-zinc-400 font-medium px-2">{h}</th>
+                  <th key={i} className="text-left pb-1 text-content-secondary font-medium px-2">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {rows.map((row, ri) => (
-                <tr key={ri} className="border-t border-zinc-700">
+                <tr key={ri} className="border-t border-line">
                   {row.map((cell, ci) => (
-                    <td key={ci} className="py-1 px-2 text-zinc-300">{cell}</td>
+                    <td key={ci} className="py-1 px-2 text-content-secondary">{cell}</td>
                   ))}
                 </tr>
               ))}
@@ -123,19 +126,19 @@ function MarkdownText({ text }) {
     if (inTable) flushTable();
 
     if (line.startsWith("### ")) {
-      elements.push(<h4 key={i} className="font-semibold text-zinc-200 mt-2">{line.slice(4)}</h4>);
+      elements.push(<h4 key={i} className="font-semibold text-content mt-2">{line.slice(4)}</h4>);
     } else if (line.startsWith("## ")) {
-      elements.push(<h3 key={i} className="font-bold text-zinc-100 mt-2">{line.slice(3)}</h3>);
+      elements.push(<h3 key={i} className="font-bold text-content mt-2">{line.slice(3)}</h3>);
     } else if (line.startsWith("# ")) {
       elements.push(<h2 key={i} className="font-bold text-zinc-50 mt-2 text-base">{line.slice(2)}</h2>);
     } else if (line.startsWith("- ") || line.startsWith("* ")) {
-      elements.push(<li key={i} className="ml-4 list-disc text-zinc-300">{formatInline(line.slice(2))}</li>);
+      elements.push(<li key={i} className="ml-4 list-disc text-content-secondary">{formatInline(line.slice(2))}</li>);
     } else if (/^\d+\.\s/.test(line)) {
-      elements.push(<li key={i} className="ml-4 list-decimal text-zinc-300">{formatInline(line.replace(/^\d+\.\s/, ""))}</li>);
+      elements.push(<li key={i} className="ml-4 list-decimal text-content-secondary">{formatInline(line.replace(/^\d+\.\s/, ""))}</li>);
     } else if (line.trim() === "") {
       elements.push(<div key={i} className="h-2" />);
     } else {
-      elements.push(<p key={i} className="text-zinc-300 whitespace-pre-wrap">{formatInline(line)}</p>);
+      elements.push(<p key={i} className="text-content-secondary whitespace-pre-wrap">{formatInline(line)}</p>);
     }
   }
 
@@ -148,10 +151,10 @@ function formatInline(text) {
   const parts = text.split(/(\*\*[^*]+\*\*|\`[^`]+\`)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={i} className="text-zinc-100 font-semibold">{part.slice(2, -2)}</strong>;
+      return <strong key={i} className="text-content font-semibold">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith("`") && part.endsWith("`")) {
-      return <code key={i} className="bg-zinc-700 px-1 rounded text-amber-400 text-xs">{part.slice(1, -1)}</code>;
+      return <code key={i} className="bg-surface-hover px-1 rounded text-accent text-xs">{part.slice(1, -1)}</code>;
     }
     return part;
   });
@@ -165,8 +168,8 @@ export default function ChatMessage({ message }) {
       <div
         className={`max-w-[90%] rounded-xl px-3 py-2 text-sm ${
           isUser
-            ? "bg-amber-500/20 text-amber-100 border border-amber-500/30"
-            : "bg-zinc-900 text-zinc-200"
+            ? "bg-accent/20 text-accent border border-accent/30"
+            : "bg-base text-content"
         }`}
       >
         {isUser ? (

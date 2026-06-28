@@ -40,6 +40,14 @@ cd finance-app/backend
 python migrate_to_postgres.py "postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require" ./finance.db
 ```
 
+## Design System
+
+The finance app design system is documented in `finance-app/DESIGN.md`. Key points:
+- Dark/light mode with emerald (#10b981) accent
+- Geist Sans for UI, Geist Mono for financial data
+- Sidebar nav on desktop, horizontal swipeable tabs on mobile (hidden scrollbar)
+- Zinc-based neutral palette (#09090b bg, #18181b surface, #27272a border)
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool.
