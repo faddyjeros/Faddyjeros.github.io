@@ -100,8 +100,25 @@ fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wg
 - Title: 13px, 500 weight
 - Subtitle: 11px muted
 - Use recharts for all data visualization
-- Area charts: emerald fill at 15% opacity, 2px stroke
-- Bar charts: emerald with decreasing opacity per rank
+- Area/line charts (single series): brand emerald `#10b981`, 2px stroke, gradient fill fading to 0
+- Gridlines, axis ticks, and tooltips read from theme CSS variables (`useChartTheme` in `src/chartTheme.js`) so they adapt to light/dark — never hardcode dark chart chrome
+
+#### Category palette
+
+One shared, emerald-anchored palette (`CATEGORY_COLORS` in `src/chartTheme.js`) — a
+category must look identical everywhere it appears (charts, budget dots, legends,
+the Categorize grid). Distinct and harmonious, never neon.
+
+| Category           | Color     | Hue     |
+| ------------------ | --------- | ------- |
+| Income             | `#10b981` | emerald |
+| Fixed Costs        | `#0ea5e9` | sky     |
+| Groceries & Dining | `#f59e0b` | amber   |
+| Travel             | `#8b5cf6` | violet  |
+| Fun Money          | `#f43f5e` | rose    |
+| Savings            | `#14b8a6` | teal    |
+| Internal Transfer  | `#71717a` | zinc    |
+| Miscellaneous      | `#a1a1aa` | zinc    |
 
 ### Data tables
 
