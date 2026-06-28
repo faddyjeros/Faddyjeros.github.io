@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
+import { CATEGORY_COLORS } from "../chartTheme";
 
+// Colors come from the shared palette so a category looks the same everywhere.
 const CATEGORIES = [
-  { key: "Fixed Costs", color: "#ef4444", icon: "🏠" },
-  { key: "Groceries & Dining", color: "#22c55e", icon: "🛒" },
-  { key: "Travel", color: "#3b82f6", icon: "✈️" },
-  { key: "Fun Money", color: "#a855f7", icon: "🎮" },
-  { key: "Income", color: "#eab308", icon: "💰" },
-  { key: "Savings", color: "#06b6d4", icon: "🏦" },
-  { key: "Internal Transfer", color: "#6b7280", icon: "🔄" },
-  { key: "Miscellaneous", color: "#78716c", icon: "📦" },
-];
+  { key: "Fixed Costs", icon: "🏠" },
+  { key: "Groceries & Dining", icon: "🛒" },
+  { key: "Travel", icon: "✈️" },
+  { key: "Fun Money", icon: "🎮" },
+  { key: "Income", icon: "💰" },
+  { key: "Savings", icon: "🏦" },
+  { key: "Internal Transfer", icon: "🔄" },
+  { key: "Miscellaneous", icon: "📦" },
+].map((c) => ({ ...c, color: CATEGORY_COLORS[c.key] ?? "#a1a1aa" }));
 
 const SHORTCUTS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 

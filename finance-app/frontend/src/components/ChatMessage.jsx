@@ -1,8 +1,11 @@
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { CHART_ACCENT, useChartTheme } from "../chartTheme";
 
-const CHART_COLORS = ["#f59e0b", "#4ade80", "#fb923c", "#60a5fa", "#a78bfa", "#f472b6"];
+// Emerald-anchored categorical palette, consistent with the rest of the app.
+const CHART_COLORS = ["#10b981", "#0ea5e9", "#f59e0b", "#f43f5e", "#8b5cf6", "#a1a1aa"];
 
 function InlineChart({ config }) {
+  const theme = useChartTheme();
   const { type, data, xKey, yKey, title } = config;
   if (!data || !Array.isArray(data) || data.length === 0) return null;
 
@@ -12,19 +15,19 @@ function InlineChart({ config }) {
       <ResponsiveContainer width="100%" height={160}>
         {type === "line" ? (
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-            <XAxis dataKey={xKey} tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }} />
-            <Line type="monotone" dataKey={yKey} stroke="#f59e0b" strokeWidth={2} dot={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
+            <XAxis dataKey={xKey} tick={{ fill: theme.axis, fontSize: 10 }} />
+            <YAxis tick={{ fill: theme.axis, fontSize: 10 }} />
+            <Tooltip contentStyle={theme.tooltip} itemStyle={{ color: theme.text }} />
+            <Line type="monotone" dataKey={yKey} stroke={CHART_ACCENT} strokeWidth={2} dot={false} />
           </LineChart>
         ) : type === "bar" ? (
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-            <XAxis dataKey={xKey} tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#a1a1aa", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }} />
-            <Bar dataKey={yKey} fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
+            <XAxis dataKey={xKey} tick={{ fill: theme.axis, fontSize: 10 }} />
+            <YAxis tick={{ fill: theme.axis, fontSize: 10 }} />
+            <Tooltip contentStyle={theme.tooltip} itemStyle={{ color: theme.text }} />
+            <Bar dataKey={yKey} fill={CHART_ACCENT} radius={[4, 4, 0, 0]} />
           </BarChart>
         ) : type === "pie" ? (
           <PieChart>

@@ -6,8 +6,10 @@ import {
 } from "recharts";
 import { api } from "../api";
 import AnalystChat from "../components/AnalystChat";
+import { CHART_ACCENT, useChartTheme } from "../chartTheme";
 
-const COLORS = ["#f59e0b", "#fbbf24", "#4ade80", "#fb923c", "#a78bfa", "#60a5fa"];
+// Emerald-anchored categorical palette, consistent with the rest of the app.
+const COLORS = ["#10b981", "#0ea5e9", "#f59e0b", "#f43f5e", "#8b5cf6", "#a1a1aa"];
 
 function SummaryCard({ label, value, sublabel }) {
   return (
@@ -25,6 +27,7 @@ function fmt(n) {
 }
 
 export default function AnalystPage() {
+  const theme = useChartTheme();
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -81,19 +84,19 @@ export default function AnalystPage() {
             <h3 className="text-sm font-medium text-content-secondary mb-3">Net Worth Trend</h3>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={net_worth_history}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "#a1a1aa", fontSize: 11 }}
+                  tick={{ fill: theme.axis, fontSize: 11 }}
                   tickFormatter={(d) => d.slice(0, 7)}
                 />
-                <YAxis tick={{ fill: "#a1a1aa", fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <YAxis tick={{ fill: theme.axis, fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  contentStyle={{ background: "#27272a", border: "none", borderRadius: 8 }}
-                  labelStyle={{ color: "#fafafa" }}
+                  contentStyle={theme.tooltip}
+                  labelStyle={{ color: theme.text }}
                   formatter={(v) => [fmt(v), "Net Worth"]}
                 />
-                <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="value" stroke={CHART_ACCENT} strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

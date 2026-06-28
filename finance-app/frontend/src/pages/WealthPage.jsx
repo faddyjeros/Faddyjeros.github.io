@@ -5,16 +5,17 @@ import {
 } from "recharts";
 import { api } from "../api";
 import EditableTable from "../components/EditableTable";
+import { CHART_ACCENT, useChartTheme } from "../chartTheme";
 
 const fmt = (v) => v?.toLocaleString("fr-CH", { maximumFractionDigits: 0 }) ?? "—";
 const fmtK = (v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : fmt(v);
 
 const TYPE_COLORS = {
-  Index: "#4361ee",
-  Stock: "#f72585",
-  Pension: "#06d6a0",
-  Loan: "#ef476f",
-  SCI: "#ffd166",
+  Index: "#10b981",   // emerald
+  Stock: "#0ea5e9",   // sky
+  Pension: "#8b5cf6", // violet
+  Loan: "#f43f5e",    // rose
+  SCI: "#f59e0b",     // amber
 };
 
 // Column definitions for each editable table
@@ -48,6 +49,7 @@ const LOAN_COLUMNS = [
 ];
 
 export default function WealthPage() {
+  const theme = useChartTheme();
   const [networth, setNetworth] = useState([]);
   const [portfolio, setPortfolio] = useState(null);
   const [accounts, setAccounts] = useState([]);
@@ -127,17 +129,17 @@ export default function WealthPage() {
           <AreaChart data={networth} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="nwGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4361ee" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#4361ee" stopOpacity={0} />
+                <stop offset="5%" stopColor={CHART_ACCENT} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={CHART_ACCENT} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: "#6b7280", fontSize: 11 }} axisLine={false} tickLine={false}
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
+            <XAxis dataKey="date" tick={{ fill: theme.axis, fontSize: 11 }} axisLine={false} tickLine={false}
               tickFormatter={(d) => d.slice(0, 7)} interval="preserveStartEnd" />
-            <YAxis tick={{ fill: "#6b7280", fontSize: 11 }} tickFormatter={fmtK} axisLine={false} tickLine={false} width={48} />
+            <YAxis tick={{ fill: theme.axis, fontSize: 11 }} tickFormatter={fmtK} axisLine={false} tickLine={false} width={48} />
             <Tooltip content={<CustomNWTooltip data={networth} />} />
-            <Area type="monotone" dataKey="value" stroke="#4361ee" strokeWidth={2}
-              fill="url(#nwGrad)" dot={false} activeDot={{ r: 4, fill: "#4361ee" }} />
+            <Area type="monotone" dataKey="value" stroke={CHART_ACCENT} strokeWidth={2}
+              fill="url(#nwGrad)" dot={false} activeDot={{ r: 4, fill: CHART_ACCENT }} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -191,26 +193,27 @@ export default function WealthPage() {
               <span>€{fmt(loan?.summary?.capital_remaining)} left</span>
             </div>
             <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 rounded-full transition-all"
+              <div className="h-full bg-accent rounded-full transition-all"
                 style={{ width: `${((loan?.summary?.capital_paid ?? 0) / (loan?.initial_balance ?? 19000)) * 100}%` }} />
             </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <ComposedChart data={loanChart} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-              <XAxis dataKey="date" tick={{ fill: "#6b7280", fontSize: 10 }} axisLine={false} tickLine={false}
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
+              <XAxis dataKey="date" tick={{ fill: theme.axis, fontSize: 10 }} axisLine={false} tickLine={false}
                 interval="preserveStartEnd" />
-              <YAxis tick={{ fill: "#6b7280", fontSize: 10 }} tickFormatter={fmtK} axisLine={false} tickLine={false} width={40} />
+              <YAxis tick={{ fill: theme.axis, fontSize: 10 }} tickFormatter={fmtK} axisLine={false} tickLine={false} width={40} />
               <Tooltip
                 formatter={(v, name) => v != null ? [fmt(v), name === "past" ? "Paid down" : "Projected"] : [null]}
-                contentStyle={{ background: "#111827", border: "1px solid #374151", borderRadius: 8 }}
+                contentStyle={theme.tooltip}
+                itemStyle={{ color: theme.text }}
               />
-              <Area type="monotone" dataKey="past" stroke="#06d6a0" strokeWidth={2}
-                fill="#06d6a020" dot={false} name="past" connectNulls={false} />
-              <Line type="monotone" dataKey="future" stroke="#06d6a0" strokeWidth={2}
+              <Area type="monotone" dataKey="past" stroke={CHART_ACCENT} strokeWidth={2}
+                fill={`${CHART_ACCENT}20`} dot={false} name="past" connectNulls={false} />
+              <Line type="monotone" dataKey="future" stroke={CHART_ACCENT} strokeWidth={2}
                 strokeDasharray="6 4" dot={false} name="future" connectNulls={false} />
-              <ReferenceLine x={new Date().toISOString().slice(0, 7)} stroke="#6b7280"
-                strokeDasharray="4 4" label={{ value: "Today", fill: "#6b7280", fontSize: 9 }} />
+              <ReferenceLine x={new Date().toISOString().slice(0, 7)} stroke={theme.axis}
+                strokeDasharray="4 4" label={{ value: "Today", fill: theme.axis, fontSize: 9 }} />
             </ComposedChart>
           </ResponsiveContainer>
 
