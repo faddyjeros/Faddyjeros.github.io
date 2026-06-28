@@ -46,16 +46,19 @@ export default function DropZone() {
         className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed cursor-pointer text-sm transition-colors ${
           isDragActive
             ? "border-accent bg-accent/10 text-accent"
-            : "border-line text-content-secondary hover:border-line hover:text-content"
+            : "border-line text-content-secondary hover:border-content-muted hover:text-content"
         }`}
       >
         <input {...getInputProps()} />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+        </svg>
         {loading ? (
           <span className="animate-pulse">Importing…</span>
         ) : isDragActive ? (
           <span>Drop to import</span>
         ) : (
-          <span>Drop bank exports here (CSV / XLS / XLSX)</span>
+          <span>Drop bank exports here <span className="text-content-muted">(CSV / XLS / XLSX)</span></span>
         )}
       </div>
 

@@ -70,8 +70,9 @@ export function MonthlyTrend({ data, incomeTarget, expenseTarget, showAverage })
     ? Math.round(data.reduce((s, d) => s + (d.expenses || 0), 0) / data.length)
     : null;
 
-  // Show short month label
-  const display = data.map((d) => ({ ...d, label: d.month.slice(5) }));
+  // Show short month name (e.g. "Jan") from a "YYYY-MM" key
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const display = data.map((d) => ({ ...d, label: MONTH_NAMES[Number(d.month.slice(5)) - 1] ?? d.month.slice(5) }));
 
   return (
     <ResponsiveContainer width="100%" height={240}>
