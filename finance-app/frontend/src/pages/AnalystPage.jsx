@@ -72,9 +72,11 @@ export default function AnalystPage() {
           <SummaryCard label="Portfolio" value={fmt(summary.portfolio_value)} />
           <SummaryCard label="Cash" value={fmt(summary.cash)} />
           <SummaryCard
-            label="Savings Rate"
-            value={`${summary.savings_rate}%`}
-            sublabel={`${fmt(summary.investable_now)} investable`}
+            label="Invested"
+            value={summary.portfolio_value + summary.cash > 0
+              ? `${Math.round((summary.portfolio_value / (summary.portfolio_value + summary.cash)) * 100)}%`
+              : "—"}
+            sublabel="of liquid assets"
           />
         </div>
 

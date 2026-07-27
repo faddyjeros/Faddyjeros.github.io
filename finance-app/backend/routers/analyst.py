@@ -9,13 +9,10 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from services.finance_data import (
-    calculate_investable_amount,
     get_accounts,
-    get_budget_status,
     get_net_worth_history,
     get_portfolio_holdings,
     get_salary_history,
-    get_transaction_summary,
 )
 from services.market_data import (
     get_company_facts,
@@ -123,34 +120,6 @@ TOOL_DEFINITIONS = [
         },
     },
     {
-        "name": "get_transaction_summary",
-        "description": "Get spending and income summary from bank transactions. Shows totals by category and monthly breakdown.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string",
-                    "description": "Filter to a specific spending category (optional)",
-                },
-                "months": {
-                    "type": "integer",
-                    "description": "Number of months to look back (default: 6)",
-                    "default": 6,
-                },
-            },
-            "required": [],
-        },
-    },
-    {
-        "name": "get_budget_status",
-        "description": "Get current month's budget vs actual spending for each category. Shows which categories are on track or over budget.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": [],
-        },
-    },
-    {
         "name": "get_net_worth_history",
         "description": "Get historical net worth data points over time, tracked manually in the accounting spreadsheet.",
         "input_schema": {
@@ -162,15 +131,6 @@ TOOL_DEFINITIONS = [
     {
         "name": "get_salary_history",
         "description": "Get salary history including gross, net, overtime, bonuses, and employer details.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": [],
-        },
-    },
-    {
-        "name": "calculate_investable_amount",
-        "description": "Calculate how much money is available to invest this month based on salary, spending so far, loan payments, and budget targets.",
         "input_schema": {
             "type": "object",
             "properties": {},
@@ -198,16 +158,10 @@ async def _execute_tool(name: str, input_data: dict, db: Session) -> str:
                 input_data.get("filing_type", "10-K"),
                 min(input_data.get("count", 3), 5),
             )
-        elif name == "get_transaction_summary":
-            result = get_transaction_summary(db, input_data.get("category"), input_data.get("months", 6))
-        elif name == "get_budget_status":
-            result = get_budget_status(db)
         elif name == "get_net_worth_history":
             result = get_net_worth_history(db)
         elif name == "get_salary_history":
             result = get_salary_history(db)
-        elif name == "calculate_investable_amount":
-            result = calculate_investable_amount(db)
         else:
             result = {"error": f"Unknown tool: {name}"}
         return json.dumps(result, default=str)
@@ -220,9 +174,6 @@ async def get_overview(db: Session = Depends(get_db)):
     holdings = get_portfolio_holdings(db)
     accounts = get_accounts(db)
     net_worth = get_net_worth_history(db)
-    salary = get_salary_history(db)
-    budget = get_budget_status(db)
-    investable = calculate_investable_amount(db)
 
     tickers = [h["ticker"] for h in holdings.get("dynamic", []) if h.get("ticker")]
     if tickers:
@@ -252,29 +203,21 @@ async def get_overview(db: Session = Depends(get_db)):
     total_portfolio = holdings.get("total_eur", 0)
     total_cash = sum(a.get("amount_eur", 0) for a in accounts)
     latest_nw = net_worth[-1]["value"] if net_worth else 0
-    latest_salary = salary[-1]["net"] if salary else 0
-
-    savings_rate = 0
-    if latest_salary > 0:
-        savings_rate = round((latest_salary - budget["total_spent"]) / latest_salary * 100, 1)
 
     return {
         "summary": {
             "net_worth": latest_nw,
             "portfolio_value": total_portfolio,
             "cash": round(total_cash, 2),
-            "savings_rate": savings_rate,
-            "investable_now": investable["investable_now"],
         },
         "holdings": holdings,
         "accounts": accounts,
         "net_worth_history": net_worth[-24:],
-        "budget": budget,
         "live_prices": live_prices,
     }
 
 
-SYSTEM_PROMPT = """You are a personal financial analyst. You have access to the user's complete financial data: bank transactions, budget targets, salary history, net worth tracking, and investment portfolio with live market prices.
+SYSTEM_PROMPT = """You are a personal financial analyst. You have access to the user's wealth data: salary history, net worth tracking, and investment portfolio with live market prices.
 
 The user's portfolio tickers and their CORRECT identities (do NOT guess or hallucinate fund names):
 - CSSPX = iShares Core S&P 500 UCITS ETF (EUR) -- tracks the US S&P 500 index
@@ -283,10 +226,9 @@ The user's portfolio tickers and their CORRECT identities (do NOT guess or hallu
 - GME = GameStop Corp -- US single stock
 
 Your role:
-- Answer questions about spending patterns, budget adherence, and savings
 - Analyze investment portfolio performance and allocation
 - Research stocks using fundamentals, financial statements, and SEC filings
-- Calculate how much is available to invest
+- Track net worth and salary trends over time
 - Compare holdings against benchmarks
 - Provide data-driven observations, not generic financial advice
 
