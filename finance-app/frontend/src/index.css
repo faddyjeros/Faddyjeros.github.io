@@ -42,6 +42,12 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Range sliders adopt the emerald accent in both themes */
+input[type="range"] {
+  accent-color: rgb(var(--color-accent));
+  cursor: pointer;
+}
+
 /* ── Hidden scrollbar — swipeable tab bars on mobile ─────────── */
 .no-scrollbar {
   -ms-overflow-style: none;
