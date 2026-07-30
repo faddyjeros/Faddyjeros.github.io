@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -477,3 +477,180 @@ def migrate_from_excel(db: Session = Depends(get_db)):
 
     db.commit()
     return {"migrated": counts, "status": "done"}
+
+
+@router.post("/sync-excel")
+async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """Incrementally sync an uploaded accounting spreadsheet.
+
+    Time-series sheets (net worth, salary, loan) are upserted by date — new
+    months are added, existing rows updated only if a value changed. Current-
+    state sheets (portfolio, bank accounts) are upserted by identity (ticker or
+    name) — nothing is deleted, so manual entries are preserved.
+    """
+    import io
+    import math
+
+    import pandas as pd
+
+    if not (file.filename or "").lower().endswith((".xlsx", ".xls")):
+        raise HTTPException(400, "Please upload an .xlsx or .xls file.")
+
+    contents = await file.read()
+    try:
+        xls = pd.ExcelFile(io.BytesIO(contents))
+    except Exception as e:
+        raise HTTPException(400, f"Could not read spreadsheet: {e}")
+
+    def _f(val, default=0.0):
+        try:
+            v = round(float(val), 2)
+            return v if math.isfinite(v) else default
+        except (TypeError, ValueError):
+            return default
+
+    def _s(val):
+        return str(val).strip() if pd.notna(val) else None
+
+    result = {}
+
+    # --- Net worth: upsert by date ---
+    if "Summary and tracking" in xls.sheet_names:
+        df = xls.parse("Summary and tracking", header=None)
+        existing = {r.date: r for r in db.query(NetWorthSnapshot).all()}
+        added = updated = 0
+        for _, row in df.iloc[1:].iterrows():
+            d = pd.to_datetime(row[0], errors="coerce")
+            if pd.isna(d):
+                continue
+            v = _f(row[1])
+            if v == 0:
+                continue
+            d = d.date()
+            comment = _s(row[2])
+            ex = existing.get(d)
+            if ex:
+                if ex.value != v or ex.comment != comment:
+                    ex.value, ex.comment = v, comment
+                    updated += 1
+            else:
+                db.add(NetWorthSnapshot(date=d, value=v, comment=comment))
+                added += 1
+        result["net_worth"] = {"added": added, "updated": updated}
+
+    # --- Salary: upsert by date ---
+    if "Salary tracker" in xls.sheet_names:
+        df = xls.parse("Salary tracker", header=None)
+        existing = {r.date: r for r in db.query(SalaryRecord).all()}
+        added = updated = 0
+        for _, row in df.iloc[1:].iterrows():
+            d = pd.to_datetime(row[0], dayfirst=True, errors="coerce")
+            if pd.isna(d):
+                continue
+            d = d.date()
+            fields = dict(
+                company=_s(row[1]), jurisdiction=_s(row[2]),
+                gross=_f(row[3]), overtime=_f(row[4]), extras=_f(row[5]),
+                bonus=_f(row[6]), net=_f(row[7]), comment=_s(row[8]),
+            )
+            ex = existing.get(d)
+            if ex:
+                if any(getattr(ex, k) != v for k, v in fields.items()):
+                    for k, v in fields.items():
+                        setattr(ex, k, v)
+                    updated += 1
+            else:
+                db.add(SalaryRecord(date=d, **fields))
+                added += 1
+        result["salary"] = {"added": added, "updated": updated}
+
+    # --- Loan: upsert by date ---
+    if "Loan" in xls.sheet_names:
+        df = xls.parse("Loan", header=None)
+        existing = {r.date: r for r in db.query(LoanPayment).all()}
+        added = updated = 0
+        for _, row in df.iloc[2:].iterrows():
+            d = pd.to_datetime(row[0], errors="coerce")
+            if pd.isna(d):
+                continue
+            d = d.date()
+            fields = dict(capital=_f(row[1]), interest=_f(row[2]), insurance=_f(row[3]))
+            ex = existing.get(d)
+            if ex:
+                if any(getattr(ex, k) != v for k, v in fields.items()):
+                    for k, v in fields.items():
+                        setattr(ex, k, v)
+                    updated += 1
+            else:
+                db.add(LoanPayment(date=d, **fields))
+                added += 1
+        result["loan"] = {"added": added, "updated": updated}
+
+    # --- Portfolio: upsert by ticker (dynamic) / name (flat) ---
+    if "Investments" in xls.sheet_names:
+        df = xls.parse("Investments", header=None)
+        existing = db.query(PortfolioHolding).all()
+        by_ticker = {(h.ticker or "").upper(): h for h in existing if h.ticker}
+        by_name = {(h.name or "").strip(): h for h in existing if not h.ticker}
+        added = updated = 0
+        for i, row in df.iloc[1:5].iterrows():
+            ticker = _s(row[7])
+            if not ticker:
+                continue
+            fields = dict(
+                name=_s(row[0]) or ticker, holding_type=_s(row[1]),
+                ticker=ticker, volume=_f(row[2]) or None, price=_f(row[3]) or None,
+                value_eur=_f(row[5]), is_dynamic=True, sort_order=i,
+            )
+            ex = by_ticker.get(ticker.upper())
+            if ex:
+                if any(getattr(ex, k) != v for k, v in fields.items()):
+                    for k, v in fields.items():
+                        setattr(ex, k, v)
+                    updated += 1
+            else:
+                db.add(PortfolioHolding(**fields))
+                added += 1
+        for i, row in df.iloc[7:11].iterrows():
+            name = _s(row[0])
+            if not name:
+                continue
+            fields = dict(
+                name=name, holding_type=_s(row[1]), value_eur=_f(row[5]),
+                is_dynamic=False, sort_order=i + 100,
+            )
+            ex = by_name.get(name)
+            if ex:
+                if any(getattr(ex, k) != v for k, v in fields.items()):
+                    for k, v in fields.items():
+                        setattr(ex, k, v)
+                    updated += 1
+            else:
+                db.add(PortfolioHolding(**fields))
+                added += 1
+        result["portfolio"] = {"added": added, "updated": updated}
+
+    # --- Bank accounts: upsert by name ---
+    if "Bank accounts" in xls.sheet_names:
+        df = xls.parse("Bank accounts", header=None)
+        existing = {(a.account_name or "").strip(): a for a in db.query(BankAccount).all()}
+        added = updated = 0
+        for _, row in df.iloc[1:].iterrows():
+            name = _s(row[0])
+            if not name:
+                continue
+            local, eur = _f(row[1]), _f(row[2])
+            ex = existing.get(name)
+            if ex:
+                if ex.amount_local != local or ex.amount_eur != eur:
+                    ex.amount_local, ex.amount_eur = local, eur
+                    updated += 1
+            else:
+                db.add(BankAccount(account_name=name, amount_local=local, amount_eur=eur))
+                added += 1
+        result["accounts"] = {"added": added, "updated": updated}
+
+    db.commit()
+    total_added = sum(v["added"] for v in result.values())
+    total_updated = sum(v["updated"] for v in result.values())
+    return {"synced": result, "total_added": total_added, "total_updated": total_updated}
