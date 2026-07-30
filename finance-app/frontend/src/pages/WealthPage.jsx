@@ -56,6 +56,8 @@ export default function WealthPage() {
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState(null);
 
   const reload = useCallback(() => {
     setLoading(true);
@@ -76,6 +78,23 @@ export default function WealthPage() {
   }, []);
 
   useEffect(() => { reload(); }, [reload]);
+
+  async function handleImport(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const res = await api.syncExcel(file);
+      setSyncResult(res);
+      reload();
+    } catch (err) {
+      setSyncResult({ error: err.message || "Import failed" });
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   if (loading) return <p className="text-content-muted text-sm p-6">Loading wealth data...</p>;
   if (error) return <p className="text-red-400 text-sm p-6">Failed to load: {error}</p>;
@@ -106,7 +125,46 @@ export default function WealthPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-content">Net Worth & Wealth</h2>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <h2 className="text-lg font-semibold text-content">Net Worth & Wealth</h2>
+        <label
+          className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border transition-colors ${
+            syncing
+              ? "border-line text-content-muted cursor-default"
+              : "border-line text-content-secondary hover:text-content hover:border-content-muted cursor-pointer"
+          }`}
+          title="Sync new rows from your accounting spreadsheet"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${syncing ? "animate-pulse" : ""}`} aria-hidden="true">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+          </svg>
+          {syncing ? "Syncing…" : "Import from Excel"}
+          <input type="file" accept=".xlsx,.xls" onChange={handleImport} disabled={syncing} className="hidden" />
+        </label>
+      </div>
+
+      {/* Sync result */}
+      {syncResult && (
+        <div className={`rounded-lg border px-4 py-2.5 text-xs flex items-center justify-between gap-3 ${
+          syncResult.error
+            ? "border-red-500/30 bg-red-500/10 text-red-400"
+            : "border-accent/30 bg-accent/10 text-content-secondary"
+        }`}>
+          {syncResult.error ? (
+            <span>Import failed: {syncResult.error}</span>
+          ) : (
+            <span className="font-mono">
+              <span className="text-accent font-semibold">+{syncResult.total_added} added</span>
+              {" · "}{syncResult.total_updated} updated
+              {Object.entries(syncResult.synced || {})
+                .filter(([, c]) => c.added || c.updated)
+                .map(([k, c]) => `  ·  ${k.replace("_", " ")} +${c.added}/${c.updated}`)
+                .join("")}
+            </span>
+          )}
+          <button onClick={() => setSyncResult(null)} className="text-content-muted hover:text-content shrink-0" aria-label="Dismiss">✕</button>
+        </div>
+      )}
 
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-4">

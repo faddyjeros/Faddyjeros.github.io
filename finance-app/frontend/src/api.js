@@ -37,6 +37,11 @@ export const api = {
   deleteLoan: (id) => fetch(`${BASE}/wealth/loan/${id}`, { method: "DELETE" }),
 
   migrateFromExcel: () => req("/wealth/migrate-from-excel", { method: "POST" }),
+  syncExcel: (file) => {
+    const form = new FormData();
+    form.append("file", file);
+    return req("/wealth/sync-excel", { method: "POST", body: form });
+  },
 
   // Analyst + stock analysis
   getAnalystOverview: () => req("/analyst/overview"),
