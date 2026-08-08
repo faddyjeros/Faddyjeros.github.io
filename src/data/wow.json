@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-07T23:07:44.233247+00:00",
+  "updated_at": "2026-08-08T22:59:34.440991+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -7,11 +7,11 @@
       "role": "Main",
       "focus": "raids_and_mythicplus",
       "class": "Warrior",
-      "spec": "Protection",
+      "spec": "Arms",
       "level": 90,
       "item_level": 288,
-      "equipped_item_level": 288,
-      "achievement_points": 22115,
+      "equipped_item_level": 285,
+      "achievement_points": 22235,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
