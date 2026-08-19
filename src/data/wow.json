@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-18T22:53:07.123843+00:00",
+  "updated_at": "2026-08-19T22:53:18.034044+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -9,9 +9,9 @@
       "class": "Warrior",
       "spec": "Arms",
       "level": 90,
-      "item_level": 290,
+      "item_level": 291,
       "equipped_item_level": 287,
-      "achievement_points": 22370,
+      "achievement_points": 22390,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
