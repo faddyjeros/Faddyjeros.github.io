@@ -31,6 +31,7 @@ const PORTFOLIO_COLUMNS = [
   { key: "ticker", label: "Ticker", type: "text", width: "100px" },
   { key: "volume", label: "Volume", type: "number", width: "90px" },
   { key: "price", label: "Price", type: "number", width: "100px" },
+  { key: "avg_cost", label: "Avg Cost", type: "number", width: "100px" },
   { key: "value_eur", label: "Value EUR", type: "number", width: "110px" },
   { key: "is_dynamic", label: "Tracked", type: "select", options: ["true", "false"], width: "80px" },
 ];
@@ -209,16 +210,32 @@ export default function WealthPage() {
           <h3 className="text-sm font-semibold text-content mb-4">Portfolio</h3>
           <div className="space-y-1 mb-4">
             <p className="text-xs text-content-muted uppercase tracking-wide">Live positions</p>
-            {portfolio?.dynamic.map((h) => (
-              <div key={h.ticker || h.name} className="flex items-center justify-between py-1.5 border-b border-line">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-semibold w-14"
-                    style={{ color: TYPE_COLORS[h.type ?? h.holding_type] ?? "#9ca3af" }}>{h.ticker}</span>
-                  <span className="text-xs text-content-muted">{h.volume} x {fmt(h.price)}</span>
+            {portfolio?.dynamic.map((h) => {
+              const gainPct = h.avg_cost ? ((h.price - h.avg_cost) / h.avg_cost) * 100 : null;
+              const px = (v) => v?.toLocaleString("fr-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "—";
+              return (
+                <div key={h.ticker || h.name} className="flex items-start justify-between py-1.5 border-b border-line">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-semibold w-14 shrink-0"
+                        style={{ color: TYPE_COLORS[h.type ?? h.holding_type] ?? "#9ca3af" }}>{h.ticker}</span>
+                      <span className="text-xs text-content-muted">{h.volume} × {px(h.price)}</span>
+                    </div>
+                    {h.avg_cost != null && (
+                      <div className="text-[11px] font-mono text-content-muted mt-0.5 ml-16">
+                        avg {px(h.avg_cost)}
+                        {gainPct != null && (
+                          <span className={gainPct >= 0 ? "text-accent" : "text-red-400"}>
+                            {"  "}{gainPct >= 0 ? "+" : ""}{gainPct.toFixed(1)}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold text-content shrink-0">{fmt(h.value_eur)}</span>
                 </div>
-                <span className="text-sm font-semibold text-content">{fmt(h.value_eur)}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="space-y-1">
             <p className="text-xs text-content-muted uppercase tracking-wide mt-3 mb-1">Other holdings</p>

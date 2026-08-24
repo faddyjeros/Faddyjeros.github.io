@@ -118,7 +118,8 @@ class PortfolioHolding(Base):
     holding_type = Column(String, nullable=True)        # "Index", "Stock", "Pension", "SCI"
     ticker = Column(String, nullable=True)               # e.g. "IWDA.AS"
     volume = Column(Float, nullable=True)
-    price = Column(Float, nullable=True)
+    price = Column(Float, nullable=True)                  # current unit price
+    avg_cost = Column(Float, nullable=True)               # average purchase price / break-even
     value_eur = Column(Float, nullable=False, default=0.0)
     is_dynamic = Column(Boolean, default=False)          # ticker-based vs manual
     sort_order = Column(Float, default=0)
@@ -177,6 +178,25 @@ def create_tables():
             conn.execute(text("PRAGMA busy_timeout=5000"))
             conn.commit()
     Base.metadata.create_all(bind=engine)
+    _ensure_columns()
+
+
+def _ensure_columns():
+    """Additive column migrations for tables that predate a new field.
+    create_all() never alters existing tables, so add missing columns by hand.
+    Idempotent and cross-database (SQLite + PostgreSQL both support ADD COLUMN)."""
+    from sqlalchemy import inspect as _inspect
+
+    checks = [("portfolio_holdings", "avg_cost", "FLOAT")]
+    insp = _inspect(engine)
+    for table, column, sql_type in checks:
+        try:
+            existing = {c["name"] for c in insp.get_columns(table)}
+        except Exception:
+            continue
+        if column not in existing:
+            with engine.begin() as conn:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {sql_type}"))
 
 
 def get_db():
