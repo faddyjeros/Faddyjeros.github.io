@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-29T23:33:44.175796+00:00",
+  "updated_at": "2026-08-23T22:50:55.747253+00:00",
   "characters": [
     {
       "name": "Vokster",
@@ -7,11 +7,11 @@
       "role": "Main",
       "focus": "raids_and_mythicplus",
       "class": "Warrior",
-      "spec": "Protection",
+      "spec": "Arms",
       "level": 90,
-      "item_level": 288,
-      "equipped_item_level": 288,
-      "achievement_points": 22115,
+      "item_level": 301,
+      "equipped_item_level": 296,
+      "achievement_points": 22435,
       "faction": "Alliance",
       "realm": "Sylvanas"
     },
@@ -47,11 +47,11 @@
       "role": "Farmer",
       "focus": "achievements",
       "class": "Druid",
-      "spec": "Guardian",
+      "spec": "Feral",
       "level": 90,
       "item_level": 289,
-      "equipped_item_level": 289,
-      "achievement_points": 22115,
+      "equipped_item_level": 283,
+      "achievement_points": 22195,
       "faction": "Alliance",
       "realm": "Sylvanas"
     }
