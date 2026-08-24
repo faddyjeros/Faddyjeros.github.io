@@ -36,6 +36,7 @@ class PortfolioHoldingIn(BaseModel):
     ticker: str | None = None
     volume: float | None = None
     price: float | None = None
+    avg_cost: float | None = None
     value_eur: float = 0.0
     is_dynamic: bool = False
     sort_order: float = 0
@@ -73,6 +74,25 @@ class LoanSettingsIn(BaseModel):
 def _get_loan_initial(db: Session) -> float:
     setting = db.query(AppSetting).filter(AppSetting.key == "loan_initial_balance").first()
     return float(setting.value) if setting else LOAN_INITIAL_DEFAULT
+
+
+import re
+
+_AVG_COST_RE = re.compile(r"(?:BEP|PP)\s*\$?\s*([0-9]+(?:[.,][0-9]+)?)", re.IGNORECASE)
+
+
+def _parse_avg_cost(info) -> float | None:
+    """Pull the average purchase price from the Info column, e.g. 'BEP 124.03'
+    or 'PP 80$ 2021-01-29' → 124.03 / 80.0. Returns None when absent."""
+    if info is None:
+        return None
+    m = _AVG_COST_RE.search(str(info))
+    if not m:
+        return None
+    try:
+        return round(float(m.group(1).replace(",", ".")), 4)
+    except ValueError:
+        return None
 
 
 def _row_to_dict(row) -> dict:
@@ -593,41 +613,52 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
         by_ticker = {(h.ticker or "").upper(): h for h in existing if h.ticker}
         by_name = {(h.name or "").strip(): h for h in existing if not h.ticker}
         added = updated = 0
-        for i, row in df.iloc[1:5].iterrows():
+
+        # The sheet has a "Dynamic" section then a "Flat" header row then flat
+        # holdings. Find the "Flat" divider so the row counts aren't hard-coded
+        # (adding a holding must not push a line out of range).
+        flat_hdr = next(
+            (idx for idx in range(len(df)) if str(df.iloc[idx, 0]).strip().lower() == "flat"),
+            None,
+        )
+        dyn_rows = df.iloc[1:flat_hdr] if flat_hdr is not None else df.iloc[1:]
+        flat_rows = df.iloc[flat_hdr + 1:] if flat_hdr is not None else df.iloc[0:0]
+
+        def _upsert(fields, key_map, key):
+            nonlocal added, updated
+            ex = key_map.get(key)
+            if ex:
+                if any(getattr(ex, k) != v for k, v in fields.items()):
+                    for k, v in fields.items():
+                        setattr(ex, k, v)
+                    updated += 1
+            else:
+                db.add(PortfolioHolding(**fields))
+                added += 1
+
+        # Dynamic holdings: any row in the dynamic section with a ticker.
+        for i, row in dyn_rows.iterrows():
             ticker = _s(row[7])
             if not ticker:
                 continue
-            fields = dict(
+            _upsert(dict(
                 name=_s(row[0]) or ticker, holding_type=_s(row[1]),
                 ticker=ticker, volume=_f(row[2]) or None, price=_f(row[3]) or None,
+                avg_cost=_parse_avg_cost(row[6]),
                 value_eur=_f(row[5]), is_dynamic=True, sort_order=i,
-            )
-            ex = by_ticker.get(ticker.upper())
-            if ex:
-                if any(getattr(ex, k) != v for k, v in fields.items()):
-                    for k, v in fields.items():
-                        setattr(ex, k, v)
-                    updated += 1
-            else:
-                db.add(PortfolioHolding(**fields))
-                added += 1
-        for i, row in df.iloc[7:11].iterrows():
+            ), by_ticker, ticker.upper())
+
+        # Flat holdings: any row in the flat section with a name.
+        for i, row in flat_rows.iterrows():
             name = _s(row[0])
             if not name:
                 continue
-            fields = dict(
+            _upsert(dict(
                 name=name, holding_type=_s(row[1]), value_eur=_f(row[5]),
+                avg_cost=_parse_avg_cost(row[6]),
                 is_dynamic=False, sort_order=i + 100,
-            )
-            ex = by_name.get(name)
-            if ex:
-                if any(getattr(ex, k) != v for k, v in fields.items()):
-                    for k, v in fields.items():
-                        setattr(ex, k, v)
-                    updated += 1
-            else:
-                db.add(PortfolioHolding(**fields))
-                added += 1
+            ), by_name, name)
+
         result["portfolio"] = {"added": added, "updated": updated}
 
     # --- Bank accounts: upsert by name ---
