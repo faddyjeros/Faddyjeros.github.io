@@ -33,7 +33,7 @@ const PORTFOLIO_COLUMNS = [
   { key: "price", label: "Price", type: "number", width: "100px" },
   { key: "avg_cost", label: "Avg Cost", type: "number", width: "100px" },
   { key: "value_eur", label: "Value EUR", type: "number", width: "110px" },
-  { key: "is_dynamic", label: "Tracked", type: "select", options: ["true", "false"], width: "80px" },
+  { key: "is_dynamic", label: "Live price", type: "select", options: ["true", "false"], width: "90px" },
 ];
 
 const ACCOUNT_COLUMNS = [
@@ -157,9 +157,10 @@ export default function WealthPage() {
             <span className="font-mono">
               <span className="text-accent font-semibold">+{syncResult.total_added} added</span>
               {" · "}{syncResult.total_updated} updated
+              {syncResult.total_removed > 0 && ` · ${syncResult.total_removed} removed`}
               {Object.entries(syncResult.synced || {})
-                .filter(([, c]) => c.added || c.updated)
-                .map(([k, c]) => `  ·  ${k.replace("_", " ")} +${c.added}/${c.updated}`)
+                .filter(([, c]) => c.added || c.updated || c.removed)
+                .map(([k, c]) => `  ·  ${k.replace("_", " ")} +${c.added}/${c.updated}${c.removed ? `/-${c.removed}` : ""}`)
                 .join("")}
             </span>
           )}
