@@ -538,5 +538,30 @@
     "date": "2026-08-23",
     "market_value_eur": 177719.72,
     "net_worth_eur": 172907.07
+  },
+  {
+    "date": "2026-08-24",
+    "market_value_eur": 177713.42,
+    "net_worth_eur": 172900.77
+  },
+  {
+    "date": "2026-08-25",
+    "market_value_eur": 177317.06,
+    "net_worth_eur": 172504.41
+  },
+  {
+    "date": "2026-08-27",
+    "market_value_eur": 177766.37,
+    "net_worth_eur": 172953.72
+  },
+  {
+    "date": "2026-08-28",
+    "market_value_eur": 177998.76,
+    "net_worth_eur": 173186.11
+  },
+  {
+    "date": "2026-08-29",
+    "market_value_eur": 177986.96,
+    "net_worth_eur": 173174.31
   }
 ]
