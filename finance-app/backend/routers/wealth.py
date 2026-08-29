@@ -612,7 +612,8 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
         existing = db.query(PortfolioHolding).all()
         by_ticker = {(h.ticker or "").upper(): h for h in existing if h.ticker}
         by_name = {(h.name or "").strip(): h for h in existing if not h.ticker}
-        added = updated = 0
+        added = updated = removed = 0
+        seen = set()  # identities present in the sheet this run
 
         # The sheet has a "Dynamic" section then a "Flat" header row then flat
         # holdings. Find the "Flat" divider so the row counts aren't hard-coded
@@ -624,9 +625,10 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
         dyn_rows = df.iloc[1:flat_hdr] if flat_hdr is not None else df.iloc[1:]
         flat_rows = df.iloc[flat_hdr + 1:] if flat_hdr is not None else df.iloc[0:0]
 
-        def _upsert(fields, key_map, key):
+        def _upsert(fields, key_map, raw_key, kind):
             nonlocal added, updated
-            ex = key_map.get(key)
+            seen.add((kind, raw_key))
+            ex = key_map.get(raw_key)
             if ex:
                 if any(getattr(ex, k) != v for k, v in fields.items()):
                     for k, v in fields.items():
@@ -646,7 +648,7 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
                 ticker=ticker, volume=_f(row[2]) or None, price=_f(row[3]) or None,
                 avg_cost=_parse_avg_cost(row[6]),
                 value_eur=_f(row[5]), is_dynamic=True, sort_order=i,
-            ), by_ticker, ticker.upper())
+            ), by_ticker, ticker.upper(), "t")
 
         # Flat holdings: any row in the flat section with a name.
         for i, row in flat_rows.iterrows():
@@ -654,12 +656,23 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
             if not name:
                 continue
             _upsert(dict(
-                name=name, holding_type=_s(row[1]), value_eur=_f(row[5]),
+                name=name, holding_type=_s(row[1]),
+                volume=_f(row[2]) or None, price=_f(row[3]) or None,
                 avg_cost=_parse_avg_cost(row[6]),
-                is_dynamic=False, sort_order=i + 100,
-            ), by_name, name)
+                value_eur=_f(row[5]), is_dynamic=False, sort_order=i + 100,
+            ), by_name, name, "n")
 
-        result["portfolio"] = {"added": added, "updated": updated}
+        # Mirror the sheet: drop holdings that are no longer in it (clears stale
+        # rows and the old phantom "Flat" divider). Guarded so a mis-parsed or
+        # empty sheet can never wipe the table.
+        if seen:
+            for h in existing:
+                ident = ("t", (h.ticker or "").upper()) if h.ticker else ("n", (h.name or "").strip())
+                if ident not in seen:
+                    db.delete(h)
+                    removed += 1
+
+        result["portfolio"] = {"added": added, "updated": updated, "removed": removed}
 
     # --- Bank accounts: upsert by name ---
     if "Bank accounts" in xls.sheet_names:
@@ -684,4 +697,10 @@ async def sync_excel(file: UploadFile = File(...), db: Session = Depends(get_db)
     db.commit()
     total_added = sum(v["added"] for v in result.values())
     total_updated = sum(v["updated"] for v in result.values())
-    return {"synced": result, "total_added": total_added, "total_updated": total_updated}
+    total_removed = sum(v.get("removed", 0) for v in result.values())
+    return {
+        "synced": result,
+        "total_added": total_added,
+        "total_updated": total_updated,
+        "total_removed": total_removed,
+    }
