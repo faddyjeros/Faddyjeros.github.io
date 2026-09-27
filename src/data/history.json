@@ -703,5 +703,10 @@
     "date": "2026-09-26",
     "market_value_eur": 181111.16,
     "net_worth_eur": 176698.01
+  },
+  {
+    "date": "2026-09-27",
+    "market_value_eur": 181819.07,
+    "net_worth_eur": 177405.92
   }
 ]
