@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-18T00:13:05+00:00",
+  "last_updated": "2026-10-19T00:24:59+00:00",
   "base_currency": "EUR",
   "positions": [
     {
@@ -10,9 +10,9 @@
       "price": 26.81,
       "bep": 80.0,
       "value_native": 1286.88,
-      "value_eur": 1144.68,
-      "cost_eur": 3415.68,
-      "gain_eur": -2271.0,
+      "value_eur": 1146.1,
+      "cost_eur": 3419.9,
+      "gain_eur": -2273.81,
       "gain_pct": -66.49,
       "bought": "2021-01-29",
       "allocation_pct": 0.62
@@ -79,13 +79,13 @@
     }
   ],
   "summary": {
-    "market_value_eur": 184210.27,
-    "total_cost_eur": 142633.01,
-    "total_gain_eur": 41577.26,
+    "market_value_eur": 184211.68,
+    "total_cost_eur": 142637.24,
+    "total_gain_eur": 41574.45,
     "total_gain_pct": 29.15,
     "loan_remaining_eur": 4013.35,
     "loan_as_of": "2026-10-04",
-    "net_worth_eur": 180196.92,
+    "net_worth_eur": 180198.33,
     "realized_gain_eur": 7509.16
   },
   "realized": {
@@ -199,13 +199,13 @@
       "current_price": 26.81,
       "bep": 80.0,
       "fx_at_buy": 0.8838,
-      "fx_today": 0.8895,
-      "fx_change_pct": 0.64,
-      "value_today_eur": 1144.68,
+      "fx_today": 0.8906,
+      "fx_change_pct": 0.77,
+      "value_today_eur": 1146.1,
       "cost_eur_at_buy": 3393.79,
-      "total_gain_eur": -2249.11,
+      "total_gain_eur": -2247.7,
       "asset_gain_eur": -2256.45,
-      "fx_gain_eur": 7.34,
+      "fx_gain_eur": 8.75,
       "benchmark_note": "Direct USD holding \u2014 FX computed against EUR/USD"
     },
     {
@@ -222,8 +222,8 @@
       "bench_today": 17186.02,
       "bench_return_pct": 116.35,
       "fx_at_buy": 1.009,
-      "fx_today": 0.8895,
-      "fx_change_pct": -11.84,
+      "fx_today": 0.8906,
+      "fx_change_pct": -11.73,
       "value_today_eur": 35553.12,
       "cost_eur_at_buy": 22636.32,
       "total_gain_eur": 12916.8,
@@ -245,13 +245,13 @@
       "bench_today": 206.34,
       "bench_return_pct": 30.61,
       "fx_at_buy": 0.9511,
-      "fx_today": 0.8895,
-      "fx_change_pct": -6.48,
+      "fx_today": 0.8906,
+      "fx_change_pct": -6.36,
       "value_today_eur": 119505.17,
       "cost_eur_at_buy": 97218.03,
       "total_gain_eur": 22287.14,
-      "asset_gain_eur": 29757.98,
-      "fx_gain_eur": -7470.85,
+      "asset_gain_eur": 29757.99,
+      "fx_gain_eur": -7470.86,
       "benchmark_note": "Decomposition uses MSCI World (URTH proxy) as USD benchmark."
     },
     {
@@ -268,8 +268,8 @@
       "bench_today": 206.34,
       "bench_return_pct": 51.33,
       "fx_at_buy": 0.9255,
-      "fx_today": 0.8895,
-      "fx_change_pct": -3.89,
+      "fx_today": 0.8906,
+      "fx_change_pct": -3.77,
       "value_today_eur": 26962.9,
       "cost_eur_at_buy": 18406.82,
       "total_gain_eur": 8556.08,
